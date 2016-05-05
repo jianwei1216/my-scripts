@@ -1,0 +1,8 @@
+set location /cluster2/test
+set subdirectories 10000
+set size 200000000
+set number 1000
+set transactions 1000
+run result.postmark
+show
+quit

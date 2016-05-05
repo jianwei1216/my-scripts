@@ -1,0 +1,301 @@
+$def with (content)
+<style type="text/css">
+	#mtop{height:7px;background:url(../static/theme/redmond/images/machinepaneltop.png) no-repeat; font-size: 0;}
+	#mbottom{height:16px;background:url(../static/theme/redmond/images/machinepanelbottom.png);}
+	#mgroup,#mtop,#mbottom{width:281px;margin:0 auto;}
+	#mgroup{background-color:#707273;border-left: 1px solid;}
+	.mcenter{backgroud-color: #707070;float:left;}
+	.machineinfo{position:absolute;top:0px;left:650px;border: 2px solid #B0B0B0;}
+	.group-8,.group-16,.group-24{width:280px;height:94px;}
+	#allinfo,.ups,.screen,.group-16{width:280px;height:94px;}
+	.group-8{width:280px;height:37px;}
+	.mleft16{background:#707070 url(../static/theme/redmond/images/diskfmbgl.png);height:69px;width:15px;float:left;}
+	.mcenter16{backgroud-color: #707070;height:64px;width:15px;}
+	.mright16{background:#b0b0b0 url(../static/theme/redmond/images/diskfmbgr.png);height:69px;width:15px;float:right;}
+	
+	.mleft8{background:#707070 url(../static/theme/redmond/images/diskfm8bgl.png);height:37px;width:15px;float:left;}
+	.mcenter8{backgroud-color: #707070;height:64px;width:15px;}
+	.mright8{background:#b0b0b0 url(../static/theme/redmond/images/diskfm8bgr.png);height:37px;width:15px;float:right;}
+	
+	.mleft24{background:#707070 url(../static/theme/redmond/images/diskfm24bgl.png);height:103px;width:15px;float:left;}
+	.mcenter24{backgroud-color: #707070;height:64px;width:15px;}
+	.mright24{background:#b0b0b0 url(../static/theme/redmond/images/diskfm24bgr.png);height:103px;width:15px;float:right;}
+	.mbottom{background-color: #b0b0b0;height:30px;display:block;}
+	.disk{background: url(../static/theme/redmond/images/diskbg.png) no-repeat scroll 0 0 transparent;width:64px;height:16px;border:1px solid #000;padding:0;cursor: pointer;}
+	.raid{cursor: pointer;display:block;height:20px;line-height:20px;width:60px;background:#b0b0b0;text-align:center;border:1px solid #fff;}
+	.raiddev{float:right;margin-right:10px;}
+	.highlight{border-color: #fff;}
+	.devname{display: block; width: 30px;color:#fff;height:15px;float:left;line-height: 15px;}
+	.greenlight{background:url(../static/theme/redmond/images/greenlight.png) no-repeat; _background-image: none; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../static/theme/redmond/images/greenlight.png');height:8px;width:8px;display:inline;float:right;margin-right:5px;margin-top: 3px;overflow: hidden;}
+	.redlight{background:url(../static/theme/redmond/images/redlight.png) no-repeat; _background-image: none; _filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../static/theme/redmond/images/redlight.png');height:8px;width:8px;display:inline;float:right;margin-right:5px;margin-top: 3px;overflow: hidden;}
+	#serviceinfo{border:1px solid #b0b0b0;}
+	#servicepanel{position:absolute;top:0px;left:200px;}
+	#screenpanel{height:160px;background:url(../static/theme/redmond/images/srceen.png) no-repeat scroll 0 0 #b0b0b0;}
+	#raidul{font-size:10px;}
+	.alertline{line-height:10px;clear:both;}
+	#progressbar{height: 32px;margin:2px;border:none;background:#42B449;}
+	#progressbarWrapper{height:44px;width:270px;padding:5px;border:none;background:#474749;float:left;}
+	.ui-widget-header{background:#42B449;border:none;}
+	.ui-progressbar .ui-progressbar-value {margin:0px;}
+	.ui-progressbar p{padding-top:3px;padding-left:45px;}
+</style>
+<div id="mtop"></div>
+<div id="mgroup">
+	<!--div id="screenpanel" class="screen ui-corner-top"></div-->
+	<div id="upspanel" class="ups ui-corner-bottom" style="height:50px;padding-top: 10px;background:#b0b0b0;">
+		<ul id="ups" style="height:30px;background-color: #FFFFFF;display: block;height: 30px;">
+			<li id="battery">
+				<div class="demo">
+					<div id="progressbarWrapper" class="ui-widget-default"></div>
+				</div>
+			</li>
+		</ul>
+	</div>
+	<div id="servicepanel">
+		<p id="serviceinfodescibe">service info of these nodes</p>
+		<ul id="serviceinfo" class="ztree ui-corner-all"></ul>
+	</div>
+</div>
+<div id="mbottom"></div>
+<div id="machineinfo">
+</div>
+<script type="text/javascript">
+$(ELT)(function(){
+	//var fresh_flag = 0;
+    function getraidinfo(nodename){
+    	url = "/indexgetraid?" + new Date().getTime();
+    	var node = nodename;
+    	$(ELT).ajax({
+    		url: url,
+    		type: 'POST',
+    		data: 'clusternodename=' + nodename,
+    		dataType: 'JSON',
+    		beforeSend: function(){},
+    		success: function(text){
+    			var raiddata = text;
+    			var raidhtml = '';
+    			for(i in raiddata){
+    				var raidid = '';
+    				for(var j=0; j<raiddata[i].length;j++){
+    					if(j == raiddata[i].length - 1){
+    						raidid += raiddata[i][j].position;
+    					}
+    					else{
+    						raidid += raiddata[i][j].position + '-';
+    					}
+    				}
+    				var raidli = '<span id="'+ i +'" class="raid ui-corner-all"><span class="raiddev">' + i + '</span><span class="ui-icon ui-icon-triangle-1-e"></span></span>';
+    				$(ELT)('#machineinfo').append(raidli);
+    			}
+    			$(ELT)('.raid').each(function(){
+    				$(ELT)(this).bind('mouseenter', function(){
+    					var that = this;
+    					$(ELT)("#"+node+" table tr td").each(function(){
+    						if($(ELT)(this).hasClass($(ELT)(that).attr('id'))){
+    							$(ELT)(this).addClass('highlight');
+    						}
+    					});
+    				});
+    			});
+    			$(ELT)('.raid').each(function(){
+    				$(ELT)(this).bind('mouseleave', function(){
+    					var that = this;
+    					$(ELT)("#"+node+" table tr td").each(function(){
+    						if($(ELT)(this).hasClass($(ELT)(that).attr('id'))){
+    							$(ELT)(this).removeClass('highlight');
+    						}
+    					});
+    				});
+    			});
+    		}
+    	});
+    }
+    function getdiskinfo(nodename){
+    	url = "/indexgetdisk?" + new Date().getTime();
+    	$(ELT).ajax({
+    		url: url,
+    		type: 'POST',
+    		data: 'clusternodename=' + nodename, 
+    		dataType: 'JSON',
+    		beforeSend: function(){},
+    		success: function(text){
+    			var diskdata = eval(text);
+    			var adisk = '';
+    			var nodisk = '<td class="disk"><span class="nodisk devname">miss</span><span class="redlight"></td>';
+    			var diskline1 = ['<tr class="hdisk">',nodisk,nodisk,nodisk,nodisk];
+    			var diskline2 = ['<tr class="hdisk">',nodisk,nodisk,nodisk,nodisk];
+    			var diskline3 = ['<tr class="hdisk">',nodisk,nodisk,nodisk,nodisk];
+    			var diskline4 = ['<tr class="hdisk">',nodisk,nodisk,nodisk,nodisk];
+    			var nodepanel = '<div id="' + diskdata[0].nodename + '" class="group-8" href="/clusternodeview?node=' + diskdata[0].nodename + '"><span class="mleft8"></span><span class="mright8"></span><span class="mcenter"><table boder="0" cellspacing="1" style="width:250px;background-color:#707070;line-height:0;">';
+    			//var nodepanel = '<div id="' + diskdata[0].nodename + '" class="group-16"><span class="mleft16"></span><span class="mright16"></span><span class="mcenter"><table boder="0" cellspacing="1" style="width:250px;background-color:#707070;line-height:0;">';
+    			for(var i = 0; i < diskdata.length; i++){
+    				var position = parseInt(diskdata[i].position);
+    				var devname = diskdata[i].devname;
+    				var devid =  diskdata[i].nodename + '-' + diskdata[i].devname;
+    				if(diskdata[i].status == "in_raid"){
+    					var diskclass = diskdata[i].raidname;
+    					adisk = '<td id="' + devid + '" class="disk ' + diskclass +'"><span class="devname">' + devname + '</span><span class="greenlight"></td>';
+    				}
+    				else{
+    					adisk = '<td id="' + devid + '" class="disk"><span class="devname">' + devname + '</span><span class="greenlight"></td>';
+    				}
+    				if(position < 5){
+    					diskline1[position-0] = adisk;
+    				}
+    				else if(position >= 5 && position < 9){ 
+    					diskline2[position-4] = adisk;
+    				}
+    				else if(position >= 9 && position < 13){
+    					diskline3[position-8] = adisk;
+    				}
+    				else{
+    					diskline4[position-12] = adisk;
+    				}
+    			}
+				if(diskline1.length >1){
+					var disklinehtml1 = diskline1.join('') + "</tr>";
+				}
+				else{
+					var disklinehtml1 = '';
+				}
+				if(diskline2.length >1){
+					var disklinehtml2 = diskline2.join('') + "</tr>";
+				}
+				else{
+					var disklinehtml2 = '';
+				}
+				if(diskline3.length >1){
+					var disklinehtml3 = diskline3.join('') + "</tr>";
+				}
+				else{
+					var disklinehtml3 = '';
+				}
+				if(diskline4.length >1){
+					var disklinehtml4 = diskline4.join('') + "</tr>";
+				}
+				else{
+					var disklinehtml4 = '';
+				}
+				//nodepanel += disklinehtml4;
+				//nodepanel += disklinehtml3;
+				nodepanel += disklinehtml2;
+				nodepanel += disklinehtml1;
+				nodepanel += "</table>";
+				$(ELT)("#upspanel").before(nodepanel);
+				$(ELT)(".disk").each(
+			    	function(){
+			    		$(ELT)(this).bind('mouseover', function(){
+			    			$(ELT)(this).addClass('highlight');});
+			    		$(ELT)(this).bind('mouseout', function(){
+			    			$(ELT)(this).removeClass('highlight');});
+			    });
+			    $(ELT)("#" + nodename).bind('mouseenter', function(){
+			    	$(ELT)("#machineinfo").html("");
+			    	$(ELT)("#machineinfo").show(getraidinfo(nodename));
+			    	$(ELT)("#" + nodename).append($(ELT)("#machineinfo"));
+			    	var nodetop = parseInt($(ELT)("#" + nodename).position().top);
+			    	$(ELT)("#machineinfo").addClass("machineinfo");
+			    	$(ELT)("#machineinfo").attr("style","top:" + nodetop + "px;");
+			    	$(ELT)("#machineinfo").addClass('ui-corner-all');
+			    });
+			    $(ELT)("#" + nodename).bind('click', function(){
+    				window.location.href=$(ELT)(this).attr('href').toString();
+				});
+			    $(ELT)("#" + nodename).bind('mouseleave', function(){
+			    	$(ELT)("#machineinfo").hide();
+			    });
+    		}
+    	});
+    }
+    function isEmptyObj(o){
+		for (var x in o){
+    		return false;
+  		}
+  		return true;
+	}
+    function getupsinfo(){
+    	url = "/indexgetupsinfo?" + new Date().getTime();
+    	$(ELT).ajax({
+    		url: url,
+    		type: 'POST',
+    		dataType: 'JSON',
+    		beforeSend: function(){
+    			$(ELT)('#progressbarWrapper').html('<img src="../static/theme/redmond/images/ajax-loader-1.gif" />');
+    		},
+    		success: function(text){
+    			$(ELT)('#progressbarWrapper').html('');
+    			upsdata = text;
+    			if(isEmptyObj(upsdata)){
+    				$(ELT)('#progressbarWrapper').html('<img src="../static/theme/redmond/images/charge.png" style="float:left;" title="$_('charge')"/><p>未发现UPS设备，请检查UPS连接状况</p>');
+				correctPNG();
+    			}
+    			else{
+	    			$(ELT)('#progressbarWrapper').progressbar({
+	    				value: upsdata.time_remaining
+	    			});
+	    			if(upsdata.charge){
+	    				$(ELT)('.ui-progressbar-value').html('<img src="../static/theme/redmond/images/charge.png" style="float:left;" title="$_('charge')"/><p>剩余电量: '+upsdata.time_remaining+'%</p><p>剩余时间：N/A</p>');
+					correctPNG();
+	    			}
+	    			else{
+	    				$(ELT)('.ui-progressbar-value').html('<img src="../static/theme/redmond/images/lighting.png" style="float:left;" title="$_('discharge')"/><p>剩余电量: '+upsdata.time_remaining+'%</p><p>剩余时间: '+upsdata.estimated_runtime+'</p>');
+					correctPNG();
+	    			}
+	    		}	
+    		}
+    	});
+    }
+    function getserviceinfo(){
+    	url = "/indexgetservice?" + new Date().getTime();
+    	$(ELT).ajax({
+    		url: url,
+    		type: 'POST',
+    		dataType: 'JSON',
+    		beforeSend: function(){},
+    		success: function(text){
+    			zNodes = text;
+    			var setting = {
+    				callback:{
+    					onExpand: zTreeOnExpand
+    				}
+    			};
+    			function zTreeOnExpand(event, treeId, treeNode) {
+    				$(ELT)('#serviceinfo a').each(function(){    //get raid subdisk
+					    if($(ELT)(this).attr('title').split(':').length > 1){
+					        var node = $(ELT)(this).attr('title').split(':')[0];
+					        var mdname = $(ELT)(this).attr('title').split(':')[1];
+					        $(ELT)(this).bind('mouseenter', function(){
+					            $(ELT)("#"+node+" table tr td").each(function(){
+						    		if($(ELT)(this).hasClass(mdname)){
+						    		    $(ELT)(this).addClass('highlight');
+						    		}
+					    	    });  
+					        });
+					        $(ELT)(this).bind('mouseleave', function(){
+					            $(ELT)("#"+node+" table tr td").each(function(){
+						    		if($(ELT)(this).hasClass(mdname)){
+						    		    $(ELT)(this).removeClass('highlight');
+						    		}
+					    	    });  
+					        });
+					    }
+					});
+    			}
+    			$(ELT).fn.zTree.init($(ELT)("#serviceinfo"), setting, zNodes);
+    		}
+    	});
+    }
+    getdiskinfo("node-1");
+    getupsinfo();
+    //setInterval(getupsinfo, 5000);
+    getserviceinfo();
+    //setInterval(getraidstatus, 5000);
+    $(ELT)(".disk").each(
+    	function(){
+    		$(ELT)(this).bind('mouseover', function(){
+    			$(ELT)(this).attr("style","border-color:#fff");});
+    		$(ELT)(this).bind('mouseout', function(){
+    			$(ELT)(this).attr("style","border-color:#000");});
+    });
+});
+</script>

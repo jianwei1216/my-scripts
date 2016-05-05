@@ -1,0 +1,80 @@
+PING-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, Integer32, Gauge32
+        FROM SNMPv2-SMI
+    DisplayString, TruthValue
+        FROM SNMPv2-TC
+    hackingExperimental
+        FROM HACKING-SNMP-MIB;
+
+PingMIB MODULE-IDENTITY
+        LAST-UPDATED    "201307180000Z"
+        ORGANIZATION    "Hacking Networked Solutions Ltd"
+        CONTACT-INFO    "Max Hacking"
+        DESCRIPTION             "This MIB module defines objects for Fail Raid"
+        REVISION        "201307180000Z"
+        DESCRIPTION             "Derived from DISKIO-MIB ex UCD."
+    ::= { Ping 1 }
+
+Ping      OBJECT IDENTIFIER ::= { hackingExperimental 10 }
+
+PingTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF SPingEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "disk drop or add information."
+    ::= { Ping 2 }
+
+PingEntry OBJECT-TYPE
+    SYNTAX      SPing
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Disk drop or add"
+    INDEX       { PingIndex }
+    ::= { PingTable 1 }
+
+	SPingEntry ::= SEQUENCE {
+        PingIndex                 Integer32,
+		PingCTime                  DisplayString,
+        PingNode                 DisplayString,
+        PingIP                  DisplayString,
+        PingEvent               DisplayString
+}
+
+PingIndex OBJECT-TYPE
+    SYNTAX      Integer32 (0..65535)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Reference index for each observed device."
+    ::= { PingEntry 1 }
+
+PingCTime OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "time-stamp"
+    ::= { PingEntry 2 }
+
+PingNode OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "node name"
+    ::= { PingEntry 3 }
+
+PingIP OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "ip addr"
+    ::= { PingEntry 4 }
+
+PingEvent OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "event"
+    ::= { PingEntry 5 }
+
+END

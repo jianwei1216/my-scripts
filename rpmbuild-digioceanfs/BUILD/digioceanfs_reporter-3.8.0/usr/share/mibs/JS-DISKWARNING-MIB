@@ -1,0 +1,117 @@
+DISKWARNING-MIB DEFINITIONS ::= BEGIN
+
+-- imports and exports
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, Integer32, Gauge32
+        FROM SNMPv2-SMI
+    DisplayString, TruthValue
+        FROM SNMPv2-TC
+    hackingExperimental
+        FROM HACKING-SNMP-MIB;
+
+diskWarningMIB MODULE-IDENTITY
+        LAST-UPDATED    "201210150000Z"
+        ORGANIZATION    "Hacking Networked Solutions Ltd"
+        CONTACT-INFO    "Max Hacking"
+        DESCRIPTION             "This MIB module defines objects for HDD SMART data."
+        REVISION        "201210150000Z"
+        DESCRIPTION             "Derived from DISKIO-MIB ex UCD."
+    ::= { DiskWarning 1 }
+
+DiskWarning      OBJECT IDENTIFIER ::= { hackingExperimental 3 }
+
+DiskWarningTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF SsmartCtlEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Table of HDD SMART information."
+    ::= { DiskWarning 2 }
+
+DiskWarningEntry OBJECT-TYPE
+    SYNTAX      SsmartCtlEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "An entry containing a device and its statistics."
+    INDEX       { DiskWarningDiskIndex }
+    ::= { DiskWarningTable 1 }
+
+    SDiskWarningEntry ::= SEQUENCE {
+        DiskWarningDiskIndex                Integer32,
+        DiskWarningDiskName                  DisplayString,
+        DiskWarningDiskTemp                  DisplayString,
+        DiskWarningDiskRate                  DisplayString,
+        DiskWarningDiskState                 DisplayString,
+        DiskWarningDiskCount                 DisplayString,
+        DiskWarningDiskErrCode               DisplayString,
+        DiskWarningDiskId                    DisplayString,
+        DiskWarningDiskPath                  DisplayString,
+}
+
+DiskWarningDiskIndex OBJECT-TYPE
+    SYNTAX      Integer32 (0..65535)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Reference index for each observed device."
+    ::= { DiskWarningEntry 1 }
+
+DiskWarningDiskName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Disk name"
+    ::= { DiskWarningEntry 2 }
+
+DiskWarningDiskTemp OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Disk temp"
+    ::= { DiskWarningEntry 3 }
+
+DiskWarningDiskState OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Disk state"
+    ::= { DiskWarningEntry 4 }
+
+DiskWarningDiskCount OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Disk state"
+    ::= { DiskWarningEntry 5 }
+
+DiskWarningDiskErrCode OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Disk state"
+    ::= { DiskWarningEntry 6 }
+
+DiskWarningDiskRate OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Disk state"
+    ::= { DiskWarningEntry 7 }
+
+DiskWarningDiskId OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Disk id"
+    ::= { DiskWarningEntry 8 }
+
+DiskWarningDiskPath OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Disk Path"
+    ::= { DiskWarningEntry 9 }
+
+END
+
+
+

@@ -1,0 +1,16 @@
+#!/bin/bash
+modprobe fuse
+modprobe md-mod
+if [ -e /etc/init.d/nfs-kernel-server ];then
+	/etc/init.d/nfs-kernel-server stop
+fi
+/etc/init.d/nfs-common restart
+/usr/local/sbin/unfsd
+mdadm --monitor --scan --daemonise 
+/usr/bin/python /usr/local/admin/softraid/raidconfig/initRaid.py
+pushd /usr/share/digioceanfs_manager/
+bash dev.sh -n &
+/etc/init.d/udev stop
+/etc/init.d/udev start
+popd
+/usr/local/bin/apachectl start

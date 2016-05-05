@@ -1,0 +1,117 @@
+$def with (content)
+<div id="clusterserviceoptionset">
+	<input id="h_servicename" value="$content.clusterservicename" hidden />
+	<span id="option_name" class="option-name">$_("clusterserviceoptionname"):</span>
+	<select id="clusterserviceoptiongroups">
+		$for group in content.clusterserviceoptiongroups:
+			<option id="$group" class="service-option-group">$_(group)</option>
+	</select>
+	<br />
+	<br />
+</div>
+<div id="clusterserviceoptions">
+</div>
+<script type="text/javascript">
+	$(ELT)(function(){
+		var service_name = $(ELT)("#h_servicename").val();
+		var group_name = $(ELT)("#clusterserviceoptiongroups option[id=quorum]").attr('id');
+		$(ELT)("#clusterserviceoptiongroups").change(function(){
+			var group_name = $(ELT)(this).attr('id');
+			getServiceOptions(service_name, group_name);
+		});
+		getServiceOptions(service_name, group_name);
+	});
+	
+	function getServiceOptions(service_name, group_name){
+		var url = "/clusterserviceoptionlist?" + new Date().getTime();
+		$(ELT).ajax({
+			url: url,
+            type: 'POST',
+            data: "clusterservicename=" + service_name + "&clusterserviceoptiongroup=" + group_name,
+            dataType: 'JSON',
+            beforeSend: function(){
+                custLoading("$_('deletingservicenow')");
+            },
+            error: function(){
+                custAlert("$_('operfail')","Request Error!");
+            },
+            success: function(text){
+            	try{
+                	optionlist = text;
+                }catch(e){
+                	optionlist = '';
+                }
+                var optionlisthtml  = '';
+                for(var option in optionlist){
+                	var optionhtml = '';
+                	switch(option){
+                		case 'cluster.quorum-type':
+                			//do something
+                			optionhtml = '<div><span class="service-option-name">$_("Cluster Quorum Type")</span><span class="service-option-value"><select class="quorum-type" title="$_("quorum_type_tips")"><option>FIXED</option><option>AUTO</option><option>NONE</option></select></span></div>';
+                			break;
+                		case 'cluster.quorum-count':
+                			optionhtml = '<div><span class="service-option-name">$_("Cluster Quorum Count")</span><span class="service-option-value"><input id=""  title="$_("quorum_count_tips")" class="quorum-count" style="text-algin: right;" value="'+$_("optionlist[option]")+'" /></span></div>';
+                			break;
+                		case 'cluster.quorum-reads':
+                			optionhtml = '<div><span class="service-option-name">$_("Cluster Quorum Reads")</span><span class="service-option-value"><select class="quorum-read" title="$_("quorum_read_no_tips")"><option>NO</option><option>TRUE</option></select></span></div>';
+                			break;
+                		default:
+                			//alert('aa');
+                			break;
+                	}
+                	optionlisthtml += optionhtml;
+                	//optionlisthtml +=  '<div><span class="service-option-name">'+$_("option")+':</span><span class="service-option-note"></span><span class="service-option-value"><input id="" style="text-algin: right;" value="'+$_("optionlist[option]")+'" /></span></div>';
+                }
+                //var quorum_type_tips_html = "aaaaaa";
+                $(ELT)("#clusterserviceoptions").html(optionlisthtml);
+                $(ELT)(".quorum-type").val(optionlist['cluster.quorum-type'].toUpperCase());
+                $(ELT)(".quorum-read").val(optionlist['cluster.quorum-reads'].toUpperCase());
+                $(ELT)(".quorum-type").qtip({
+					content: {
+	        			text: '<ul><li style="line-height: 18px;">NONE: $_("quorum_type_none_tips")</li><li style="line-height: 18px;">AUTO : $_("quorum_type_auto_tips")</li><li style="line-height: 18px;">FIXED: $_("quorum_type_fixed_tips")</li></ul>',
+	    				title: {
+	    					text: '写操作限制',
+	    				}
+	    			},
+	    			
+	    			position: {
+	    				my: 'center left',
+	    				at: 'right center'
+	    			},
+	    			style: {
+	    				classes: 'qtip-rounded'
+	    			}
+				});
+				$(ELT)(".quorum-read").qtip({
+					content: {
+	        			text: '<ul><li style="line-height: 18px;">NO  : $_("quorum_read_no_tips")</li><li style="line-height: 18px;">TRUE: $_("quorum_read_true_tips")</li></ul>',
+	        			title: {
+	    					text: '读操作限制',
+	    				},
+	    			},
+	    			
+	    			position: {
+	    				my: 'center left',
+	    				at: 'right center'
+	    			},
+	    			style: {
+	    				classes: 'qtip-rounded'
+	    			}
+				});
+				$(ELT)(".quorum-count").qtip({
+					content: {
+	        			text: '<p style="line-height: 18px;">$_("quorum_count_tips")</p>'
+	    			},
+	    			
+	    			position: {
+	    				my: 'center left',
+	    				at: 'right center'
+	    			},
+	    			style: {
+	    				classes: 'qtip-rounded'
+	    			}
+				});
+            }
+		});
+	}
+</script>

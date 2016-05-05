@@ -1,0 +1,29 @@
+
+server_rename_cbk(xdata)
+{
+        dict_get_int32(xdata, GLUSTERFS_XATTR_EXPAND_HOLD, &expand_hold)
+        if (expand_hold == 1) {
+                tmp_inode = inode_grep (digi_file's inode);
+                if (tmp_inode) {
+                        inode_unlink(digi_file's entry);
+                        tmp_parent = inode_parent(tmp_inode);
+                        if(tmp_parent)
+                                inode_unref(tmp_parent);
+                        else
+                                inode_forget(tmp_inode);
+                        inode_unref(tmp_inode);
+                }
+        }
+
+}
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,232 @@
+Breakpoint 1 at 0x3d2001e917: file dict.c, line 152.
+Continuing.
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803f08c, key1=0x7ff0a8002f60 "trusted.glusterfs.dht", value1=0x7ff0a800257c, data=0x7ff0ae016580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$1 = 0x7ff0a8002f60 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803f08c, key1=0x7ff0a803e790 "trusted.ec.version", value1=0x7ff0a80396ec, data=0x7ff0ae016580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$2 = 0x7ff0a803e790 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0980024fc, key1=0x7ff098006740 "trusted.glusterfs.dht", value1=0x7ff0980065cc, data=0x7ff0a68c6580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$3 = 0x7ff098006740 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0980024fc, key1=0x7ff098002470 "trusted.ec.version", value1=0x7ff0980025dc, data=0x7ff0a68c6580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$4 = 0x7ff098002470 "trusted.ec.version"
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800876c, key1=0x7ff0980084f0 "trusted.ec.version", value1=0x7ff0980089ac, data=0x7ff0a68c66c0) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$5 = 0x7ff0980084f0 "trusted.ec.version"
+
+Breakpoint 1, key_value_cmp (one=0x7ff098004f2c, key1=0x7ff098005180 "trusted.ec.version", value1=0x7ff09800500c, data=0x7ff0a68c66c0) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$6 = 0x7ff098005180 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803e14c, key1=0x7ff0a803fea0 "trusted.glusterfs.dht", value1=0x7ff0a800257c, data=0x7ff0ae016580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$7 = 0x7ff0a803fea0 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803e14c, key1=0x7ff0a8042690 "trusted.ec.version", value1=0x7ff0a803f8cc, data=0x7ff0ae016580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$8 = 0x7ff0a8042690 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff098000adc, key1=0x7ff098005010 "trusted.glusterfs.dht", value1=0x7ff09800896c, data=0x7ff0a68c6580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$9 = 0x7ff098005010 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff098000adc, key1=0x7ff098007d70 "trusted.ec.version", value1=0x7ff0980088dc, data=0x7ff0a68c6580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$10 = 0x7ff098007d70 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803cffc, key1=0x7ff0a8042a80 "trusted.glusterfs.dht", value1=0x7ff0a803dc7c, data=0x7ff0ae016580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$11 = 0x7ff0a8042a80 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803cffc, key1=0x7ff0a8043450 "trusted.ec.version", value1=0x7ff0a804301c, data=0x7ff0ae016580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$12 = 0x7ff0a8043450 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0980059dc, key1=0x7ff098000ac0 "trusted.glusterfs.dht", value1=0x7ff098004f2c, data=0x7ff0a68c6580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$13 = 0x7ff098000ac0 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0980059dc, key1=0x7ff09800a9a0 "trusted.ec.version", value1=0x7ff0980017ac, data=0x7ff0a68c6580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$14 = 0x7ff09800a9a0 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a804977c, key1=0x7ff0a8049a00 "trusted.ec.version", value1=0x7ff0a80498ec, data=0x7ff0ae0166b0) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$15 = 0x7ff0a8049a00 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800348c, key1=0x7ff098001720 "trusted.ec.version", value1=0x7ff0980065cc, data=0x7ff0a68c66b0) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$16 = 0x7ff098001720 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a804301c, key1=0x7ff0a8045cc0 "trusted.glusterfs.dht", value1=0x7ff0a804125c, data=0x7ff0ae016580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$17 = 0x7ff0a8045cc0 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a804301c, key1=0x7ff0a8002fd0 "trusted.ec.version", value1=0x7ff0a803f8cc, data=0x7ff0ae016580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$18 = 0x7ff0a8002fd0 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff098008a0c, key1=0x7ff0980054c0 "trusted.glusterfs.dht", value1=0x7ff098002e4c, data=0x7ff0a68c6580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$19 = 0x7ff0980054c0 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff098008a0c, key1=0x7ff098000ac0 "trusted.ec.version", value1=0x7ff098000b4c, data=0x7ff0a68c6580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$20 = 0x7ff098000ac0 "trusted.ec.version"
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800a86c, key1=0x7ff098000d80 "trusted.glusterfs.dht", value1=0x7ff098000d0c, data=0x7ff0a68c6580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$21 = 0x7ff098000d80 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800a86c, key1=0x7ff09800a090 "trusted.ec.version", value1=0x7ff0980088bc, data=0x7ff0a68c6580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$22 = 0x7ff09800a090 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a80487bc, key1=0x7ff0a803e790 "trusted.glusterfs.dht", value1=0x7ff0a800257c, data=0x7ff0ae016580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$23 = 0x7ff0a803e790 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a80487bc, key1=0x7ff0a803fea0 "trusted.ec.version", value1=0x7ff0a803f8cc, data=0x7ff0ae016580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$24 = 0x7ff0a803fea0 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff098007ebc, key1=0x7ff098000d80 "trusted.ec.version", value1=0x7ff098000d0c, data=0x7ff0a68c66b0) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$25 = 0x7ff098000d80 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a804258c, key1=0x7ff0a803e790 "trusted.ec.version", value1=0x7ff0a803f8cc, data=0x7ff0ae0166b0) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$26 = 0x7ff0a803e790 "trusted.ec.version"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a80487bc, key1=0x7ff0a8001300 "trusted.glusterfs.dht", value1=0x7ff0a804261c, data=0x7ff0ae016580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$27 = 0x7ff0a8001300 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a80487bc, key1=0x7ff0a80396d0 "trusted.ec.version", value1=0x7ff0a804258c, data=0x7ff0ae016580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$28 = 0x7ff0a80396d0 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff098002cfc, key1=0x7ff098000d80 "trusted.glusterfs.dht", value1=0x7ff09800439c, data=0x7ff0a68c6580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$29 = 0x7ff098000d80 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff098002cfc, key1=0x7ff0980086a0 "trusted.ec.version", value1=0x7ff098000d0c, data=0x7ff0a68c6580) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$30 = 0x7ff0980086a0 "trusted.ec.version"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0980086bc, key1=0x7ff098010aa0 "trusted.ec.version", value1=0x7ff098010b2c, data=0x7ff0a68c66c0) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$31 = 0x7ff098010aa0 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803e35c, key1=0x7ff0a803f280 "trusted.ec.version", value1=0x7ff0a803f8cc, data=0x7ff0ae0166c0) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$32 = 0x7ff0a803f280 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0980059dc, key1=0x7ff0980086a0 "trusted.ec.version", value1=0x7ff09800348c, data=0x7ff0a68c66b0) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$33 = 0x7ff0980086a0 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a804301c, key1=0x7ff0a8041720 "trusted.ec.version", value1=0x7ff0a8042cec, data=0x7ff0ae0166b0) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$34 = 0x7ff0a8041720 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800a41c, key1=0x7ff09800ae40 "trusted.ec.size", value1=0x7ff09800accc, data=0x7ff0a68c6410) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$35 = 0x7ff09800ae40 "trusted.ec.size"
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800a41c, key1=0x7ff09800ac40 "trusted.ec.version", value1=0x7ff09800aacc, data=0x7ff0a68c6410) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$36 = 0x7ff09800ac40 "trusted.ec.version"
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800a41c, key1=0x7ff09800aa40 "trusted.ec.config", value1=0x7ff09800a8cc, data=0x7ff0a68c6410) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$37 = 0x7ff09800aa40 "trusted.ec.config"
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800a41c, key1=0x7ff098002660 "gfid-req", value1=0x7ff09800a5ec, data=0x7ff0a68c6410) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$38 = 0x7ff098002660 "gfid-req"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803f08c, key1=0x7ff0a8002fd0 "trusted.ec.size", value1=0x7ff0a8042d1c, data=0x7ff0ae016410) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$39 = 0x7ff0a8002fd0 "trusted.ec.size"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803f08c, key1=0x7ff0a80012f0 "trusted.ec.version", value1=0x7ff0a8045d7c, data=0x7ff0ae016410) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$40 = 0x7ff0a80012f0 "trusted.ec.version"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803f08c, key1=0x7ff0a803fea0 "trusted.ec.config", value1=0x7ff0a800127c, data=0x7ff0ae016410) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$41 = 0x7ff0a803fea0 "trusted.ec.config"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803f08c, key1=0x7ff0a8039380 "gfid-req", value1=0x7ff0a800257c, data=0x7ff0ae016410) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$42 = 0x7ff0a8039380 "gfid-req"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a804115c, key1=0x7ff0a803c130 "trusted.ec.version", value1=0x7ff0a803bfbc, data=0x7ff0ae0166c0) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$43 = 0x7ff0a803c130 "trusted.ec.version"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a804115c, key1=0x7ff0a8048fa0 "trusted.ec.size", value1=0x7ff0a803cb6c, data=0x7ff0ae0166c0) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$44 = 0x7ff0a8048fa0 "trusted.ec.size"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a804115c, key1=0x7ff0a8048c90 "trusted.ec.config", value1=0x7ff0a8048b1c, data=0x7ff0ae0166c0) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$45 = 0x7ff0a8048c90 "trusted.ec.config"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800e8bc, key1=0x7ff098005330 "trusted.ec.version", value1=0x7ff0980051bc, data=0x7ff0a68c66c0) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$46 = 0x7ff098005330 "trusted.ec.version"
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800e8bc, key1=0x7ff098004fb0 "trusted.ec.size", value1=0x7ff09800ea8c, data=0x7ff0a68c66c0) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$47 = 0x7ff098004fb0 "trusted.ec.size"
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800e8bc, key1=0x7ff0980059c0 "trusted.ec.config", value1=0x7ff09800e99c, data=0x7ff0a68c66c0) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$48 = 0x7ff0980059c0 "trusted.ec.config"
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800e87c, key1=0x7ff098009ea0 "trusted.ec.version", value1=0x7ff09800e95c, data=0x7ff0a68c66b0) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$49 = 0x7ff098009ea0 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a80489bc, key1=0x7ff0a803f280 "trusted.ec.version", value1=0x7ff0a8048a9c, data=0x7ff0ae0166b0) at dict.c:152
+152	                if (is_data_equal (value1, value2) == 1)
+$50 = 0x7ff0a803f280 "trusted.ec.version"
+
+Program received signal SIGINT, Interrupt.
+[Switching to Thread 0x7ff0b797a700 (LWP 10894)]
+0x0000003a7f0082ad in pthread_join () from /lib64/libpthread.so.0
+A debugging session is active.
+
+	Inferior 1 [process 10894] will be detached.
+
+Quit anyway? (y or n) Detaching from program: /usr/sbin/glusterfsd, process 10894

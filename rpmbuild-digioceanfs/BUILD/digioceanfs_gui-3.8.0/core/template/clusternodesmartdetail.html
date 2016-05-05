@@ -1,0 +1,124 @@
+$def with (content)
+
+<table cellpadding="0" class="ui-widget ui-widget-content ui-corner-all" style="line-height:20px;">
+    <thead>
+        <tr>
+            <th>$_("clusternodediskdev")</th>
+            <th>$_("clusternode")</th>
+            <th>$_("Serial_Number")</th>
+            <th>$_("Health")</th>
+        </tr>
+    </thead>
+    <td>DISK $(content.position)($content.smartmsg['Diskname'])</td>
+    <td>$content.smartmsg['Nodename']</td>
+    <td>$content.smartmsg['Serial_Number']</td>
+    $if 'Health' in content.smartmsg:
+        $if content.smartmsg['Health'] == 'PASSED' or content.smartmsg['Health'] == 'OK':
+            <td><span style="color:#22FF33">$_('active')</span></td>
+        $elif content.smartmsg['Health'] == 'WARNING':
+            <td><span style="color:#FF0000">$_('warning')</span></td>
+        $else:
+            <td><span style="color:#FF0000">$_('failed')</span></td>
+    $else:
+        <td><span>$_('No_health')</span></td>
+</table>
+<table cellpadding="0" class="ui-widget ui-widget-content ui-corner-all" style="line-height:20px;">
+    <thead>
+        <tr>
+            <th align="center">$_("smart_msgid")</th>
+            <th align="center">$_("ATTRIBUTE_NAME")</th>
+            <th align="center">$_("VALUE")</th>
+            <th align="center">$_("WORST")</th>
+            <th align="center">$_("THRESH")</th>
+            <th align="center">$_("RAW_VALUE")</th>
+            <th align="center">$_("STATE")</th>
+        </tr>
+    </thead>
+    $if 'Smartmsg' in content.smartmsg:
+        $for msg in content.smartmsg['Smartmsg']:
+            <tr>
+                <td>$msg[0]</td>
+                $if msg[1] == "Raw_Read_Error_Rate":
+                    <td>$_("Raw_Read_Error_Rate")</td>
+                $elif msg[1] == "Throughput_Performance":
+                    <td>$_("Throughput_Performance")</td>
+                $elif msg[1] == "Spin_Up_Time":
+                    <td>$_("Spin_Up_Time")</td>
+                $elif msg[1] == "Reallocated_Sector_Ct":
+                    <td>$_("Reallocated_Sector_Ct")</td>
+                $elif msg[1] == "Seek_Error_Rate":
+                    <td>$_("Seek_Error_Rate")</td>
+                $elif msg[1] == "Power_On_Hours":
+                    <td>$_("Power_On_Hours")</td>
+                $elif msg[1] == "Spin_Retry_Count":
+                    <td>$_("Spin_Retry_Count")</td>
+                $elif msg[1] == "Power_Cycle_Count":
+                    <td>$_("Power_Cycle_Count")</td>
+                $elif msg[1] == "Power-Off_Retract_Count":
+                    <td>$_("Power-Off_Retract_Count")</td>
+                $elif msg[1] == "Temperature_Celsius":
+                    <td>$_("Temperature_Celsius")</td>
+                $elif msg[1] == "Current_Pending_Sector":
+                    <td>$_("Current_Pending_Sector")</td>
+                $elif msg[1] == "Start_Stop_Count":
+                    <td>$_("Start_Stop_Count")</td>
+                $elif msg[1] == "Reported_Uncorrect":
+                    <td>$_("Reported_Uncorrect")</td>
+                $elif msg[1] == "High_Fly_Writes":
+                    <td>$_("High_Fly_Writes")</td>
+                $elif msg[1] == "Airflow_Temperature_Cel":
+                    <td>$_("Airflow_Temperature_Cel")</td>
+                $elif msg[1] == "Hardware_ECC_Recovered":
+                    <td>$_("Hardware_ECC_Recovered")</td>
+                $elif msg[1] == "Offline_Uncorrectable":
+                    <td>$_("Offline_Uncorrectable")</td>
+                $elif msg[1] == "UDMA_CRC_Error_Count":
+                    <td>$_("UDMA_CRC_Error_Count")</td>
+                $elif msg[1] == "Calibration_Retry_Count":
+                    <td>$_("Calibration_Retry_Count")</td>
+                $elif msg[1] == "Load_Cycle_Count":
+                    <td>$_("Load_Cycle_Count")</td>
+                $elif msg[1] == "Reallocated_Event_Count":
+                    <td>$_("Reallocated_Event_Count")</td>
+                $elif msg[1] == "Multi_Zone_Error_Rate":
+                    <td>$_("Multi_Zone_Error_Rate")</td>
+                $elif msg[1] == "Seek_Time_Performance":
+                    <td>$_("Seek_Time_Performance")</td>
+                $elif msg[1] == "Head_Flying_Hours":
+                    <td>$_("Head_Flying_Hours")</td>
+                $elif msg[1] == "G-Sense_Error_Rate":
+                    <td>$_("G-Sense_Error_Rate")</td>
+                $elif msg[1] == "Disk_Shift":
+                    <td>$_("Disk_Shift")</td>
+                $elif msg[1] == "Loaded_Hours":
+                    <td>$_("Loaded_Hours")</td>
+                $elif msg[1] == "Load_Retry_Count":
+                    <td>$_("Load_Retry_Count")</td>
+                $elif msg[1] == "Load-in_Time":
+                    <td>$_("Load-in_Time")</td>
+                $elif msg[1] == "Command_Timeout":
+                    <td>$_("Command_Timeout")</td>
+                $elif msg[1] == "End-to-End_Error":
+                    <td>$_("End-to-End_Error")</td>
+                $elif msg[1] == "End-to-End_Error":
+                    <td>$_("End-to-End_Error")</td>
+                $elif msg[1] == "Unknown_Attribute":
+                    <td>$_("Unknown_Attribute")</td>
+                $elif msg[1] == "Program_Fail_Count_Chip":
+                    <td>$_("Program_Fail_Count_Chip")</td>
+                $else:
+                    <td>$msg[1]</td>
+                <td>$msg[2]</td>
+                <td>$msg[3]</td>
+                <td>$msg[4]</td>
+                <td>$msg[6]</td>
+                $if msg[7] == "OK":
+                    <td style="color:#22FF33">$msg[7]</td>
+                $else:
+                    <td style="color:#FF0000">$msg[7]</td>
+            </tr>
+    $else:
+        <tr>
+            <td colspan="7">$_("no_smart_msg")</td>
+        </tr>
+</table>

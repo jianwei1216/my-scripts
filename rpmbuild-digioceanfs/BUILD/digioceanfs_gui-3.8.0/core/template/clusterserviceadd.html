@@ -1,0 +1,113 @@
+$def with (content)
+
+<form id="formclusterservice" method="post">
+    <fieldset>
+        <label for="clusterservicename">$_("clusterservicename")</label>
+        <input type="text" id="clusterservicename" name="clusterservicename" class="ui-widget-content ui-corner-all" /><br /><br />
+        <label for="clusternodeipaddr">$_("clusternodeipaddr")</label>
+        <select name="clusternodeipaddr" id="clusternodeipaddr" style="height:150px;" class="ui-widget-content ui-corner-all" multiple="true" onchange="getUnusedDisk();">
+            $for ip in content.clusternodeip:
+                <option value="$ip">$ip</option>
+        </select>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <select id="clusternodedev" name="clusternodedev" style="height:150px;" class="ui-widget-content ui-corner-all" multiple="true">
+        </select>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <select id="clusternewservicedev" name="clusternewservicedev" style="height:150px;" class="ui-widget-content ui-corner-all" multiple="true">
+        </select>
+        <ul>
+            <li style="display:inline-block;width:30%">
+                <label for="clusterservicetype_none">$_("clusterservicetype_none")</label>
+                <input type="radio" id="clusterservicetype_none" name="clusterservicetype_none" checked onchange="setNone();"/>
+            </li>
+            <li style="display:inline-block;width:30%">
+                <label for="clusterservicetype_afr">$_("clusterservicetype_afr")</label>
+                <input type="radio" id="clusterservicetype_afr" name="clusterservicetype_afr" onchange="setRadio();"/>
+            </li>
+            <li style="display:inline-block; width:30%">
+                <label for="clusterservicetype_strip">$_("clusterservicetype_strip")</label>
+                <input type="radio" id="clusterservicetype_strip" name="clusterservicetype_strip" onchange="setRadio();"/>
+            </li>
+        </ul>
+        <br /><br />
+        <label>&nbsp;</label>
+        <div style="text-align: right;padding-right: 120px;">
+            <button id="nodemr">$_("add")</button>
+            <button id="nodemra">$_("addall")</button>
+            <button id="nodeml">$_("remove")</button>
+            <button id="nodemla">$_("removeall")</button>
+        <br /><br />
+        </div>
+    </fieldset>
+</form>
+<script type="text/javascript">
+function setNone(){
+    $(ELT)('#clusterservicetype_afr').attr('checked','');
+    $(ELT)('#clusterservicetype_strip').attr('checked','');
+}
+function setRadio(){
+    $(ELT)('#clusterservicetype_none').attr('checked','');
+}
+function getUnusedDisk(){
+    var nodeip = $(ELT)('#clusternodeipaddr').val();
+    var data = 'clusternodeipaddr=' + nodeip;
+    checkSession();
+    $ELT .ajax({
+        url: '/clusterservicecreatedialog',
+        type: 'GET',
+        data: data,
+        dataType: 'JSON',
+        success:function(text){
+            $(ELT)('#clusternodedev').html('');
+            if(text != null){
+                var devlist = eval(text);
+                var clusternewservicedev = [];
+                $(ELT)('#clusternewservicedev option').each(function(){clusternewservicedev.push($(ELT)(this).val());});
+                if(clusternewservicedev.length == 0){
+                    for(var i = 0; i < devlist.length; i++){
+                        $(ELT)("<option value='"+ devlist[i] + "'>" + devlist[i] + "</option>").appendTo("#clusternodedev");
+                    }
+                }
+                else{
+                    for(var i = 0; i < devlist.length; i++){
+                        var flag = 1;
+                        for(var j = 0; j < clusternewservicedev.length; j++){
+                            if(devlist[i] == clusternewservicedev[j]){
+                                flag = 0;
+                                break;
+                            }
+                        }
+                        if(flag){
+                            $(ELT)("<option value='"+ devlist[i] + "'>" + devlist[i] + "</option>").appendTo("#clusternodedev");
+                        }
+                    }
+                }
+            }
+        }
+    });
+}    
+$(ELT)(function(){
+    $(ELT)("#clusternodedev").dblclick(function() {$(ELT).listtolist("clusternodedev","clusternewservicedev","move",false);});
+    $(ELT)("#clusternewservicedev").dblclick(function() {$(ELT).listtolist("clusternewservicedev","clusternodedev","move",false);});
+    $(ELT)("#nodemr").button({
+        icons: {
+            primary: "ui-icon-triangle-1-e"
+        }
+    }).bind("click",function() {$(ELT).listtolist("clusternodedev","clusternewservicedev","move",false);return false;});
+    $(ELT)("#nodemra").button({
+        icons: {
+            primary: "ui-icon-seek-next"
+        }
+    }).bind("click",function() {$(ELT).listtolist("clusternodedev","clusternewservicedev","move",true);return false;});
+    $(ELT)("#nodeml").button({
+        icons: {
+            primary: "ui-icon-triangle-1-w"
+        }
+    }).bind("click",function() {$(ELT).listtolist("clusternewservicedev","clusternodedev","move",false);return false;});
+    $(ELT)("#nodemla").button({
+    icons: {
+            primary: "ui-icon-seek-prev"
+        }
+    }).bind("click",function() {$(ELT).listtolist("clusternewservicedev","clusternodedev","move",true);return false;});
+});
+</script>

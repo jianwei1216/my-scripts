@@ -1,0 +1,115 @@
+$def with (content)
+<div id="user_list">
+	<span>$_("auther_list")</span>
+	<select id='auther_list'>
+		$for auther in content.authers:
+			<option>$auther</option>
+		<option id="new_auther">$_("new_auther_d")</option>
+	</select>
+	<dl class="opercommand" style="float: none;">
+       	<dd><a title="$_('delete')" href="javascript:void(0);" onclick="javascript:clusterautherdel();" class="ui-icon ui-icon-inline ui-icon-trash">&nbsp;</a></dd>
+    </dl>
+</div>
+<form id="new_auther_div" style="display: none">
+	<span>$_("new_auther")</span>
+	<input id="new_auther_name" name="new_auther_name" type="text" size="10" />
+	<div id="new_auther_tip_div">$_("new_auther_tip")</div>
+</form>
+
+<div id="auther_config_div">
+	<span>$_("valid_op")</span>
+	<ul id='auther_config' class='ztree'></ul>
+</div>
+<script type="text/javascript">
+	function getAutherConfig(auther){
+		var url = "/clusterautherlist?" + new Date().getTime();
+		var data = "auther=" + auther;
+		var settings = {
+	        check: {
+	            enable: true,
+	            chkStyle: "checkbox"
+	        },
+	        data: {
+	            key: {
+	            	name: "cname"
+	            }
+	        }
+	    };
+		$(ELT).ajax({
+			url: url,
+			data: data,
+			type: 'POST',
+			dataType: 'text',
+			success: function(text){
+				try{
+					var zNodes = $(ELT).parseJSON(text);
+				}catch(e){
+					alert(e);
+					alert('parse json error');
+				}
+				//alert(zNodes);
+				$(ELT).fn.zTree.init($(ELT)('#auther_config'), settings, zNodes);
+				if($(ELT)("#auther_list").val() != '$_("new_auther_d")'){
+					chkDisable('auther_config');
+				}
+			}
+		});
+	}
+	function clusterautherdel(){
+		var url = "/clusterautherdel?" + new Date().getTime();
+		var auther = $(ELT)("#auther_list").val();
+		if(auther != '$_("new_auther_d")'){
+        	var data = "auther=" + auther;            		
+        }else{
+        	return false;
+        }
+		$(ELT).ajax({
+    		url: url,
+    		type: 'POST',
+    		data: data,
+    		dataType: 'text',
+    		success: function(text){
+    			if(isNaN(text)){
+    				getAutherConfig(auther);
+                    custAlert("$_('operfail')",text);
+                }else{
+                	if(parseInt(text) == 0){
+                		custAlert("$_('opersucc')","$_('clusterauthdelsucc')");
+                		$(ELT)("#auther_list").find("option:selected").remove();
+                		$(ELT)('#new_auther_div').hide(500, function(){
+							getAutherConfig($(ELT)("#auther_list").val());
+						});
+                	}else{
+                		getAutherConfig(auther);
+                		custAlert("$_('operfail')",text);
+                	}
+                }
+    		}
+    	});
+	}
+	$(ELT)(function(){
+		var auther_array = [];
+		$(ELT)('#auther_list option').each(function(){auther_array.push($(ELT)(this).html());});
+		var auther_name_rules = {required: true, notIn: auther_array, byterangelength: [3,20], inputName: true, messages: { required: "$_('noauthername')", notIn: "$_('autherexisted')", inputName: "输入只能包括英文字母、数字和@、短横线、下划线以及圆点", byterangelength: "请确保输入的值在3-20个字节之间"}};
+		var selectObj = $(ELT)("#auther_list");
+		selectObj.change(function(){
+			$(ELT)('#auther_list option').each(function(){auther_array.push($(ELT)(this).html());});
+			var auther_name = $(ELT)(this).val();
+			$(ELT)('#new_auther_div').validate();
+			if(auther_name == '$_("new_auther_d")'){
+				$(ELT)('#new_auther_div').show(500, function(){
+					$(ELT)('#new_auther_name').rules('add',auther_name_rules);
+					auther_name = $(ELT)('#new_auther_name').val();
+					getAutherConfig(auther_name);
+				});
+			}else{
+				$(ELT)('#new_auther_div').hide(500, function(){
+					$(ELT)('#new_auther_name').rules('remove');
+					getAutherConfig(auther_name);
+					$(ELT)('#new_auther_name').val('');
+				});
+			}
+		});
+		getAutherConfig(selectObj.val());
+	});
+</script>

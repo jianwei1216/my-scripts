@@ -1,0 +1,20 @@
+/*
+.wrapper-out{ 
+    _margin-left:1000px; 
+    _zoom:1; 
+}
+.wrapper-in{ 
+    _position:relative; 
+    _float:left; 
+    _margin-left:-1000px; 
+}*/
+#right{
+    margin-right:200px;
+}
+#rightcontent{
+    float: left;
+    padding:0px 5px;
+}
+#box{
+    overflow-y: visible; 
+}

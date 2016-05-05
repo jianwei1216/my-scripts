@@ -1,0 +1,25 @@
+$def with (content)
+
+<table style="width:230px;" class="middlelefttable" cellpadding="0" class="ui-widget ui-widget-content ui-corner-all">
+    <thead>
+        <tr>
+            <th>$_("clustermobp")</th>
+        </tr>
+    </thead>
+    <tbody>
+        $if content.mob_numbers:
+            $for mob_num in content.mob_numbers:
+                <tr>
+                    <td>
+                        <span class="opertext">$mob_num</span>
+                        <dl class="opercommand">
+                            <dd><a title="$_('delete')" href="javascript:clusternodedelmobp('$mob_num');" class="ui-icon ui-icon-inline ui-icon-trash">&nbsp;</a></dd>
+                        </dl>        
+                    </td>
+                </tr>
+        $else:
+            <tr>
+                <td colspan="1">$_("nomobnums")</td>
+            </tr>
+    </tbody>
+</table>

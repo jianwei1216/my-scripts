@@ -1,0 +1,235 @@
+$def with (content)
+
+<div id="toolbar" class="ui-corner-all">
+    <button id="btnclustergroupcreate">$_("clustergroupcreate")</button>
+</div>
+
+<div id="pcontent">
+
+</div>
+<script type="text/javascript">
+    $(ELT)(function(){
+        $(ELT)('#btnclustergroupcreate').button({
+            icons: {
+                primary: 'ui-icon-plusthick'
+            }
+        }).bind('click',clustergroupcreate);
+        clustergroupload();
+    });
+    function clustergroupload(){
+        var url = "/clustergroupload?" + new Date().getTime();
+        $(ELT)("#pcontent").load(url,'');
+    }
+    function clustergroupcreate(){
+		custLoading("$_('Loading Data ...')");
+        var url = "/clustergroupcreate?" + new Date().getTime();
+        checkSession();
+        var cgroupdialog = $(ELT)('<div id="cgroupdialog" title="$_('clustergroupcreate')">').appendTo('body');
+        cgroupdialog.load(
+            url, 
+            '',
+            function (responseText, textStatus, XMLHttpRequest) {
+				$(ELT)('#loaddialog').dialog('close');
+                cgroupdialog.dialog({
+                    bgiframe: true,
+                    autoOpen: true,
+                    width: 450,
+                    modal: true,
+                    resizable: false,
+                    buttons: {
+                        "$_('cancel')": function() {
+                            $(ELT)(this).dialog('close');
+                        },
+                        "$_('create')": function() {
+                            if(!$(ELT)('#formclustergroup').valid()){
+                                return false;
+                            }
+                            $(ELT)('#clustergroupnodes option').each(function(){$(ELT)(this).attr('selected', 'selected');});       //selected all that not highlight
+                            var data = $(ELT)("#formclustergroup").serialize();
+                            if(data == 'clustergroupname='){    //check groupname is null;
+                                custAlert("$_('operfail')","$_('groupnamemustnotnull')");
+                                $(ELT)(this).dialog('close');
+                            }
+                            else{
+                                $(ELT).ajax({
+                                    url: url,
+                                    type: 'POST',
+                                    data: data,
+                                    dataType: 'text',
+                                    error: function(){
+                                        custAlert("$_('operfail')","Request Error!");
+                                    },
+                                    success: function(text){
+                                        if(isNaN(text)){
+                                            custAlert("$_('operfail')",text);
+                                        }
+                                        else{
+                                            if(parseInt(text) == 0){
+                                                clustergroupload();
+                                                custAlert("$_('opersucc')","$_('clustergroupcreatesucc')");
+                                            }else{
+                                                custAlert("$_('operfail')","$_('operfailinfo')");
+                                            }
+                                        }
+                                    }
+                                });
+                                $(ELT)(this).dialog('close');
+                            }
+                        }
+                    },
+                    close: function(){
+                        cgroupdialog.remove();
+                    }
+                });
+            }
+        );
+    }
+    function clustergroupadd(clustergroupname){
+        var url = "/clustergroupadd?" + new Date().getTime();
+        checkSession();
+        var agroupdialog = $(ELT)('<div id="agroupdialog" title="$_('clustergroupadd')">').appendTo('body');
+        agroupdialog.load(
+            url, 
+            '',
+            function (responseText, textStatus, XMLHttpRequest) {
+                agroupdialog.dialog({
+                    bgiframe: true,
+                    autoOpen: true,
+                    width: 450,
+                    modal: true,
+                    resizable: false,
+                    buttons: {
+                        "$_('cancel')": function() {
+                            $(ELT)(this).dialog('close');
+                        },
+                        "$_('add')": function() {
+                            $(ELT)('#clustergroupnodes option').each(function(){$(ELT)(this).attr('selected', 'selected');});       //selected all that not highlight
+                            if(!$(ELT)('#clustergroupnodes').valid()){
+                                return false;
+                            }
+                            var data = $(ELT)("#formclustergroup").serialize() + '&clustergroupname=' + clustergroupname;
+                            $(ELT).ajax({
+                                url: url,
+                                type: 'POST',
+                                data: data,
+                                dataType: 'text',
+                                error: function(){
+                                    custAlert("$_('operfail')","Request Error!");
+                                },
+                                success: function(text){
+                                    if(isNaN(text)){
+                                        custAlert("$_('operfail')",text);
+                                    }
+                                    else{
+                                        if(parseInt(text) == 0){
+                                            clustergroupload();
+                                            custAlert("$_('opersucc')","$_('clustergroupaddsucc')");
+                                        }else{
+                                            custAlert("$_('operfail')","$_('operfailinfo')");
+                                        }
+                                    }
+                                }
+                            });
+                            $(ELT)(this).dialog('close');
+                        }
+                    },
+                    close: function(){
+                        agroupdialog.remove();
+                    }
+                });
+            }
+        );
+    }
+    function clustergroupedit(clustergroupname){
+        var url = '/clustergroupedit?' + new Date().getTime();
+        checkSession();
+        var egroupdialog = $(ELT)('<div id="egroupdialog" title="$_('clustergroupedit')">').appendTo('body');
+        egroupdialog.load(
+            url, 
+            'clustergroupname=' + clustergroupname,
+            function (responseText, textStatus, XMLHttpRequest) {
+                egroupdialog.dialog({
+                    bgiframe: true,
+                    autoOpen: true,
+                    width: 450,
+                    modal: true,
+                    resizable: false,
+                    buttons: {
+                        "$_('cancel')": function() {
+                            $(ELT)(this).dialog('close');
+                        },
+                        "$_('update')": function() {
+                            $(ELT)('#clustergroupnodetodel option').each(function(){$(ELT)(this).attr('selected', 'selected');});       //selected all that not highlight
+                            if(!$(ELT)('#formclustergroup').valid()){
+                                return false;
+                            }
+                            var data = $(ELT)("#formclustergroup").serialize();
+                            $(ELT).ajax({
+                                url: url,
+                                type: 'POST',
+                                data: data,
+                                dataType: 'text',
+                                error: function(){
+                                    custAlert("$_('operfail')","Request Error!");
+                                },
+                                success: function(text){
+                                    if(isNaN(text)){
+                                        custAlert("$_('operfail')",text);
+                                    }
+                                    else{
+                                        if(parseInt(text) == 0){
+                                            clustergroupload();
+                                            custAlert("$_('opersucc')","$_('clustergroupeditsucc')");
+                                        }else{
+                                            custAlert("$_('operfail')","$_('operfailinfo')");
+                                        }
+                                    }
+                                }
+                            });
+                            $(ELT)(this).dialog('close');
+                        }
+                    },
+                    close: function(){
+                        egroupdialog.remove();
+                    }
+                });
+            }
+        );
+        
+    }
+    function clustergroupdelete(clustergroupname){
+        var url = '/clustergroupdelete?' + new Date().getTime();
+        checkSession();
+        var buttons = {
+            "$_('cancel')": function() {
+                $(ELT)(this).dialog('close');
+            },
+            "$_('delete')": function() {
+                $(ELT)(this).dialog('close');
+                $(ELT).ajax({
+                    url: url,
+                    type: 'POST',
+                    data: 'clustergroupname=' + clustergroupname,
+                    dataType: 'text',
+                    error: function(){
+                        custAlert("$_('operfail')","Request Error!");
+                    },
+                    success: function(text){
+                        if(isNaN(text)){
+                            custAlert("$_('operfail')",text);
+                        }
+                        else{
+                            if(parseInt(text) == 0){
+                                clustergroupload();
+                                custAlert("$_('opersucc')","$_('clustergroupdeletesucc')");
+                            }else{
+                                custAlert("$_('operfail')","$_('operfailinfo')");
+                            }
+                        }
+                    }
+                });
+            }
+        };
+        custConfirm("$_('confirmoper')","$_('clustergroupdeleteconfirm')",buttons);
+    }
+</script>

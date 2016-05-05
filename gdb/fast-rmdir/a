@@ -1,0 +1,29 @@
+Breakpoint 1, client_getxattr (frame=0x7f19900431ac, this=0x7f19a0009790, loc=0x7f199003e2e0, name=0x7f19900337d0 "trusted.glusterfs.fast-rmdir", xdata=0x0) at client.c:1341
+1341	        int          ret  = -1;
+$2 = 0x7f19a0009350 "test-client-1"
+#0  client_getxattr (frame=0x7f19900431ac, this=0x7f19a0009790, loc=0x7f199003e2e0, name=0x7f19900337d0 "trusted.glusterfs.fast-rmdir", xdata=0x0) at client.c:1341
+#1  0x00007f19a766adb0 in dht_getxattr (frame=0x7f199002282c, this=0x7f19a000d0b0, loc=0x7f199003e2e0, key=0x7f19900337d0 "trusted.glusterfs.fast-rmdir", xdata=0x0) at dht-common.c:3432
+#2  0x00007f19b2367571 in default_getxattr (frame=0x7f199002282c, this=0x7f19a000e660, loc=0x7f199003e2e0, name=0x7f19900337d0 "trusted.glusterfs.fast-rmdir", xdata=0x0) at defaults.c:2510
+#3  0x00007f19b2367571 in default_getxattr (frame=0x7f199002282c, this=0x7f19a000fb30, loc=0x7f199003e2e0, name=0x7f19900337d0 "trusted.glusterfs.fast-rmdir", xdata=0x0) at defaults.c:2510
+#4  0x00007f19b2367571 in default_getxattr (frame=0x7f199002282c, this=0x7f19a0010f80, loc=0x7f199003e2e0, name=0x7f19900337d0 "trusted.glusterfs.fast-rmdir", xdata=0x0) at defaults.c:2510
+#5  0x00007f19b2367571 in default_getxattr (frame=0x7f199002282c, this=0x7f19a00124e0, loc=0x7f199003e2e0, name=0x7f19900337d0 "trusted.glusterfs.fast-rmdir", xdata=0x0) at defaults.c:2510
+#6  0x00007f19b2367571 in default_getxattr (frame=0x7f199002282c, this=0x7f19a0013930, loc=0x7f199003e2e0, name=0x7f19900337d0 "trusted.glusterfs.fast-rmdir", xdata=0x0) at defaults.c:2510
+#7  0x00007f19b2367571 in default_getxattr (frame=0x7f199002282c, this=0x7f19a0014d90, loc=0x7f199003e2e0, name=0x7f19900337d0 "trusted.glusterfs.fast-rmdir", xdata=0x0) at defaults.c:2510
+#8  0x00007f19a67d878f in mdc_getxattr (frame=0x7f199004c23c, this=0x7f19a0016240, loc=0x7f199003e2e0, key=0x7f19900337d0 "trusted.glusterfs.fast-rmdir", xdata=0x0) at md-cache.c:1811
+#9  0x00007f19a65c18c5 in io_stats_getxattr (frame=0x7f1990044edc, this=0x7f19a0017700, loc=0x7f199003e2e0, name=0x7f19900337d0 "trusted.glusterfs.fast-rmdir", xdata=0x0) at io-stats.c:3028
+#10 0x00007f19b2367571 in default_getxattr (frame=0x7f1990044edc, this=0x7f19a0019080, loc=0x7f199003e2e0, name=0x7f19900337d0 "trusted.glusterfs.fast-rmdir", xdata=0x0) at defaults.c:2510
+#11 0x00007f19ab15daff in fuse_getxattr_resume (state=0x7f199003e2c0) at fuse-bridge.c:3522
+#12 0x00007f19ab14c803 in fuse_fop_resume (state=0x7f199003e2c0) at fuse-bridge.c:553
+#13 0x00007f19ab14a46f in fuse_resolve_done (state=0x7f199003e2c0) at fuse-resolve.c:660
+#14 0x00007f19ab14a545 in fuse_resolve_all (state=0x7f199003e2c0) at fuse-resolve.c:687
+#15 0x00007f19ab14a450 in fuse_resolve (state=0x7f199003e2c0) at fuse-resolve.c:651
+#16 0x00007f19ab14a51c in fuse_resolve_all (state=0x7f199003e2c0) at fuse-resolve.c:683
+#17 0x00007f19ab14a5a3 in fuse_resolve_continue (state=0x7f199003e2c0) at fuse-resolve.c:703
+#18 0x00007f19ab149a42 in fuse_resolve_inode (state=0x7f199003e2c0) at fuse-resolve.c:361
+#19 0x00007f19ab14a442 in fuse_resolve (state=0x7f199003e2c0) at fuse-resolve.c:648
+#20 0x00007f19ab14a4c7 in fuse_resolve_all (state=0x7f199003e2c0) at fuse-resolve.c:676
+#21 0x00007f19ab14a5e1 in fuse_resolve_and_resume (state=0x7f199003e2c0, fn=0x7f19ab15d057 <fuse_getxattr_resume>) at fuse-resolve.c:715
+#22 0x00007f19ab15dd04 in fuse_getxattr (this=0x6c6c30, finh=0x7f1990004f50, msg=0x7f1990004f78) at fuse-bridge.c:3587
+#23 0x00007f19ab163239 in fuse_thread_proc (data=0x6c6c30) at fuse-bridge.c:5047
+#24 0x0000003481a079d1 in start_thread () from /lib64/libpthread.so.0
+#25 0x00000034816e8b6d in clone () from /lib64/libc.so.6

@@ -1,0 +1,43 @@
+$def with (content)
+
+<form id="formclusterraid" method="post">
+    <fieldset class="createdialog">
+        <div>
+            <label>$_("clusternodediskselected")</label>
+            <span id="clusternewraiddev"></span>
+        </div>
+        <br>
+        <div>
+            <label for="clusterraidlv">$_("clusterraidlv")</label>
+            <select name="clusterraidlv" id="clusterraidlv">
+                <option name="0">RAID0</option>
+                <option name="1">RAID1</option>
+                <option name="10">RAID10</option>
+                <option name="5">RAID5</option>
+                <option name="6">RAID6</option>
+            </select>
+        </div>
+        <br>
+        <div>
+            <label for="clusterraidsz">$_("clusterraidsz")</label>
+            <select name="clusterraidsz" id="clusterraidsz">
+                <option name="0">4K</option>
+                <option name="1">8K</option>
+                <option name="2">16K</option>
+                <option name="3">32K</option>
+                <option name="4">64K</option>
+                <option name="5">128K</option>
+                <option name="6" selected="selected">256K</option>
+                <option name="7">512K</option>
+                <option name="8">1M</option>
+                <option name="9">2M</option>
+                <option name="10">4M</option>
+                <option name="11">8M</option>
+                <option name="12">16M</option>
+                <option name="13">32M</option>
+            </select>
+        </div>
+        <div>
+        <label>&nbsp;</label>
+    </fieldset>
+</form>

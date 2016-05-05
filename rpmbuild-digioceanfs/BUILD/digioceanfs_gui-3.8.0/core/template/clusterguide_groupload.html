@@ -1,0 +1,60 @@
+$def with (content)
+<div id="toolbar" class="ui-corner-all">
+    <button id="btnclustergroupcreate">$_("clustergroupcreate")</button>
+</div>
+<table id="clutergroups" cellpadding="0" class="datatable ui-widget ui-widget-content">
+    <thead>
+        <tr>
+            <th>$_('clustergroupname')</th>
+            <th>$_('clustergroupnodes')</th>
+        </tr>
+    </thead>
+    <tbody>
+        $if content.clustergroups:
+            $for cgkey,cgvalue in content.clustergroups.iteritems():
+                $if cgkey != content.nodewithoutgroupname:
+                    <tr>
+                        <td style="width:120px;">
+                            <span class="opertext">$cgkey</span>
+                            <dl class="opercommand">
+                                <dd><a title="$_('delete')" href="javascript:void(0);" onclick="javascript:clustergroupdelete('$cgkey');" class="ui-icon ui-icon-inline ui-icon-trash">&nbsp;</a></dd>
+                            </dl>
+                        </td>
+                        <td>
+                            $if cgvalue:
+                                <ul class="groupnode">
+                                    $for node in cgvalue:
+                                        <li><a class="ui-corner-all" href="/clusternodeview?$node[0]">$node[0]</a></li>
+                                </ul>                
+                            $else:
+                                &nbsp;
+                        </td>
+                    </tr>
+            <tr>
+                <td>$_("nodewithoutgroupname")</td>
+                <td>
+                    $if content.clustergroups[content.nodewithoutgroupname]:
+                        <ul class="groupnode">
+                            $for node in content.clustergroups[content.nodewithoutgroupname]:
+                                <li><a class="ui-corner-all" href="/clusternodeniew?$node[0]">$node[0]</a></li>
+                        </ul>                
+                    $else:
+                        &nbsp;
+    </tbody>
+</table>
+<script type="text/javascript">
+    $(ELT)(function(){
+        $(ELT)('#clutergroups').dataTable({
+            "bJQueryUI": true,
+            "sPaginationType": "full_numbers",
+            "oLanguage": {
+                "sUrl": "/static/js/temp/datatable_ZH"
+            }
+		});
+        $(ELT)('#btnclustergroupcreate').button({
+            icons: {
+                primary: 'ui-icon-plusthick'
+            }
+        }).bind('click',clustergroupcreate);
+    });
+</script>

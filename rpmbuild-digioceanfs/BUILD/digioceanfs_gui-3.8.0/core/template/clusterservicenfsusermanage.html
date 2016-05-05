@@ -1,0 +1,172 @@
+$def with (content)
+
+<form id="nuser" method="post">
+    <fieldset>
+        <div id="userlist" style="margin:none;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            <p style="width:100px;float:left;">$_('userip')</p>
+                            <dl class="opercommand">
+                        		<dd><a title="$_('refresh')" style="float:right;margin-top:4px;" href="javascript:void(0);" onclick="$(ELT)('.userip').remove();clusterservicenfslistuser()" class="ui-icon ui-icon-refresh ui-icon-inline" id="">&nbsp;</a></dd>
+                        	</dl>
+                            <dl class="opercommand">
+                        		<dd><a title="$_('save')" style="float:right;margin-top:4px;" href="javascript:void(0);" class="ui-icon ui-icon-disk ui-icon-inline" id="nfsusersave">&nbsp;</a></dd>
+                        	</dl>
+                        	<dl class="opercommand">
+                        		<dd><a title="$_('add')" style="float:right;margin-top:4px;" href="javascript:void(0);" class="ui-icon ui-icon-plus ui-icon-inline" id="nfsuseradd">&nbsp;</a></dd>
+                        	</dl>                         
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="userlist">
+                    <tr class="beforesend" style="display:none;">
+                        <td>$_("load data")</td>
+                    </tr>
+                    <tr id="newnfsuser" style="display:none;">
+                        <td>
+                            <div class="ui-widget-content ui-corner-all" style="border:none;">
+                                <p class="subtitile ui-corner-top"><span>$_("userinfo")</span></p>
+                                <label for="user">$_("userip")</label>
+                                <input name="user" id="user" class="ip" type="text" />
+                                <input type="hidden" name="oldipaddr" id="oldipaddr" type="text" />
+                                <!--input id="user" name="user" class="ui-widget-content ui-corner-all" /> <span class="ui-state-require">*</span--><br /><br />
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </fieldset>
+</form>
+<script type="text/javascript">
+    $(ELT)('#nuser').validate({
+        errorClass: "invalid",
+        rules: {
+            user: {
+                required: true
+            }
+        },
+        messages: {
+            user: {
+                required: "<img src='/static/theme/redmond/images/iperror.png'>"
+            }
+        }
+    });
+    $(ELT)(function(){
+        $(ELT)('#user').ipaddress();
+    });
+    function clusterservicenfslistuser(){
+        checkSession();
+        var url = "/clusterservicenfslistuser?" + new Date().getTime();
+    	$(ELT).ajax({
+            url: url,
+            type: 'POST',
+            data: 'service_name='+$(ELT)('#clusterservicename').val(),
+            beforeSend: function(){
+                $(ELT)(".beforesend").attr("style","display:block;")
+            },
+            dataType: 'JSON',
+            success: function(text){
+                var userinfo = text;
+                if (userinfo.length == 0){
+                    var user = "<tr class='userip'><td>" + "$_('No user found')" + "</td></tr>";
+                    $(ELT)('#newnfsuser').before(user);
+                }
+                for(i=0; i < userinfo.length; i++){
+                    if(userinfo[i] == '$_("nouser")'){
+                        var user = '<tr class="userip"><td><span style="height:16px; width:16px;display: block">' + userinfo[i] + '</span></td></tr>';
+                    }else{
+                        var user = '<tr class="userip"><td><dl class="opercommand"><dd><a id="'+ userinfo[i].split('.').join('-') + '" title="$_('delete')" href="javascript:void(0);" class="ui-icon ui-icon-inline ui-icon-trash">&nbsp;</a></dd></dl><span style="height:16px; width:16px;display: block">' + userinfo[i] + '</span></td></tr>';
+                    }
+                    $(ELT)('#newnfsuser').before(user);
+                    $(ELT)("#"+userinfo[i].split('.').join('-')).bind("click",function() {
+                        clusterservicenfsdeluser($(ELT)(this).attr('id').split('-').join('.'));
+                    });
+                }
+                $(ELT)(".beforesend").attr("style","display:none;");
+            }
+        });
+    }
+    $(ELT)(function(){
+    	$(ELT)('#user').ipaddress();
+    	$(ELT)('#nfsuseradd').bind({click: clusterservicenfsuseradd,
+                                    mouseover:function(){$(ELT)('#nfsuseradd').css("color","blue");},
+                                    mouseout:function(){$(ELT)('#nfsuseradd').css("color","black");}
+                                  });
+        $(ELT)('#nfsusersave').bind({click: clusterservicenfsusersave,
+                                     mouseover:function(){$(ELT)("#nfsusersave").css("color","blue");},
+                                     mouseout:function(){$(ELT)("#nfsusersave").css("color","black");}
+                                   }); 
+        clusterservicenfslistuser();
+    });
+    function clusterservicenfsuseradd() {
+    	$(ELT)('#newnfsuser').show();
+    	$(ELT)('.ip_octet').val('');
+    	$(ELT)('#nfsusersave').show();
+    }
+    
+    function clusterservicenfsusersave(){
+    	checkSession();
+    	var url = '/clusterservicenfsadduser?' + new Date().getTime();
+        if(!$(ELT)('#nuser').valid()){
+            return false;
+        }
+    	$(ELT).ajax({
+            url: url,
+            type: 'POST',
+            data: 'service_name='+$(ELT)('#clusterservicename').val() + '&userip=' + $(ELT)('#user').val(),
+            beforeSend: function(){
+                $(ELT)(".beforesend").attr("style","display:block;")
+            },
+            dataType: 'JSON',
+            success: function(text){
+                if(isNaN(text)){
+                    custAlert("$_('operfail')",text);
+                }else{
+                    if(parseInt(text) == 0){
+                        clusterserviceload();
+                        $(ELT)('#loaddialog').dialog('close');
+                        custAlert("$_('opersucc')","$_('clusterservicenfsaddusersucc')");
+                    }else{
+                        custAlert("$_('operfail')","$_('operfailinfo')");
+                    }
+                }
+                $(ELT)(".beforesend").attr("style","display:none;");
+                $(ELT)(".userip").remove();
+                clusterservicenfslistuser();
+            }
+        });
+        $(ELT)('#newnfsuser').hide();
+        //$(ELT)('#nfsusersave').hide();
+    }
+    function clusterservicenfsdeluser(userip){
+    	checkSession();
+    	var url = '/clusterservicenfsdeluser?' + new Date().getTime();
+    	$(ELT).ajax({
+            url: url,
+            type: 'POST',
+            data: 'service_name='+$(ELT)('#clusterservicename').val() + '&userip=' + userip,
+            beforeSend: function(){
+                $(ELT)(".beforesend").attr("style","display:block;")
+            },
+            dataType: 'JSON',
+            success: function(text){
+                if(isNaN(text)){
+                    custAlert("$_('operfail')",text);
+                }else{
+                    if(parseInt(text) == 0){
+                        $(ELT)('#loaddialog').dialog('close');
+                        custAlert("$_('opersucc')","$_('clusterservicenfsdelusersucc')");
+                    }else{
+                        custAlert("$_('operfail')","$_('operfailinfo')");
+                    }
+                }
+                $(ELT)(".beforesend").attr("style","display:none;");
+                $(ELT)(".userip").remove();
+                clusterservicenfslistuser();
+            }
+        });
+    }
+</script>

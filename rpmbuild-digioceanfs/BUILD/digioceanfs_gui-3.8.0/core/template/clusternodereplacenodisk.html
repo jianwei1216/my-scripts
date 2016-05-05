@@ -1,0 +1,169 @@
+$def with (content)
+
+<style>
+.ui-autocomplete {
+max-height: 100px;
+overflow-y: auto;
+/* prevent horizontal scrollbar */
+overflow-x: hidden;
+}
+/* IE 6 doesn't support max-height
+* we use height instead, but this forces the menu to always be this tall
+*/
+* html .ui-autocomplete {
+height: 100px;
+}
+</style>
+
+<form id="formclusterreplacenodisk" method="post">
+    <fieldset class="createdialog">
+        <!--<div>
+            <label>$_("clusternodediskselected")</label>
+            <span id="clusternewraiddev"></span>
+        </div>
+        <br>-->
+        <div>
+            <label for="clusterservicename">$_("clusterservicename")</label>
+            <select name="clusterservicename" id="clusterservicename" onchange="getservicenodiskinfo();">
+            $if content.clusterservice:
+                $for servicename in content.clusterservice:
+                    <option value="$servicename">$servicename</option>
+            $else:
+            	<option value="">$_("none")</option>
+            </select>
+            &nbsp;&nbsp;
+            <strong>$_("format_raidinfo")</strong>
+            <input type="checkbox" id="disk_replace_format" />
+            <br /><br />
+            <!--<label>&nbsp;</label>-->
+            <input type="hidden" id="service_disk_str" />
+        </div>
+        <!--<label>&nbsp;</label>-->
+    </fieldset>
+    <div>
+      <table>
+        <thead>
+          <th>$_("clusternodediskselected")</th>
+          <th>$_("clusternodedisksize")</th>
+          <th>$_("clusternodediskreplaced")</th>
+          <th>$_("clusternodedisksize")</th>
+        </thead>
+        <tbody id="selected_disk_table"></tbody>
+      </table>
+    </div>
+</form>
+
+<script type="text/javascript">
+$(ELT)(document).ready(function(){
+	var selected_disk_arr=$(ELT)('#selected_disk').val().split(',');
+	//$(ELT)('#selected_disk').remove();
+	
+	var selected_disk_table='';
+	for(i=0;i<selected_disk_arr.length;i++){
+		//alert(selected_disk_arr[i])
+		var disk=selected_disk_arr[i].split('+');
+		var id= disk[0].replace(":","-");
+		selected_disk_table+='<tr>';
+		  selected_disk_table+='<td>'+disk[0]+'</td>';
+		  selected_disk_table+='<td>'+disk[1]+'</td>';
+		  //selected_disk_table+='<td><select id="'+disk[0]+'" class="replace_disk" onchange="get_replace_disk_size(this.id,this.value)"></select></td>';
+		  selected_disk_table+='<td><input id="'+id+'" class="replace_disk" />&nbsp;<button class="replace_disk_select" onclick=return(show_auto("'+id+'"))>$_("select")</button></td>';
+		  selected_disk_table+='<td id="'+id+'_size" class="replace_disk_size">&nbsp;</td>';
+		selected_disk_table+='</tr>';
+	}
+	$(ELT)('#selected_disk_table').html(selected_disk_table);
+	
+	getservicenodiskinfo()
+	
+	$(ELT)('.replace_disk_select').button({
+		text: false,
+		icons: {
+			primary: 'ui-icon-arrowthick-1-s' 
+		}
+	});
+});
+
+//获取服务磁盘
+function getservicenodiskinfo(){
+	if($(ELT)('#clusterservicename').val()){
+		servicename = $(ELT)('#clusterservicename').val();
+	}else{
+		//$(ELT)('.replace_disk').html('<option value="">$_("select")</option>');
+		return false;
+	}
+	/*if(servicename == ''){
+		$(ELT)('#tipinfo').text('');
+		return false;
+	}*/
+	var url = '/clusternodegetservicenodiskinfo?' + new Date().getTime();
+	/*var dataobj = {
+		'servicename':servicename
+	};
+	var data = $(ELT).param(dataobj);*/
+	$ELT .ajax({
+		url: url,
+		type: 'POST',
+		data: 'servicename='+servicename,
+		dataType: 'text',
+		error: function(){
+			custAlert("$_('failinfo')","Request Error!");
+		},
+		success: function(text){
+			$(ELT)('.replace_disk').val('');
+			$(ELT)('.replace_disk').autocomplete('option','source','');
+			$(ELT)('.replace_disk_size').html('&nbsp;');
+			$(ELT)('#service_disk_str').val('');
+			if(!text){
+				//$(ELT)('.replace_disk').val('$_("startserivcefirst")');
+				custAlert("$_('operfail')",'$_("startserivcefirst")')
+				return false;
+			}
+			$(ELT)('#service_disk_str').val(text);
+			
+			var service_disk_arr=text.split(',');
+			
+			/*var option='<option value="">$_("select")</option>';
+			for(i=0;i<service_disk_arr.length;i++){
+				var disk=service_disk_arr[i].split('+');
+				option+='<option value="'+disk[0]+'">'+disk[0]+'</option>';
+			}
+			$(ELT)('.replace_disk').html(option);*/
+			
+			backup_arr=[];
+			for(i=0;i<service_disk_arr.length;i++){
+				var disk=service_disk_arr[i].split('+');
+				backup_arr.push(disk[0]);
+			}
+			$(ELT)('.replace_disk').autocomplete({
+				source: backup_arr,
+				select: function( event, ui ) {
+					//alert(ui.toSource())
+					get_replace_disk_size($(ELT)(this).attr('id'),ui.item.value);
+				}
+			});
+		}
+	});
+}
+
+//显示备选磁盘列表
+function show_auto(id){
+	var id = fixID(id);
+	$(ELT)('.replace_disk').autocomplete("search","");
+	$(ELT)('#'+id).autocomplete("search","node");
+	return false;
+}
+
+//获取备选磁盘大小
+function get_replace_disk_size(id,value){
+	var sizeID = fixID(id+'_size');
+	$(ELT)('#'+sizeID).html('&nbsp;');
+	var service_disk_arr=$(ELT)('#service_disk_str').val().split(',');
+	for(i=0;i<service_disk_arr.length;i++){
+		var disk=service_disk_arr[i].split('+');
+		if(value==disk[0]){
+			$(ELT)('#'+sizeID).html(disk[1]);
+			return disk[1];
+		}
+	}
+}
+</script>

@@ -1,0 +1,100 @@
+[GLOBAL]
+DIRECTORY=17.00%                                            #目录操作占比，精确到小数点后2位
+SYMBOL_LINK=3.00%                                           #软链接操作占比，精确到小数点后2位
+FILE=80.00%                                                 #文件操作占比，精确到小数点后2位
+#DIR、SYMLINK、FILE三项之和必须为100%
+
+ACCURACY=10000                                              #操作精度
+LOG_LEVEL=8                                                 #log级别默认是LOG_INFO, LOG_NONE:0 LOG_EMERG:1 LOG_ALERT:2 LOG_CRITICAL:3 LOG_ERROR:4
+                                                            #                       LOG_WARNING:5 LOG_NOTICE:6 LOG_INFO:7 LOG_DEBUG:8 LOG_TRACE:9
+MAX_OP_SIZE=10240000                                        #文件最大size
+MINI_OP_SIZE=10240000                                       #文件最小size
+WRITE_SIZE=512                                              #读操作的size大小
+READ_SIZE=512                                               #写操作的size大小
+DIRECTORY_MAX_DEPTH=10                                      #最大测试目录深度
+INITIAL_DIRECTORY_COUNTS=300                               #初始化时生成的目录数
+INITIAL_FILE_COUNTS=300                                    #初始化时生成的文件数
+INITIAL_SYMLINK_COUNTS=300                                 #初始化时生成的symlink数量
+TOTAL_OPERATION_GROUP=3000                                  #测试总共执行的操作组数
+TEST_DIRECTORY=/cluster2/test                               #集群文件系统测试路径
+VALIDATION_DIRECTORY=/mnt/disk6/brick                       #校验数据写入路径
+WORKING_DIRECTORY=/root/shark_log/                          #默认的工作路径
+WORKING_THREADS=8                                           #工作线程数
+OPERATIONS_WAITING_LIST=500                                 #操作等待队列
+OPERATIONS_OF_OPENED_FILE=5                                 #打开文件时，操作组中的成员数量
+OPERATIONS_OF_UNOPENED_FILE=3                               #不打开文件时，操作组中的成员数量
+OPERATIONS_OF_OPENED_DIR=3                                  #打开目录时，操作组中的成员数量
+OPERATIONS_OF_UNOPENED_DIR=3                                #不打开目录时，操作组中的成员数量
+OPERATIONS_OF_SYMLINK=1                                     #操作软链接时，操作组中的成员数量
+
+NEW_DIR=8.00%                                               #目录操作中新建目录的占比，精确到小数点后2位
+OPEN_DIR=89.22%                                             #需要打开目录的操作占比，精确到小数点后2位
+
+NEW_FILE=50.00%                                             #文件操作中新建文件的占比，精确到小数点后2位
+OPEN_FILE=90.00%                                            #需要打开文件的操作占比，精确到小数点后2位
+
+[OPENED_DIR]
+FSYNC=10.00%                                                #FSYNC占比，精确到小数点后2位
+FSETXATTR=15.00%                                            #FSETXATTR占比，精确到小数点后2位
+FGETXATTR=15.00%                                            #FGETXATTR占比，精确到小数点后2位
+FREMOVEXATTR=10.00%                                         #FREMOVEXATTR占比，精确到小数点后2位
+READDIR=10.00%                                              #READDIR占比，精确到小数点后2位
+LK=00.00%                                                   #LK占比，精确到小数点后2位
+FCHOWN=10.00%                                               #FCHOWN占比，精确到小数点后2位
+FCHMOD=10.00%                                               #FCHMOD占比，精确到小数点后2位
+FUTIMES=10.00%                                              #FUTIMES占比，精确到小数点后2位
+FSTAT=10.00%                                                #FSTAT占比，精确到小数点后2位
+#上述操作占比之和必须为100%
+
+[UNOPENED_DIR]
+ACCESS=10.00%                                               #ACCESS占比，精确到小数点后2位
+RENAME=0.00%                                                #RENAME占比，精确到小数点后2位。暂不支持
+SYMLINK=10.00%                                              #SYMLINK占比，精确到小数点后2位
+SETXATTR=10.00%                                             #SETXATTR占比，精确到小数点后2位
+GETXATTR=10.00%                                             #GETXATTR占比，精确到小数点后2位
+REMOVEXATTR=10.00%                                          #REMOVEXATTR占比，精确到小数点后2位
+CHOWN=10.00%                                                #CHOWN占比，精确到小数点后2位
+CHMOD=10.00%                                                #CHMOD占比，精确到小数点后2位
+UTIMES=10.00%                                               #UTIMES占比，精确到小数点后2位
+RMDIR=0.00%                                                 #RMDIR占比，精确到小数点后2位
+STAT=10.00%                                                 #STAT占比，精确到小数点后2位
+STATFS=10.00%                                               #STATFS占比，精确到小数点后2位
+#上述操作占比之和必须为100%
+
+[OPENED_FILE]
+WRITEV=10.00%                                               #WRITEV占比，精确到小数点后2位
+READV=10.00%                                                #READV占比，精确到小数点后2位
+FALLOCATE=10.00%                                            #FALLOCATE占比，精确到小数点后2位
+FTRUNCATE=10.00%                                            #FTRUNCATE占比，精确到小数点后2位
+FSYNC=10.00%                                                #FSYNC占比，精确到小数点后2位
+FSETXATTR=10.00%                                            #FSETXATTR占比，精确到小数点后2位
+FGETXATTR=10.00%                                            #FGETXATTR占比，精确到小数点后2位
+FREMOVEXATTR=5.00%                                          #FREMOVEXATTR占比，精确到小数点后2位
+LK=5.00%                                                    #LK占比，精确到小数点后2位
+FCHOWN=5.00%                                                #FCHOWN占比，精确到小数点后2位
+FCHMOD=5.00%                                                #FCHMOD占比，精确到小数点后2位
+FUTIMES=5.00%                                               #FUTIMES占比，精确到小数点后2位
+FSTAT=5.00%                                                 #FSTAT占比，精确到小数点后2位
+#上述操作占比之和必须为100%
+
+[UNOPENED_FILE]
+RENAME=00.00%                                               #RENAME占比，精确到小数点后2位
+SYMLINK=20.00%                                              #SYMLINK占比，精确到小数点后2位
+LINK=10.00%                                                 #LINK占比，精确到小数点后2位
+TRUNCATE=10.00%                                             #TRUNCATE占比，精确到小数点后2位
+SETXATTR=10.00%                                             #SETXATTR占比，精确到小数点后2位
+GETXATTR=10.00%                                             #GETXATTR占比，精确到小数点后2位
+REMOVEXATTR=5.00%                                           #REMOVEXATTR占比，精确到小数点后2位
+ACCESS=5.00%                                                #ACCESS占比，精确到小数点后2位
+CHOWN=5.00%                                                 #CHOWN占比，精确到小数点后2位
+CHMOD=5.00%                                                 #CHMOD占比，精确到小数点后2位
+UTIMES=5.00%                                                #UTIMES占比，精确到小数点后2位
+STAT=5.00%                                                  #STAT占比，精确到小数点后2位
+UNLINK=5.00%                                                #UNLINK占比，精确到小数点后2位
+STATFS=5.00%                                                #STATFS占比，精确到小数点后2位
+#上述操作占比之和必须为100%
+
+[SYMBOL_LINK]
+READLINK=50.00%                                             #READLINK占比，精确到小数点后2位
+UNLINK=50.00%                                               #UNLINK占比，精确到小数点后2位
+#上述操作占比之和必须为100%

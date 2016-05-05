@@ -1,0 +1,41 @@
+$def with (content)
+<div>
+    $if content.clusternodestatus == 'start':
+        <div>
+            <input type="radio" name="initOption" value="6" checked/>
+            <div class="mess-info ui-state-error ui-corner-all">
+                <p>
+                    <span style="float:left;" class="ui-icon ui-icon-alert"></span>
+                    <strong>$_('Warnning'): </strong> $_('init6warning')
+                </p>
+       	    </div>
+        </div>
+        <div>
+            <input type="radio" name="initOption" value="0" />
+            <div class="mess-info ui-state-error ui-corner-all">
+                <p>
+                    <span style="float:left;" class="ui-icon ui-icon-alert"></span>
+                    <strong>$_('Warnning'): </strong> $_('init0warning')
+                </p>
+       	    </div>
+        </div>
+        <div>
+            <input type="radio" name="initOption" value="i_0" />
+            <div class="mess-info ui-state-error ui-corner-all">
+                <p>
+                    <span style="float:left;" class="ui-icon ui-icon-alert"></span>
+                    <strong>$_('Warnning'): </strong> $_('ipmi_init0warning')
+                </p>
+       	    </div>
+        </div>
+    $else:
+        <div>
+            <input type="radio" name="initOption" value="i_6" checked/>
+            <div class="mess-info ui-state-error ui-corner-all">
+                <p>
+                    <span style="float:left;" class="ui-icon ui-icon-alert"></span>
+                    <strong>$_('Warnning'): </strong> $_('ipmi_init6warning')
+                </p>
+       	    </div>
+        </div>
+</div>

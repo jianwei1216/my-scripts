@@ -1,0 +1,1330 @@
+$def with (content)
+
+<div id="toolbar" class="ui-corner-all">
+    <button id="btnclusterservicecreate">$_("clusterservicecreate")</button><!--服务创建-->
+    <button id="btnclusterservicextend">$_("clusterservicextend")</button><!--服务扩容-->
+    <!--<button id="btncluster_client_node_create">$_("cluster_client_node_create")</button>--><!--添加客户端节点-->
+    <button id="btnclusterservicesharemanage">$_('clusterservicesharemanage')</button><!--共享管理-->
+    <button id="btnclusterservicedisk">$_("clusternodedisk")</button><!--磁盘管理-->
+    <button id="btnclusterserviceauthmanage">$_("clusterserviceauthmanage")</button><!--权限管理-->
+    <button id="btnclusterservicequota">$_("clusterservicequota")</button><!--配额管理-->
+</div>
+
+<div id="service_pcontent">
+
+</div>
+
+<script type="text/javascript">
+    $(ELT)(function(){
+		//服务创建
+        $(ELT)('#btnclusterservicecreate').button({
+            icons: {
+                primary: 'ui-icon-plusthick'
+            }
+        }).bind('click',clusterservicecreate);
+		//服务扩容
+        $(ELT)('#btnclusterservicextend').button({
+            icons: {
+                primary: 'ui-icon-plusthick'
+            }
+        }).bind('click',clusterservicextend);
+		//磁盘管理
+        $(ELT)('#btnclusterservicedisk').button({
+            icons: {
+                primary: 'ui-icon-plusthick'
+            }
+        }).bind('click',clusterservicedisk);
+		//添加客户端节点
+		$(ELT)('#btncluster_client_node_create').button({
+			icons: {
+				primary: 'ui-icon-plusthick'
+			}
+		}).bind('click',cluster_client_node_create);
+		//共享管理
+		$(ELT)('#btnclusterservicesharemanage').button({
+			icons: {
+				primary: 'ui-icon-plusthick'
+			}
+		}).bind('click',clusterservicesharemanage);
+		$(ELT)('#btnclusterservicequota').button({
+			icons: {
+				primary: 'ui-icon-plusthick'
+			}
+		}).bind('click',clusterservicequotamanage);
+		//配额管理
+        $(ELT)('#btnclusterserviceauthmanage').button({
+            icons: {
+                primary: 'ui-icon-plusthick'
+            }
+        }).bind('click',clusterserviceauthmanage);
+        //权限管理
+        clusterserviceload();
+    });
+	//载入服务列表
+    function clusterserviceload(UNIT){
+		if(!UNIT){
+			if(getCookie('unit')){
+				var UNIT=getCookie('unit');
+			}else{
+				var UNIT="GB"
+			}
+		}
+        var url = "/clusterserviceload?" + new Date().getTime();
+        $(ELT).ajax({
+            url: url,
+            data: 'unit='+UNIT,
+            dataType: 'html',
+            beforeSend: function(){
+                custLoading("$_('Loading Data ...')");
+            },
+            success: function(text){
+                $(ELT)('#loaddialog').dialog('close');
+                $(ELT)('#service_pcontent').html(text);
+            }
+        });
+    }
+	//服务创建
+    var redundancy = '';
+    var stripnum = '';
+    var disks_num = '';
+    var sub_volume_num = '';
+    function clusterservicecreate(){
+        custLoading("$_('Loading Data ...')");
+        var url_a = "/clusterservicecreateguide_a";
+        var clusterservicename = '';
+        var clusterservicetype= null;
+        var clusterservicenewdev = [];
+        checkSession();
+        var cservicedialog_a = $(ELT)('<div id="cservicedialog_a" title="$_('clusterservicecreate')">').appendTo('body');
+        cservicedialog_a.load(
+            url_a, 
+            '',
+            function stepA() {
+                $(ELT)('#loaddialog').dialog('close');
+                $(ELT)("input[name='clusterservicename']").val(clusterservicename);
+                cservicedialog_a.dialog({
+                    bgiframe: true,
+                    autoOpen: true,
+                    width: 350,
+                    modal: true,
+                    resizable: false,
+                    buttons: {
+                        "$_('next')": function() {
+                            if(!$(ELT)('#formclusterservice').valid()){
+                                return false;
+                            }
+                            clusterservicename = $(ELT)('#clusterservicename').val();
+                            cservicedialog_a.dialog('close');
+                            var url_b = "/clusterservicecreateguide_b";
+                            var cservicedialog_b = $(ELT)('<div id="cservicedialog_b" title="$_('clusterservicecreate')">').appendTo('body');
+                            cservicedialog_b.load(
+                                url_b, 
+                                '',
+                                function stepB() {
+                                    cservicedialog_b.dialog({
+                                        bgiframe: true,
+                                        autoOpen: true,
+                                        width: 350,
+                                        modal: true,
+                                        resizable: false,
+                                        buttons: {
+                                            "$_('next')": function() {
+                                            	//local poroiritize init
+                                            	var clusterservicelocalpor = $(ELT)("input[name='clusterservicelocalpor']:checked").attr('id');
+                                                //check the cluster service type 
+                                                var clusterservicetype = $(ELT)("#serviceraidlv").children('option:selected');//$(ELT)("input[name='clusterservicetype']:checked");
+                                                var clusterservicecustom_store = '';
+                                                var afr_c = 0;
+                                                var strip_c = 0;
+                                                var disperse_c = 0;
+                                                if($(ELT)(clusterservicetype).attr('id') == 'clusterservicetype_default'){
+                                                    url_c = "/clusterservicecreateguide_c";
+                                                    if($(ELT)("#clusterservicelocalpor_default").attr('checked')){
+                                                    	var clusterservicelocalpor = 'clusterservicelocalpor_yes';
+                                                    }else{
+                                                    	var clusterservicelocalpor = 'clusterservicelocalpor_no';
+                                                    }
+                                                }
+                                                else if($(ELT)(clusterservicetype).attr('id') == 'clusterservicetype_afr'){
+                                                    if(!$(ELT)('#formclusterservice_b').valid()){
+                                                        return false;
+                                                    }
+                                                    url_c = "/clusterservicecreateguide_c";
+                                                    afr_c = 1;
+                                                    if($(ELT)("#clusterservicelocalpor_afr").attr('checked')){
+                                                    	var clusterservicelocalpor = 'clusterservicelocalpor_yes';
+                                                    }else{
+                                                    	var clusterservicelocalpor = 'clusterservicelocalpor_no';
+                                                    }
+                                                    //get cluster service redundancy
+                                                    redundancy = $(ELT)('#clusterserviceafrnum').val();
+                                                    clusterservicecustom_store = $(ELT)('#clustercustomstore').val();
+                                                    sub_volume_num = redundancy;
+                                                    disks_num = '1';
+                                                }
+                                                else if($(ELT)(clusterservicetype).attr('id') == 'clusterservicetype_disperse'){
+                                                	if(!$(ELT)('#formclusterservice_b').valid()){
+                                                        return false;
+                                                    }
+                                                    var clusterservicelocalpor = 'clusterservicelocalpor_no';
+                                                    disperse_c = 1;
+                                                	url_c = "/clusterservicecreateguide_c";
+                                                	var disk_num = $(ELT)('#clusterservicedisknum').val();
+                                                	var disperse_num = $(ELT)('#clusterservicedispersenum').val();
+                                                }
+                                                else if($(ELT)(clusterservicetype).attr('id') == 'clusterservicetype_strip'){
+                                                    url_c = "/clusterservicecreateguide_c";
+                                                    strip_c = 1;
+                                                    stripnum = $(ELT)('#clusterservicestripnum').val();
+                                                    disks_num = stripnum;
+                                                    //if($(ELT)("input[name='clusterservicetype_is_afr']:checked")){
+                                                    afr_c = 1;
+                                                    redundancy = $(ELT)('#clusterservicestrip_afrnum').val();
+                                                    sub_volume_num = redundancy;
+                                                    if(sub_volume_num == ''){
+                                                        sub_volume_num = '1';
+                                                    }
+                                                    //}
+                                                }
+                                                clusterservicetype= clusterservicetype.attr('id');
+                                                cservicedialog_b.dialog('close');
+                                                var cservicedialog_c = $(ELT)('<div id="cservicedialog_c" title="$_('clusterservicecreate')">').appendTo('body');
+                                                cservicedialog_c.load(
+                                                    url_c + '?' + new Date().getTime(),
+                                                    '',
+                                                    function stepC(){
+                                                        cservicedialog_c.dialog({
+                                                            bgiframe: true,
+                                                            autoOpen: true,
+                                                            width: 900,
+                                                            height:450,
+                                                            modal: true,
+                                                            resizable: false,
+                                                            open:function(){
+                                                                custLoading("$_('Loading Data ...')");
+                                                                if(url_c =='/clusterservicecreateguide_c'){
+                                                                    $(ELT)('#afr_num').parent().hide();
+                                                                    $(ELT)('#strip_num').parent().hide();
+                                                                    $(ELT)('#disperse_num').parent().hide();
+                                                                    if(afr_c == 1){
+                                                                        $(ELT)('#afr_num').html(redundancy);
+                                                                    }
+                                                                    if(strip_c == 1){
+                                                                        $(ELT)('#strip_num').html(disks_num);
+                                                                    }
+                                                                    if(disperse_c == 1){
+                                                                        $(ELT)('#disk_num').html(disk_num);
+                                                                        $(ELT)('#disperse_num').html(disperse_num);
+                                                                    }
+                                                                }else{
+                                                                    $(ELT)('#afr_num').parent().hide();
+                                                                    $(ELT)('#strip_num').parent().hide();
+                                                                    $(ELT)('#disperse_num').parent().hide();
+                                                                    $(ELT)('#afr_num').empty();
+                                                                    $(ELT)('#strip_num').empty();
+                                                                    $(ELT)('#disperse_num').empty();
+                                                                    $(ELT)('#disk_num').empty();
+                                                                }
+                                                            },
+                                                            buttons: {
+                                                                "$_('create')": function(){
+                                                                	var clusterservicenewdev = [];
+                                                                	var datatable = $(ELT)("#disktable").DataTable();
+                                                                	var selectRows = datatable.rows('.selected').nodes();
+                                                                	//alert(selectRows.length);
+                                                                	for(var i=0;i<selectRows.length;i++){
+                                                                		clusterservicenewdev.push($(ELT)(selectRows[i]).find('.edit_arr').val());
+                                                                	}
+                                                                	//console.log($(ELT)(this).find('.edit_arr').val());
+                                                                    
+                                                                    if(url_c =='/clusterservicecreateguide_c'&&clusterservicetype=='clusterservicetype_afr'){
+                                                                        var afrdisknewdev = clusterservicenewdev;
+                                                                        var data = 'clusterservicename=' + clusterservicename + '&clusterservicelocalpor=' + clusterservicelocalpor + '&clusterservicecustom_store=' + clusterservicecustom_store + '&clusterservicetype=' + clusterservicetype + '&afrdisknewdev=' + afrdisknewdev + '&disks_num=' + disks_num + '&sub_volume_num=' + sub_volume_num;
+                                                                    }else if(url_c =='/clusterservicecreateguide_c'&&clusterservicetype=='clusterservicetype_strip'){
+                                                                        var stripdisknewdev = clusterservicenewdev;
+                                                                        var data = 'clusterservicename=' + clusterservicename + '&clusterservicelocalpor=' + clusterservicelocalpor + '&clusterservicecustom_store=' + clusterservicecustom_store + '&clusterservicetype=' + clusterservicetype + '&stripdisknewdev=' + stripdisknewdev + '&disks_num=' + disks_num + '&sub_volume_num=' + sub_volume_num;
+                                                                    }else if(url_c =='/clusterservicecreateguide_c'&&clusterservicetype=='clusterservicetype_default'){
+                                                                        var defaultdisknewdev = clusterservicenewdev;
+                                                                        var data = 'clusterservicename=' + clusterservicename + '&clusterservicelocalpor=' + clusterservicelocalpor + '&clusterservicecustom_store=' + clusterservicecustom_store + '&clusterservicetype=' + clusterservicetype + '&defaultdisknewdev=' + defaultdisknewdev;
+                                                                    }else if(url_c == '/clusterservicecreateguide_c'&&clusterservicetype=='clusterservicetype_disperse'){
+                                                                    	var dispersedisknewdev = clusterservicenewdev;
+                                                                        var data = 'clusterservicename=' + clusterservicename + '&clusterservicelocalpor=' + clusterservicelocalpor + '&clusterservicecustom_store=' + clusterservicecustom_store + '&clusterservicetype=' + clusterservicetype + '&dispersedisknewdev=' + dispersedisknewdev + '&disks_num=' + disk_num + '&disperse_num=' + disperse_num;                                                                            
+                                                                    }
+                                                                    url = '/clusterservicecreate';
+                                                                    //console.log(url+data);
+                                                                    //return false;
+                                                                    if(clusterservicenewdev == ''){
+                                                                        custAlert("$_('operfail')","$_('nodiskselected')");
+                                                                        return false;
+                                                                    }
+                                                                    else{
+                                                                        $(ELT).ajax({
+                                                                            url: url,
+                                                                            type: 'POST', 
+                                                                            data: data,
+                                                                            dataType: 'text',
+                                                                            beforeSend: function(){
+                                                                                custLoading("$_('creatingservicenow')");
+                                                                            },
+                                                                            error: function(){
+                                                                                $(ELT)('#loaddialog').dialog('close');
+                                                                                custAlert("$_('operfail')","Request Error!");
+                                                                            },
+                                                                            success: function(text){
+                                                                                if(isNaN(text)){
+                                                                                    $(ELT)('#loaddialog').dialog('close');
+                                                                                    custAlert("$_('operfail')",text);
+                                                                                }
+                                                                                else{
+                                                                                    if(parseInt(text) == 0){
+                                                                                        clusterserviceload();
+                                                                                        $(ELT)('#loaddialog').dialog('close');
+                                                                                        custAlert("$_('opersucc')","$_('clusterservicecreatesucc')");
+                                                                                    }else{
+                                                                                        $(ELT)('#loaddialog').dialog('close');
+                                                                                        custAlert("$_('operfail')","$_('operfailinfo')");
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        });
+                                                                    }
+                                                                    $(ELT)(this).dialog('close');
+                                                                },
+                                                                "$_('back')": function(){
+                                                                    cservicedialog_c.remove();
+                                                                    cservicedialog_b.load(url_b,'',stepB);
+                                                                }
+                                                            },
+                                                            close: function(){
+                                                                cservicedialog_c.remove();
+                                                            }
+                                                        });
+                                                    }
+                                                );
+                                            },
+                                            "$_('back')": function() {
+                                                cservicedialog_b.remove();
+                                                cservicedialog_a = $(ELT)('<div id="cservicedialog_a" title="$_('clusterservicecreate')">').appendTo('body');
+                                                cservicedialog_a.load(url_a,'',stepA);
+                                            }
+                                        },
+                                        close: function(){
+                                            cservicedialog_b.remove();
+                                        }
+                                    });
+                                }
+                            );
+                        }
+                    },
+                    close: function(){
+                        cservicedialog_a.remove();
+                    }
+                });
+            }
+        );
+    }
+	//服务扩容
+    function clusterservicextend(){
+        if($(ELT)('#startword').length > 0){
+            custAlert("$_('operfail')","$_('noservicefound')");
+        }else{
+            custLoading("$_('Loading Data ...')");
+            var url = "/clusterservicextend?" + new Date().getTime();
+            checkSession();
+            var exservicedialog = $(ELT)('<div id="exservicedialog" title="$_('clusterservicextend')">').appendTo('body');
+            exservicedialog.load(
+                url, 
+                '',
+                function (responseText, textStatus, XMLHttpRequest) {
+                    $(ELT)('#loaddialog').dialog('close');
+                    exservicedialog.dialog({
+                        bgiframe: true,
+                        autoOpen: true,
+                        width: 900,
+                        height: 450,
+                        modal: true,
+                        resizable: false,
+                        buttons: {
+                            "$_('cancel')": function() {
+                                $(ELT)(this).dialog('close');
+                            },
+                            "$_('extend')": function() {
+                                var clusterexservicedev = []
+                                //验证服务名
+                                if($(ELT)('#clusterservicename').val() == ''){
+                                    custAlert("$_('operfail')","$_('noservicename')");
+                                    return false;
+                                }
+                                var datatable = $(ELT)("#disktable").DataTable();
+								var selectRows = datatable.rows('.selected').nodes();
+								for(var i=0;i<selectRows.length;i++){
+									var rowObj = $(ELT)(selectRows[i]);
+									var selectObj = rowObj.find('.edit_arr');
+									clusterexservicedev.push('clusterexservicedev='+selectObj.val());
+								}
+                                clusterexservicedev=clusterexservicedev.join('&');
+                                //clusterservicename=aaa&clusterexservicedev=node-1%3Asdd
+                                var data = 'clusterservicename='+$(ELT)('#clusterservicename').val()+'&'+clusterexservicedev;
+                                //alert(data);
+                                //return false;
+                                if(clusterexservicedev == ''){
+                                    custAlert("$_('operfail')","$_('nodiskselected')");
+                                    return false;
+                                }
+                                else if($(ELT)("#pair_size").hasClass('disk-not-match')){
+                                	return false;
+                                }
+                                else{
+                                    $(ELT).ajax({
+                                        url: url,
+                                        type: 'POST',
+                                        data: data,
+                                        dataType: 'text',
+                                        beforeSend: function(){
+                                            custLoading("$_('extendingservicenow')");
+                                        },
+                                        error: function(){
+                                            custAlert("$_('operfail')","Request Error!");
+                                        },
+                                        success: function(text){
+                                            if(isNaN(text)){
+                                                $(ELT)('#loaddialog').dialog('close');
+                                                custAlert("$_('operfail')",text);
+                                            }
+                                            else{
+                                                if(parseInt(text) == 0){
+                                                    clusterserviceload();
+                                                    $(ELT)('#loaddialog').dialog('close');
+                                                    custAlert("$_('opersucc')","$_('clusterexservicesucc')");
+                                                }else{
+                                                    $(ELT)('#loaddialog').dialog('close');
+                                                    custAlert("$_('operfail')","$_('operfailinfo')");
+                                                }
+                                            }
+                                        }
+                                    });
+                                }
+                                $(ELT)(this).dialog('close');
+                            }
+                        },
+                        close: function(){
+                            exservicedialog.remove();
+                    }
+                });
+            }
+        );
+        }
+    }
+    //function add afrs | strips
+    function clusterserviceraidlvedit(clusterservicename){
+        var url = ''; 
+    }
+    //NFS状态改变
+    function clusterservicenfs_status(option, clusterservicename, clusterservicestatus){
+        var url = '/clusterservicenfs_status?' + new Date().getTime();
+        if(option == 'start'){
+            var buttons = {
+                "$_('cancel')": function(){
+                    $(ELT)(this).dialog('close');
+                },
+                "$_('start')": function(){
+                    optionFunc(option);
+                    $(ELT)(this).dialog('close');
+                }
+            };
+        }
+        else{
+            var buttons = {
+                "$_('cancel')": function() {
+                    $(ELT)(this).dialog('close');
+                },
+                "$_('stop')": function(){
+                    optionFunc(option);
+                    $(ELT)(this).dialog('close');
+                }
+            };
+        }
+        function optionFunc(innerOption) {
+        	checkSession();
+            $(ELT).ajax({
+                url: url,
+                type: 'POST',
+                data: 'clusterservicename=' + clusterservicename + '&clusterservicenfsoption=' + option,
+                dataType: 'text',
+                beforeSend: function(){
+                    if(option =='stop'){
+                        custLoading("$_('stoppingnfsnow')");
+                    }
+                    else{
+                        if(clusterservicestatus == "start"){
+                            custLoading("$_('startingnfsnow')");
+                        }
+                        else{
+                            custAlert("$_('operfail')", "$_('startserivcefirst')");
+                            return false
+                        }
+                    }
+                },
+                success: function(text){
+                    if(isNaN(text)){
+                        $(ELT)('#loaddialog').dialog('close');
+                        custAlert("$_('operfail')",text);
+                    }
+                    else{
+                        if(parseInt(text) == 0){
+                            clusterserviceload();
+                            $(ELT)('#loaddialog').dialog('close');
+                            if( option == 'stop'){
+                            	$(ELT)('#loaddialog').dialog('close');
+                                custAlert("$_('opersucc')","$_('clusterservicenfsstopsucc')");
+                            }
+                            else{
+                            	$(ELT)('#loaddialog').dialog('close');
+                                custAlert("$_('opersucc')","$_('clusterservicenfsstartsucc')");
+                            }
+                        }
+                        else{
+                            $(ELT)('#loaddialog').dialog('close');
+                            custAlert("$_('operfail')","$_('operfailinfo')");
+                        }
+                    }
+                }
+            });
+        }
+        if( option == 'stop'){
+            custConfirm("$_('confirmoper')","$_('clusterservicenfsstopconfirm')",buttons);
+        }
+        else{
+            custConfirm("$_('confirmoper')","$_('clusterservicenfsstartconfirm')",buttons);
+        }
+    }
+    //CIFS状态改变
+    function clusterservicecifs_status(option, clusterservicename, clusterservicestatus){
+        var url = '/clusterservicecifs_status?' + new Date().getTime();
+        checkSession();
+        if(option == 'start'){
+            var buttons = {
+                "$_('cancel')": function(){
+                    $(ELT)(this).dialog('close');
+                },
+                "$_('start')": function(){
+                    optionFunc(option);
+                    $(ELT)(this).dialog('close');
+                }
+            };
+        }
+        else{
+            var buttons = {
+                "$_('cancel')": function() {
+                    $(ELT)(this).dialog('close');
+                },
+                "$_('stop')": function(){
+                    optionFunc(option);
+                    $(ELT)(this).dialog('close');
+                }
+            };
+        }
+        function optionFunc(innerOption) {
+            checkSession();
+            $(ELT).ajax({
+                url: url,
+                type: 'POST',
+                data: 'clusterservicename=' + clusterservicename + '&clusterservicecifsoption=' + option,
+                dataType: 'text',
+                beforeSend: function(){
+                    if(option =='stop'){
+                        custLoading("$_('stoppingcifsnow')");
+                    }
+                    else{
+                        if(clusterservicestatus == "start"){
+                            custLoading("$_('startingcifsnow')");
+                        }
+                        else{
+                            custAlert("$_('operfail')", "$_('startserivcefirst')");
+                            return false
+                        }
+                    }
+                },
+                error: function(){
+                    custAlert("$_('operfail')","Request Error!");
+                },
+                success: function(text){
+                    if(isNaN(text)){
+                        $(ELT)('#loaddialog').dialog('close');
+                        custAlert("$_('operfail')",text);
+                    }
+                    else{
+                        if(parseInt(text) == 0){
+                            clusterserviceload();
+                            $(ELT)('#loaddialog').dialog('close');
+                            if( option == 'stop'){
+                                custAlert("$_('opersucc')","$_('clusterservicecifsstopsucc')");
+                            }
+                            else{
+                                custAlert("$_('opersucc')","$_('clusterservicecifsstartsucc')");
+                            }
+                        }
+                        else{
+                            $(ELT)('#loaddialog').dialog('close');
+                            custAlert("$_('operfail')",text);
+                        }
+                    }
+                }
+            });
+        }
+        if( option == 'stop'){
+            custConfirm("$_('confirmoper')","$_('clusterservicecifsstopconfirm')",buttons);
+        }
+        else{
+            custConfirm("$_('confirmoper')","$_('clusterservicecifsstartconfirm')",buttons);
+        }
+    }
+    //CIFS重启
+    function clusterservicecifsrestart(clusterservicename){
+    	var url = "/clusterservicecifsrestart?" + new Date().getTime();
+    	checkSession();
+    	$(ELT).ajax({
+                url: url,
+                type: 'POST',
+                data: 'clusterservicename=' + clusterservicename,
+                dataType: 'text',
+                beforeSend: function(){
+                    custLoading("$_('restartingcifsnow')");
+                },
+                error: function(){
+                    custAlert("$_('operfail')","Request Error!");
+                },
+                success: function(text){
+                    if(isNaN(text)){
+                        $(ELT)('#loaddialog').dialog('close');
+                        custAlert("$_('operfail')",text);
+                    }
+                    else{
+                        if(parseInt(text) == 0){
+                            clusterserviceload();
+                            $(ELT)('#loaddialog').dialog('close');
+                            custAlert("$_('opersucc')","$_('clusterservicecifsrestartsucc')");
+                        }
+                        else{
+                            custAlert("$_('operfail')","$_('operfailinfo')");
+                        }
+                    }
+                }
+            });
+    }
+    //CIFS管理
+    function clusterservicecifsmanage(service_name){
+        if($(ELT)('#' + service_name +'_tr .cifs_status').html() == '停止'){
+            custAlert("$_('operfail')","$_('startcifsfirst')");
+            return false;
+        }
+        checkSession();
+    	var servicecifsmanage = $(ELT)('<div id="servicecifsmanage" title="$_('clusterservicecifsmanage')">').appendTo('body');
+    	var url = "/clusterservicecifsmanage?random=" + new Date().getTime() + "&service_name=" + service_name;
+        servicecifsmanage.load(
+            url, 
+            '',
+            function (responseText, textStatus, XMLHttpRequest) {
+                servicecifsmanage.dialog({
+                    bgiframe: true,
+                    autoOpen: true,
+                    width: 450,
+                    modal: true,
+                    resizable: false,
+                    buttons: {
+                        "$_('close')": function() {
+                            $(ELT)(this).dialog('close');
+                        }
+                    },
+                    close: function(){
+                        servicecifsmanage.remove();
+                        $(ELT)(".tooltip").remove();
+                    }
+                });
+            }
+        );
+    }
+	//NFS管理
+    function clusterservicenfsmanage(service_name){
+        if($(ELT)('#' + service_name +'_tr .nfs_status').html() == '停止'){
+            custAlert("$_('operfail')","$_('startnfsfirst')");
+            return false;
+        }
+        checkSession();
+    	var servicenfsmanage = $(ELT)('<div id="servicenfsmanage" title="$_('clusterservicenfsmanage')">').appendTo('body');
+    	var url = "/clusterservicenfsmanage?random=" + new Date().getTime() + "&service_name=" + service_name;
+        servicenfsmanage.load(
+            url, 
+            '',
+            function (responseText, textStatus, XMLHttpRequest) {
+                servicenfsmanage.dialog({
+                    bgiframe: true,
+                    autoOpen: true,
+                    width: 450,
+                    modal: true,
+                    resizable: false,
+                    buttons: {
+                        "$_('close')": function() {
+                            $(ELT)(this).dialog('close');
+                        }
+                    },
+                    close: function(){
+                        servicenfsmanage.remove();
+                    }
+                });
+            }
+        );
+    }
+	
+    //共享管理
+    function clusterservicesharemanage(){
+        if($(ELT)('#startword').length > 0){
+            custAlert("$_('operfail')","$_('noservicefound')");
+            return false;
+        }
+        var time=new Date().getTime();
+        var url="/clusterservicesharemanage?"+time;
+		
+        $(ELT)("body").append('<div id="pop_div_service_share_manage" class="pop_div"></div>');
+        $(ELT)("#pop_div_service_share_manage").dialog({
+            bgiframe: true,								   
+            modal: true,				 
+            autoOpen:false,
+            resizable:false,
+            width:800,
+            height:450,
+            title:"$_('clusterservicesharemanage')",
+            open:function(){
+                custLoading("$_('Loading Data ...')");
+            },
+            close:function(){
+                $(ELT)(this).remove();
+            },
+            buttons:{
+                "$_('close')": function() {
+                    $(ELT)(this).dialog('close');
+                }
+            }
+        });
+        $(ELT)("#pop_div_service_share_manage").load(url,'',function(){
+            $(ELT)('#loaddialog').dialog('close');											
+        });
+        $(ELT)("#pop_div_service_share_manage").dialog("open");
+    }
+	
+    //获取客户端节点列表
+    function cluster_client_node_load(service_name){
+        var oTable = $(ELT)('#cluterservices').dataTable();
+		
+        if($(ELT)("#"+service_name+"_node").attr("title")=="$_('open')"){
+            var html=$(ELT).ajax({
+                url: "/clusterclientnodeload?" + new Date().getTime(),
+                data: "service_name="+service_name,
+                dataType: 'html',
+                async:false,
+                beforeSend: function(){
+                    custLoading("$_('Loading Data ...')");
+                },
+                success: function(text){
+                    $(ELT)('#loaddialog').dialog('close');
+                }
+            });
+			
+            $(ELT)("#"+service_name+"_node").attr("class","ui-icon ui-icon-minus ui-icon-inline");
+            $(ELT)("#"+service_name+"_node").attr("title","$_('close')");
+			
+            $(ELT)("#"+service_name+"_tr").click(function(){
+                oTable.fnOpen(this,html.responseText,"info_row_"+service_name);
+            });
+        }else{
+            $(ELT)("#"+service_name+"_node").attr("class","ui-icon ui-icon-plus ui-icon-inline");
+            $(ELT)("#"+service_name+"_node").attr("title","$_('open')");
+			
+            $(ELT)("#"+service_name+"_tr").click(function(){
+                oTable.fnClose(this);
+            });
+        }
+    }
+	
+    //节点列表刷新
+    function cluster_client_node_refresh(service_name){
+        $(ELT)('#cluterservices .opertext').each(function(){
+            if($(ELT)(this).attr('id')){
+	        var service_name=$(ELT)(this).attr('id').replace('status','');
+				
+                if($(ELT)("#"+service_name+"_node").attr("title")=="$_('close')"){
+                    $(ELT).ajax({
+                        url: "/clusterclientnodeload?" + new Date().getTime(),
+                        data: "service_name="+service_name,
+                        dataType: 'html',
+                        async:false,
+                        beforeSend: function(){
+                            custLoading("$_('Loading Data ...')");
+                        },
+                        success: function(text){
+                            $(ELT)('#loaddialog').dialog('close');
+                            $(ELT)(".info_row_"+service_name).html(text);
+                        }
+                    });
+                }
+            }
+        });
+    }
+	
+    //客户端节点添加
+    function cluster_client_node_create(service_name){
+        if($(ELT)('#startword').length > 0){
+            custAlert("$_('operfail')","$_('noservicefound')");
+            return false;
+        }
+        var time=new Date().getTime();
+        var url="/clusterclientnodecreate?"+time;
+		
+        $(ELT)("body").append('<div id="pop_div_client_node_create" class="pop_div"></div><input type="hidden" value="'+service_name+'" id="pop_val_service_name" />');
+        $(ELT)("#pop_div_client_node_create").dialog({
+            bgiframe: true,								   
+            modal: true,				 
+            autoOpen:false,
+            resizable:false,
+            width:400,
+            height:150,
+            title:"$_('cluster_client_node_create')",
+            open:function(){
+                custLoading("$_('Loading Data ...')");
+            },
+            close:function(){
+                $(ELT)(this).remove();
+                $(ELT)("#pop_val_service_name").remove();
+            },
+            buttons:{
+                "$_('cancel')": function() {
+                    $(ELT)(this).dialog('close');
+                },
+                "$_('create')": function() {
+                    var node_name=$(ELT)("#clusternodeipaddr").val();
+                    var service_name=$(ELT)("#clusterservicename").val();
+					
+                    if(!node_name){
+                        custAlert("$_('operfail')","$_('ip_please')");
+                        return false;
+                    }
+					
+                    $(ELT).ajax({
+                        url: "/clusterclientnodecreate?" + new Date().getTime(),
+                        type: 'POST',
+                        data: "service_name="+service_name+"&node_name="+node_name,
+                        dataType: 'text',
+                        async:true,
+                        beforeSend: function(){
+                            custLoading("$_('Loading Data ...')");
+                        },
+                        error: function(){
+                            custAlert("$_('operfail')","Request Error!");
+                        },
+                        success: function(text){
+                            if(isNaN(text)){
+                                custAlert("$_('operfail')",text);
+                            }else{
+                                if(parseInt(text) == 0){
+                                    clusterserviceload();
+                                    //cluster_client_node_refresh(service_name)
+                                    custAlert("$_('opersucc')","$_('opersucc')");
+                                    //window.location.reload();
+                                }else{
+                                    switch(parseInt(text)){
+                                        case 1:
+                                            custAlert("$_('operfail')","$_('ip_exists')");
+                                            break;
+										
+                                        case 11098:
+                                            custAlert("$_('operfail')","$_('ip_can_not_connect')");
+                                            break;
+										
+                                        case 11099:
+                                            custAlert("$_('operfail')","$_('ip_no_node')");
+                                            break;
+										
+                                        default:
+                                            custAlert("$_('operfail')","$_('operfailinfo')");
+                                            break;
+                                    }
+                                }
+                            }
+                            $(ELT)('#loaddialog').dialog('close');
+                        }
+                    });
+                    $(ELT)(this).dialog('close');
+                }
+            }
+        });
+        $(ELT)("#pop_div_client_node_create").load(url,'',function(){
+            $(ELT)('#loaddialog').dialog('close');											
+        });
+        $(ELT)("#pop_div_client_node_create").dialog("open");
+    }
+	
+    //客户端节点删除
+    function cluster_client_node_delete(service_name,node_name){
+        var buttons = {
+            "$_('cancel')": function() {
+                $(ELT)(this).dialog('close');
+            },
+            "$_('destroy')": function() {
+                $(ELT).ajax({
+                    url: "/clusterclientnodedelete?" + new Date().getTime(),
+                    type: 'POST',
+                    data: "service_name="+service_name+"&node_name="+node_name,
+                    dataType: 'text',
+                    async:true,
+                    beforeSend: function(){
+                        custLoading("$_('deletingnodenow')");
+                    },
+                    error: function(){
+                        custAlert("$_('operfail')","Request Error!");
+                    },
+                    success: function(text){
+                        if(isNaN(text)){
+                            custAlert("$_('operfail')",text);
+                        }else{
+                            if(parseInt(text) == 0){
+                                clusterserviceload();
+                                //cluster_client_node_refresh(service_name)
+                                //custAlert("$_('opersucc')","$_('clusternodedeletesucc')");
+                                //window.location.reload();
+                            }else{
+                                custAlert("$_('operfail')","$_('operfailinfo')");
+                            }
+                        }
+                        $(ELT)('#loaddialog').dialog('close');
+                    }
+                });
+                $(ELT)(this).dialog('close');
+            }
+        };
+		
+        $(ELT).ajax({
+            url: "/clusterclientnodeload?" + new Date().getTime(),
+            data: "node_name="+node_name,
+            type: 'POST',
+            async:true,
+            beforeSend: function(){
+                custLoading("$_('Loading Data ...')");
+            },
+            success: function(text){
+                $(ELT)('#loaddialog').dialog('close');
+				
+                if(text!='0'){
+                    custAlert("$_('operfail')",'请停止该客户端节点在服务"'+text+'"中的状态！');
+                }else{
+                    custwarning("$_('confirmoper')","$_('clusternodedeleteconfirm')",buttons);
+                }
+            }
+        });
+    }
+	
+    //客户端节点状态改变
+    function cluster_client_node_status(op,service_name,node_name){
+        $(ELT).ajax({
+            url: "/clusterclientnodestatus?" + new Date().getTime(),
+            type: 'POST',
+            data: "op="+op+"&service_name="+service_name+"&node_name="+node_name,
+            dataType: 'text',
+            async:true,
+            beforeSend: function(){
+                if(op == 'stop'){
+                    custLoading("$_('cluster_client_node_stop_now')");
+                }else{
+                    custLoading("$_('cluster_client_node_start_now')");
+                }
+            },
+            error: function(){
+                custAlert("$_('operfail')","Request Error!");
+            },
+            success: function(text){
+                if(isNaN(text)){
+                    custAlert("$_('operfail')",text);
+                }else{
+                    if(parseInt(text) == 0){
+                        cluster_client_node_refresh(service_name);
+                        if(op == 'stop'){
+                            custAlert("$_('opersucc')","$_('cluster_client_node_stop_succ')");
+                        }else{
+                            custAlert("$_('opersucc')","$_('cluster_client_node_start_succ')");
+                        }
+                    }else{
+                        custAlert("$_('operfail')","$_('operfailinfo')");
+                    }
+                }
+                $(ELT)('#loaddialog').dialog('close');
+            }
+        });
+    }
+	
+    //分布策略详细
+    function clusterserviceraidlvdetail(service_name,afr,strip){
+		
+        if(!afr||isNaN(afr)){
+            afr=0;
+        }
+        if(!strip||isNaN(strip)){
+            strip=0;
+        }
+		
+        var time=new Date().getTime();
+        var url="/clusterserviceraidlvdetail?"+time+"&service_name="+service_name+'&afr='+afr+'&strip='+strip;
+		
+        $(ELT)("body").append('<div id="pop_div_service_raidlv_detail" class="pop_div"></div>');
+        $(ELT)("#pop_div_service_raidlv_detail").dialog({
+            bgiframe: true,								   
+            modal: true,				 
+            autoOpen:false,
+            resizable:false,
+            width:950,
+            height:450,
+            title:"$_('detail')"+" - "+service_name,
+            open:function(){
+                custLoading("$_('Loading Data ...')");
+            },
+            close:function(){
+                $(ELT)(this).remove();
+            },
+            buttons:{
+                "$_('confirm')": function() {
+                    $(ELT)(this).dialog('close');
+                },
+                "$_('update')": function(){
+                	$(ELT)(this).dialog('close');
+                	clusterserviceraidlvdetail(service_name,afr,strip);
+                }
+            }
+        });
+		
+        $(ELT)("#pop_div_service_raidlv_detail").load(url,'',function(){
+            $(ELT)('#loaddialog').dialog('close');										
+        });
+        $(ELT)("#pop_div_service_raidlv_detail").dialog("open");
+    }
+	
+    //磁盘管理
+    function clusterservicedisk(){
+        var time=new Date().getTime();
+        var url="/clusterservicedisk?"+time;
+		
+        $(ELT)("body").append('<div id="pop_div_service_disk" class="pop_div"></div>');
+        $(ELT)("#pop_div_service_disk").dialog({
+            bgiframe: true,								   
+            modal: true,				 
+            autoOpen:false,
+            resizable:false,
+            width:900,
+            height:450,
+            title:"$_('clusternodedisk')",
+            open:function(){
+                custLoading("$_('Loading Data ...')");
+            },
+            close:function(){
+                $(ELT)(this).remove();
+            },
+            buttons:{
+                "$_('confirm')": function() {
+                    $(ELT)(this).dialog('close');
+                }
+            }
+        });
+        $(ELT)("#pop_div_service_disk").load(url,'',function(){
+            $(ELT)('#loaddialog').dialog('close');									
+        });
+        $(ELT)("#pop_div_service_disk").dialog("open");
+    }
+    //配额管理
+    function clusterservicequotamanage(clusterservicename){
+        //checkSession();
+        var url = "/clusterservicelistdir" ;
+        $(ELT)("body").append('<div id="clusterservicelistdir" class="pop_div"></div>');
+        $(ELT)("#clusterservicelistdir").dialog({
+            bgiframe: true,								   
+            modal: true,				 
+            autoOpen:false,
+            resizable:false,
+            width:900,
+            height:450,
+            title:"$_('clusterservicequota')",
+            open:function(){
+                custLoading("$_('Loading Data ...')");
+            },
+            close:function(){
+                $(ELT)(this).remove();
+            },
+            buttons:{
+                "$_('confirm')": function() {
+                    $(ELT)(this).dialog('close');
+                }
+            }
+        });
+        $(ELT)("#clusterservicelistdir").load(url,'',function(){
+            $(ELT)('#loaddialog').dialog('close');									
+        });
+        $(ELT)("#clusterservicelistdir").dialog("open");
+    }
+	
+    //服务启动
+    function clusterservicestart(clusterservicename){ 
+        checkSession();
+        var url = '/clusterservicestart?' + new Date().getTime();
+        var buttons = {
+            "$_('cancel')": function() {
+                $(ELT)(this).dialog('close');
+            },
+            "$_('start')": function() {
+                $(ELT)(this).dialog('close');
+                $(ELT).ajax({
+                    url: url,
+                    type: 'POST',
+                    data: 'clusterservicename=' + clusterservicename,
+                    dataType: 'text',
+                    beforeSend: function(){
+                        custLoading("$_('startingservicenow')");
+                    },
+                    error: function(){
+                        custAlert("$_('operfail')","Request Error!");
+                    },
+                    success: function(text){
+                        if(isNaN(text)){
+                            $(ELT)('#loaddialog').dialog('close');
+                            custAlert("$_('operfail')",text);
+                        }
+                        else{
+                            if(parseInt(text) == 0){
+                                clusterserviceload();
+                                $(ELT)('#loaddialog').dialog('close');
+                                custAlert("$_('opersucc')","$_('clusterservicestartsucc')");
+                            }else{
+                                custAlert("$_('operfail')","$_('operfailinfo')");
+                            }
+                        }
+                    }
+                });
+            }
+        };
+        custConfirm("$_('confirmoper')","$_('clusterservicestartconfirm')",buttons);
+    }
+	//服务停止
+    function clusterservicestop(clusterservicename){
+    	checkSession();
+        var url = '/clusterservicestop?' + new Date().getTime();
+        var buttons = {
+            "$_('cancel')": function() {
+                $(ELT)(this).dialog('close');
+            },
+            "$_('stop')": function() {
+                $(ELT)(this).dialog('close');
+                $(ELT).ajax({
+                    url: url,
+                    type: 'POST',
+                    data: 'clusterservicename=' + clusterservicename,
+                    dataType: 'text',
+                    beforeSend: function(){
+                        custLoading("$_('stoppingservicenow')");
+                    },
+                    error: function(){
+                        custAlert("$_('operfail')","Request Error!");
+                    },
+                    success: function(text){
+                        if(isNaN(text)){
+                            $(ELT)('#loaddialog').dialog('close');
+                            custAlert("$_('operfail')",text);
+                        }
+                        else{
+                            if(parseInt(text) == 0){
+                                clusterserviceload();
+                                $(ELT)('#loaddialog').dialog('close');
+                                custAlert("$_('opersucc')","$_('clusterservicestopsucc')");
+                            }else{
+                                custAlert("$_('operfail')","$_('operfailinfo')");
+                                $(ELT)('#loaddialog').dialog('close');
+                            }
+                        }
+                    }
+                });
+            }
+        };
+        custConfirm("$_('confirmoper')","$_('clusterservicestopconfirm')",buttons);
+    }
+	//服务删除
+    function clusterservicedestroy(clusterservicename){
+    	checkSession();
+        var url = '/clusterservicedestroy?' + new Date().getTime();
+        var buttons = {
+            "$_('cancel')": function() {
+                $(ELT)(this).dialog('close');
+            },
+            "$_('destroy')": function() {
+                $(ELT)(this).dialog('close');
+                $(ELT).ajax({
+                    url: url,
+                    type: 'POST',
+                    data: 'clusterservicename=' + clusterservicename,
+                    dataType: 'text',
+                    beforeSend: function(){
+                        custLoading("$_('deletingservicenow')");
+                    },
+                    error: function(){
+                        custAlert("$_('operfail')","Request Error!");
+                    },
+                    success: function(text){
+                        if(isNaN(text)){
+                            $(ELT)('#loaddialog').dialog('close');
+                            custAlert("$_('operfail')",text);
+                        }
+                        else{
+                            if(parseInt(text) == 0){
+                                clusterserviceload();
+                                $(ELT)('#loaddialog').dialog('close');
+                                custAlert("$_('opersucc')","$_('clusterservicedestroysucc')");
+                            }else{
+                                $(ELT)('#loaddialog').dialog('close');
+                                custAlert("$_('operfail')","$_('operfailinfo')");
+                            }
+                        }
+                    }
+                });
+            }
+        };
+        custwarning("$_('confirmoper')","$_('clusterservicedeleteconfirm')",buttons);
+    }
+	//服务重启
+    function clusterservicerestart(clusterservicename){
+    	checkSession();
+        var flag = 0; //value for check service status times
+        var url = '/clusterservicerestart?' + new Date().getTime();
+        var buttons = {
+            "$_('cancel')": function() {
+                $(ELT)(this).dialog('close');
+            },
+            "$_('fix')": function restartService() {
+                $(ELT)(this).dialog('close');
+                $(ELT).ajax({
+                    url: url,
+                    type: 'POST',
+                    data: 'clusterservicename=' + clusterservicename,
+                    dataType: 'text',
+                    beforeSend: function(){
+                        custLoading("$_('fixingservicenow')");
+                    },
+                    error: function(){
+                        custAlert("$_('operfail')","Request Error!");
+                    },
+                    success: function(text){
+                        if(isNaN(text)){
+                            $(ELT)('#loaddialog').dialog('close');
+                            custAlert("$_('operfail')",text);
+                        }
+                        else{
+                            if(parseInt(text) == 0){
+                                clusterserviceload();
+                                $(ELT)('#loaddialog').dialog('close');
+                                custAlert("$_('opersucc')","$_('clusterservicefixsucc')");
+                            }else{
+                                $(ELT)('#loaddialog').dialog('close');
+                                custAlert("$_('operfail')","$_('operfailinfo')");
+                            }
+                        }
+                    }
+                });
+            }
+        };
+        custConfirm("$_('confirmoper')","$_('clusterservicefixconfirm')",buttons);
+    }
+    function clusterserviceoptionset(service_name){
+    	var url = "/clusterserviceoptionset?" + new Date().getTime() + "&clusterservicename=" + service_name;
+    	var service_options = $(ELT)('<div id="service_options" title="$_('clusterserviceoptionset')">').appendTo('body');
+    	service_options.load(
+        url, 
+        '',
+        function (responseText, textStatus, XMLHttpRequest) {
+			$(ELT)('#loaddialog').dialog('close');
+            service_options.dialog({
+                bgiframe: true,
+                autoOpen: true,
+                width: 450,
+                modal: true,
+                resizable: false,
+                buttons: {
+                        "$_('cancel')": function() {
+                            $(ELT)(this).dialog('close');
+                        },
+                        "$_('save')": function(){
+                        	var optionsObj = new Object();
+                        	optionsObj['cluster.quorum-type'] = $(ELT)('.quorum-type').val().toLowerCase();
+                        	optionsObj['cluster.quorum-count'] = $(ELT)('.quorum-count').val();
+                        	optionsObj['cluster.quorum-reads'] = $(ELT)('.quorum-read').val().toLowerCase();
+                        	var optionsjsonstr = JSON.stringify(optionsObj);
+                        	//return false;
+                        	$(ELT).ajax({
+			                    url: url,
+			                    type: 'POST',
+			                    data: 'clusterservicename=' + service_name + '&clusterserviceoptions=' + optionsjsonstr,
+			                    dataType: 'text',
+			                    beforeSend: function(){
+			                        custLoading("$_('Loading Data ...')");
+			                    },
+			                    error: function(){
+			                        custAlert("$_('operfail')","Request Error!");
+			                    },
+			                    success: function(text){
+			                        if(isNaN(text)){
+			                            $(ELT)('#loaddialog').dialog('close');
+			                            custAlert("$_('operfail')",text);
+			                        }
+			                        else{
+			                            if(parseInt(text) == 0){
+			                                clusterserviceload();
+			                                $(ELT)('#loaddialog').dialog('close');
+			                                custAlert("$_('opersucc')","$_('clusterservicesetoptionssucess')");
+			                            }else{
+			                                $(ELT)('#loaddialog').dialog('close');
+			                                custAlert("$_('operfail')","$_('operfailinfo')");
+			                            }
+			                        }
+			                    }
+			                });
+                        },
+                },
+                close: function(){
+                        service_options.remove();
+                        }
+          	});
+       	});
+                        
+    }
+    //权限管理
+    function clusterserviceauthmanage(clusterservicename){
+        //checkSession();
+        var url = "/clusterserviceauthmanage" ;
+        $(ELT)("body").append('<div id="clusterserviceauthmanage" class="pop_div"></div>');
+        $(ELT)("#clusterserviceauthmanage").dialog({
+            bgiframe: true,
+            modal: true,
+            autoOpen:false,
+            resizable:false,
+            width:900,
+            minHeight:450,
+            title:"$_('clusterserviceauthmanage')",
+            open:function(){
+                custLoading("$_('Loading Data ...')");
+            },
+            close:function(){
+                $(ELT)(this).remove();
+            },
+            buttons:{
+                "$_('confirm')": function() {
+                    $(ELT)(this).dialog('close');
+                }
+            }
+        });
+        $(ELT)("#clusterserviceauthmanage").load(url,'',function(){
+            $(ELT)('#loaddialog').dialog('close');
+        });
+        $(ELT)("#clusterserviceauthmanage").dialog("open");
+    }
+</script>

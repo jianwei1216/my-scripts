@@ -1,0 +1,53 @@
+$def with (content) 
+<table id="raidtable" cellpadding="0" class="datatable ui-widget ui-widget-content ui-corner-all">
+    <thead>
+        <tr>
+            <th>$_("clusternoderaid_inactive")</th>
+            <th>$_("clusternoderaid_activenum")</th>
+            <th>$_("")</th>
+        </tr>
+    </thead>
+    <tbody>
+        $for raid in content.clusternoderaid_inactive:
+            $if raid['normal_count'] == raid['disk_num']:
+                <tr id="$raid['devname']" style="cursor:pointer;" class="raid">
+                    <td>$raid['devname']</td>
+                    <td>$raid['disk_num']</td>
+                    <td>
+                        <input type="checkbox" width="10%" class="$raid['devname']" onclick="event.cancelBubble=true" />
+                    </td>
+                </tr>
+    </tbody>
+</table>
+
+<script type="text/javascript">
+$(ELT)(function(){
+    $(ELT)('#raidtable').dataTable({
+        "bJQueryUI": true,
+        "sPaginationType": "full_numbers",
+        "bRetrieve":true,
+        "sDom": '<"">t<"">',
+        "oLanguage": {
+            "sUrl": "/static/js/temp/datatable_ZH"
+        }
+    });
+});
+$for raid in content.clusternoderaid_inactive:
+    $(ELT)(function(){
+        var myTable = $(ELT)('#raidtable').dataTable();
+        $(ELT)('#$raid["devname"]').click(function(){
+            var raidinfo = String();
+            $for child in raid['child']:
+                raidinfo += '<tr><td>$child.keys()</td><td>$child.values()</td></tr>';
+                var that = this;
+                myTable.fnOpen( this,
+                                "<table>"+raidinfo+"<table>", 
+                                "info_row"
+                                );
+                $(ELT)('#raidtable .info_row').click(function(){
+                    myTable.fnClose(that);
+                });
+        });
+    });
+</script>
+

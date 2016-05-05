@@ -1,0 +1,23 @@
+$def with (content)
+
+<div id="clustersettab">
+    <div id="tabs">
+        <ul>
+            <li><a href="/clusterdomainload" id="domain_tab">$_('clusternodedomainset')</a></li>
+            <li><a href="/clustersmsinfoload" id="sms_tab">$_('clusternodesmsset')</a></li>
+            <li><a href="/clusternodectdbset" id="ctdb_tab">$_('clusternodectdbset')</a></li>
+        </ul>
+    </div>
+</div>
+
+<script tyep="text/javascript">
+    $(ELT)(function(){
+        $(ELT)( "#tabs" ).tabs({
+            ajaxOptions: {
+                error: function( xhr, status, index, anchor ) {
+                    $(ELT)( anchor.hash ).html("Couldn't load this tab. We'll try to fix this as soon as possible. " + "If this wouldn't be a demo." );
+                }
+            }
+        });
+    })
+</script>

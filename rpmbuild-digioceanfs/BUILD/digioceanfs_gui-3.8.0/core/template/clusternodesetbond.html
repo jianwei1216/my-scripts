@@ -1,0 +1,72 @@
+$def with (content)
+
+<form id="formclusternet" method="post">
+    <fieldset class="createdialog">
+        <div>
+        </div><br />
+        <div class="left">
+            <p>$_("clusterifacedevunused")</p><br />
+            <select id="clusterifacedev" name="clusterifacedev" style="height:150px;" class="ui-widget-content ui-corner-all" multiple="true">
+                $for iface in content.clusternodenicinfo:
+                    $if 'sub_nic' not in iface:
+                        <option value="$iface['devname']">$iface['devname']</option>
+            </select>
+        </div>
+        <div class="center">
+            <ul>
+                <li><button id="ifaceadd">$_("add")</button></li>
+                <li><button id="ifaceremove">$_("remove")</button></li>
+                <li><button id="ifaceaddall">$_("addall")</button></li>
+                <li><button id="ifaceremoveall">$_("removeall")</button></li>
+            </ul>
+        </div>
+        <div class="right">
+            <p>$_("clusterifacedevselected")</p><br />
+            <select id="clusternewifacedev" name="clusternewifacedev" style="height:150px;" class="ui-widget-content ui-corner-all" multiple="true">
+            </select><br /><br />
+        </div>
+        <div>
+            <label for="clusternewifacelevel">$_("clusternewifacelevel")</label>
+            <select name="clusternewifacelevel" id="clusternewifacelevel">
+                <option>Balance Round-Robin</option>
+                <option>Active Backup</option>
+                <option>Balance - XOR</option>
+                <option>Broadcast</option>
+                <option>802.3ad</option>
+                <option>Balance-tlb</option>
+                <option>Balance-alb</option>
+            </select>
+        </div>
+        <label>&nbsp;</label>
+    </fieldset>
+</form>
+<script type="text/javascript">
+$(ELT)(function(){
+    $(ELT)("#clusterifacedev").dblclick(function() {$(ELT).listtolist("clusterifacedev","clusternewifacedev","move",false);});
+    $(ELT)("#clusternewifacedev").dblclick(function() {$(ELT).listtolist("clusternewifacedev","clusterifacedev","move",false);});
+    $(ELT)("#ifaceadd").button({
+        text: false,
+        icons: {
+            primary: "ui-icon-triangle-1-e"
+        }
+    }).bind("click",function() {$(ELT).listtolist("clusterifacedev","clusternewifacedev","move",false);return false;});
+    $(ELT)("#ifaceremove").button({
+        text: false,
+        icons: {
+            primary: "ui-icon-triangle-1-w"
+        }
+    }).bind("click",function() {$(ELT).listtolist("clusternewifacedev","clusterifacedev","move",false);return false;});
+    $(ELT)("#ifaceaddall").button({
+        text: false,
+        icons: {
+            primary: "ui-icon-seek-next"
+        }
+    }).bind("click",function() {$(ELT).listtolist("clusterifacedev","clusternewifacedev","move",true);return false;});
+    $(ELT)("#ifaceremoveall").button({
+        text: false,
+        icons: {
+            primary: "ui-icon-seek-prev"
+        }
+    }).bind("click",function() {$(ELT).listtolist("clusternewifacedev","clusterifacedev","move",true);return false;});
+});
+</script>

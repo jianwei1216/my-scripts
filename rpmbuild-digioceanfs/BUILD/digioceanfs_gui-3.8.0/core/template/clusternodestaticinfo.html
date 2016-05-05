@@ -1,0 +1,81 @@
+$def with (content)
+
+<div id="tabs-1">
+    <div id="vitals">
+        <h2><span id="lang_002">$_("system vitals")</span></h2>
+        <table class="stripeMe" id="vitalsTable" cellspacing="0">
+            <tr>
+                <td style="width:160px;"><span id="lang_003">$_('hostname')</span></td>
+                <td><span id="s_hostname"></span></td>
+            </tr>
+            <tr>
+                <td style="width:160px;"><span id="lang_004">$_('listening ip')</span></td>
+                <td><span id="s_ip"></span></td>
+            </tr>
+            <tr>
+                <td style="width:160px;"><span id="lang_005">$_('kernel version')</span></td>
+                <td><span id="s_kernel"></span></td>
+            </tr>
+            <tr>
+                <td style="width:160px;"><span id="lang_006">$_('distro name')</span></td>
+                <td><span id="s_distro"></span></td>
+            </tr>
+            <tr>
+                <td style="width:160px;"><span id="lang_007">$_('uptime')</span></td>
+                <td><span id="s_uptime"></span></td>
+            </tr>
+            <tr>
+                <td style="width:160px;"><span id="lang_008">$_('current users')</span></td>
+                <td><span id="s_users"></span></td>
+            </tr>
+            <tr>
+                <td style="width:160px;"><span id="lang_009">$_('load averages')</span></td>
+                <td id="s_loadavg"></td>
+            </tr>
+        </table>
+    </div>
+    <div id="filesystem">
+    </div>
+    <div id="hardware">
+    </div>
+    <div style="clear:both;"></div>
+</div>
+<script type="text/javascript">
+    $(ELT)(function buildpage() {
+    checkSession();
+    $(ELT).ajax({
+        url: '/clusternodeviewstaticinfoxml?' + new Date().getTime(),
+        dataType: 'xml',
+        beforeSend: function(){
+            clearInterval(buildinterval);
+            custLoading("$_('Loading Data ...')");
+        },
+        error: function error() {
+            $(ELT).jGrowl("Error loading XML document!", {
+                sticky: true
+            });
+        },
+            success: function buildblocks(xml) {
+            clearInterval(buildinterval);
+            $(ELT)('#loaddialog').dialog('close');
+            populateErrors(xml);
+            refreshVitals(xml);
+            refreshFilesystems(xml);
+            refreshHardware(xml);
+            $(ELT)('.stripeMe tr:nth-child(even)').addClass('even');
+            langcounter = 1;
+            $(ELT)("#filesystemTable tbody tr td").each(function(i){
+                if($(ELT)(this).text().length>25){
+                    $(ELT)(this).attr("title",$(ELT)(this).text());
+                    var text=$(ELT)(this).text().substring(0,18)+"...";
+                    $(ELT)(this).text(text);
+                }
+            });
+        }
+    });
+    $(ELT)(function(){
+        filesystemtable();
+    });
+});
+</script>
+

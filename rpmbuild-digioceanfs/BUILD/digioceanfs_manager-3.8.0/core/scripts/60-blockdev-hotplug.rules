@@ -1,0 +1,2 @@
+KERNEL=="sd[a-z]*",ACTION=="add",RUN+="/usr/bin/python /usr/bin/disk_plug add /digioceanfs/wwn-$env{ID_WWN_WITH_EXTENSION}"
+KERNEL=="sd[a-z]*",ACTION=="remove",RUN+="/usr/bin/python /usr/bin/disk_plug remove /digioceanfs/wwn-$env{ID_WWN_WITH_EXTENSION}"

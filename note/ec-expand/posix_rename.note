@@ -1,0 +1,44 @@
+
+posix_rename()
+{
+        dict_get_int32(xdata, GLUSTERFS_XATTR_EXPAND_HOLD, &expand_hold);
+        if (expand_hold == 1) {
+                posix_stat(digi_file's path, &stbuf2);
+                gf_uuid_copy(digi_link_gfid, stbuf.ia_gfid);
+        }
+
+        sys_rename(digi_file, source_file);
+
+        if (was_present && !was_dir && nlink==1) {
+                if (expand_hold == 1) {
+                        sys_rename(digi_link_gfid, source_link_gfid);
+                        sys_lsetxattr(source_file'path, GFID_XATTR_KEY, source_gfid, XATTR_REPLACE);
+                        sys_removexattr(source_file's expand.offset/hold/destroy)
+                        for (;;) {
+                                close(pfd->fd);
+                                tmp = open(source_file);
+                                pfd->fd = tmp;
+                        }
+                }
+        }
+
+        UNWIND(xdata);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

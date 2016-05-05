@@ -1,0 +1,327 @@
+$def with (content)
+
+<div class="nv" style="border-bottom:1px solid #A6C9E2;">
+    <span class="synsize title">$_('synsize')</span>
+    <span class="src title">$_('source')</span>
+    <span class="tgt title">$_('target')</span>
+    <span class="spe title">$_('speed')</span>
+    <span class="status title">$_('procedure')</span>
+    <span class="filename title">$_('filetree')</span>
+</div>
+<ul id="treeDemo" class="ztree"></ul>
+<div class="nv" style="border:none;">
+    <span class="synsize title">$_('synsize')</span>
+    <span class="src title">$_('source')</span>
+    <span class="tgt title">$_('target')</span>
+    <span class="spe title">$_('speed')</span>
+    <span class="status title">$_('procedure')</span>
+    <span class="filename title">$_('filetree')</span>
+</div>
+<script type="text/javascript">
+	var fresh_flag = 0;
+    var setting = {
+    	data: {
+			key: {
+				title: "fullName"
+			}
+		},
+        async: {
+            enable: true,
+            url: "/clusterserviceviewload" 
+            //autoParam: escape(['PATH'])
+        },
+        view: {
+        	showTitle: true,
+            expandSpeed: "normal",
+            selectedMulti: false,
+            showLine: false,
+            addDiyDom: addDiyDom,
+            addHoverDom: addHoverDom,
+            removeHoverDom: removeHoverDom 
+        },
+        callback: {
+            beforeExpand: beforeExpand,
+            beforeCollapse: zTreeBeforeCollapse,
+            onAsyncSuccess: onAsyncSuccess,
+            onAsyncError: onAsyncError,
+            onMouseDown: onMouseDown,
+            onMouseUp: onMouseUp
+        }
+    };
+   
+	function decToHex2(str) {
+    	var res="",c;
+    	for(var i=0;i < str.length;i++){
+        	c = str.charCodeAt(i);
+        	res+=(c< 32 || c==38 || c>127)?"\\u"+c.toString(16):str.charAt(i);
+    	}
+    	return res;
+	}
+
+    var zNodes = [{'name':'/',isParent:"true", 'fullName':'/'}];
+    var expandstr = getCookie('expandstr');   
+    var treeObj = $(ELT).fn.zTree.getZTreeObj("treeDemo");
+    function refreshPage(){
+    	checkSession();
+        var url = '/clusterserviceviewloadrefresh?' + new Date().getTime();
+        if(fresh_flag == 1){
+        	return false;
+        }
+        var data = 'expandarray=' + escape(getCookie('expandstr'));
+        $(ELT).ajax({
+            url:url,
+            type: 'POST',
+            data: data,
+            dataType: 'JSON',
+            beforeSend: function(){
+            	fresh_flag = 1;
+            },
+            //error:,
+            success: function(text){
+            	fresh_flag = 0;
+                zNodes = eval(text);
+                var treeObj = $(ELT).fn.zTree.getZTreeObj("treeDemo");
+                if(treeObj){
+                    //treeObj.refresh();
+                    //treeObj.reAsyncChildNodes(null, "refresh");
+                    var nodes = treeObj.getNodes();
+                    //nodes[0].name = zNodes[0].name;
+                    nodes[0].name = '/';//zNodes[0].name;
+                    nodes[0].fullName = zNodes[0].fullName;
+                    nodes[0].childs = zNodes[0].childs;
+                    nodes[0].open = zNodes[0].open;
+                    nodes[0].PATH = zNodes[0].PATH;
+                    nodes[0].SRC = zNodes[0].SRC;
+                    nodes[0].TGT = zNodes[0].TGT;
+                    nodes[0].SPEED = zNodes[0].SPEED;
+                    nodes[0].SYNSIZE = zNodes[0].SYNSIZE;
+                    nodes[0].PROCEDURE = zNodes[0].PROCEDURE;
+                    nodes[0].TYPE = zNodes[0].TYPE;
+                    nodes[0].FILE = zNodes[0].FILE;
+                    addDiyDom(nodes[0],'refresh');
+                    //treeObj.reAsyncChildNodes(nodes[0], 'refresh');
+                    treeObj.refresh();
+                    //treeObj.updateNode(nodes[0],'refresh');
+                    return true;
+                }
+            }
+        });
+    }
+
+    function speedTransform(str, type){
+        if(str == ''){
+            return '';
+        }
+        if(str == '0'){
+            return '';
+        }
+        if(str.length > 9){
+            var dot = str.length - 10;
+            str = parseFloat(str.replace(str[dot],str[dot] + '.'));
+            if(type == "speed"){
+                return Math.round(str * 10)/10 + " GB/S";
+            }
+            else{
+                return Math.round(str * 10)/10 + " GB";
+            }
+        }
+        else if(str.length > 6 && str.length <= 9){
+            var dot = str.length - 7;
+            str = parseFloat(str.replace(str[dot],str[dot] + '.'));
+            if(type == "speed"){
+                return Math.round(str * 10)/10 + " MB/S";
+            }
+            else{
+                return Math.round(str * 10)/10 + " MB";
+            }
+        }
+        else if(str.length > 3 && str.length <= 6){
+            var dot = str.length - 4;
+            str = parseFloat(str.replace(str[dot],str[dot] + '.'));
+            if(type == "speed"){
+                return Math.round(str * 10)/10 + " KB/S";
+            }
+            else{
+                return Math.round(str * 10)/10 + " KB";
+            }
+        }
+        else{
+            str = parseFloat(str);
+            if(type == "speed"){
+                return Math.round(str * 10)/10 + " B/S";
+            }
+            else{
+                return Math.round(str * 10)/10 + " B";
+            }
+        }
+    }
+    function getUrl(treeNode){
+    	param = "expandarray=" + escape(getCookie('expandstr'));
+    	return "/clusterserviceviewload?" + param;
+    }
+
+    function onMouseDown(event, treeId, treeNode, clickFlag) {
+        var aObj = $(ELT)("#" + treeNode.tId);
+        aObj.addClass('light');
+    }
+    function onMouseUp(event, treeId, treeNode, clickFlag) {
+        var aObj = $(ELT)("#" + treeNode.tId);
+        aObj.removeClass('light');
+    }
+
+    function addDiyDom(treeId, treeNode) {
+        if (treeNode.parentNode && treeNode.parentNode.id!=1) return;
+        var aObj = $(ELT)("#" + treeNode.tId);
+        if (treeNode.PROCEDURE == '0'){
+            var procedure = '$_("notstart")';
+        }
+        else if(treeNode.PROCEDURE == '1'){
+            var procedure = '$_("fdcreating")';
+        }
+        else if(treeNode.PROCEDURE == '2'){
+            var procedure = '$_("metadatafixing")';
+        }
+        else if(treeNode.PROCEDURE == '3'){
+            var procedure = '$_("filefixing")';
+        }
+        else if(treeNode.PROCEDURE == '4'){
+            var procedure = '$_("dirfixing")';
+        }
+        else if(treeNode.PROCEDURE == '5'){
+            var procedure = '$_("fixingnow")';
+        }
+        else if(treeNode.PROCEDURE == '????'){
+            var procedure = '????'
+        }
+        else{
+            var procedure = '$_("OK")'
+        }
+        if (!isNaN(treeNode.SPEED)){
+            var speed = speedTransform(treeNode.SPEED, 'speed');
+        }
+        else{
+            var speed = treeNode.SPEED;
+        }
+        if (!isNaN(treeNode.SYNSIZE)){
+            var synsize = speedTransform(treeNode.SYNSIZE, 'synsize');
+        }
+        else{
+            if(treeNode.SYNSIZE == undefined){
+                var synsize = ''; 
+            }
+            else{
+                var synsize = treeNode.SYNSIZE;
+            }
+        }
+        if(!treeNode.SRC){
+            var src = '';
+        }
+        else{
+            var src = treeNode.SRC; 
+        }
+        if(!treeNode.TGT){
+            var tgt = '';
+        }
+        else{
+            var tgt = treeNode.TGT; 
+        }
+        if (treeNode.tId == "treeDemo_1"){//delete first table's top border
+            var editStr = "<span class='synsize' style='border-top:none;'>" + synsize + "</span>"+ "<span class='src' style='border-top:none;'>"+ src +"</span>" +"<span class='tgt' style='border-top:none;>"+ tgt +"</span>"+"<span class='spe' style='border-top:none;>"+ speed +"</span>" +"<span class='status' style='border-top:none;>"+ procedure +"</span>";
+        }
+        else{
+            var editStr = "<span class='synsize'>" + synsize + "</span>" + "<span class='src'>"+ src +"</span>" +"<span class='tgt'>"+ tgt +"</span>"+"<span class='spe'>"+ speed +"</span>" +"<span class='status'>"+ procedure +"</span>";
+        }
+        aObj.prepend(editStr);
+    }
+    function addHoverDom(treeId, treeNode) {
+        if (treeNode.parentNode && treeNode.parentNode.id!=1) return;
+        var aObj = $(ELT)("#" + treeNode.tId);
+        aObj.addClass('light');
+    }
+    function removeHoverDom(treeId, treeNode) {
+        if (treeNode.parentNode && treeNode.parentNode.id!=1) return;
+        var aObj = $(ELT)("#" + treeNode.tId);
+        aObj.removeClass('light');
+    }
+
+    function beforeExpand(treeId, treeNode) {
+        if (!treeNode.isAjaxing) {
+            //treeNode.times = 1;
+            tmpexpand = getCookie('expandstr');
+        	if (tmpexpand.indexOf('|'+treeNode.PATH + '|') < 0){
+            	tmpexpand += '|' + treeNode.PATH;
+            	setCookie('expandstr',tmpexpand + '|', 3600*1000);
+        	}
+            ajaxGetNodes(treeNode, "refresh");
+            return true;
+        } else {
+            alert("zTree 正在下载数据中，请稍后展开节点。。。");
+            return false;
+        }
+    }
+    function zTreeBeforeCollapse(treeId, treeNode) {
+        if (!treeNode.isAjaxing) {
+            treeNode.times = 1;
+            tmpexpand = getCookie('expandstr');
+            tmpexpandarray = tmpexpand.split('|');
+            for(var i = 0; i<tmpexpandarray.length;i++){
+                if (tmpexpandarray[i] && tmpexpandarray[i].indexOf(treeNode.PATH) >= 0){
+                    tmpexpandarray[i] = '';
+                }
+            }
+            tmpexpand = tmpexpandarray.clean("").join('|');
+            setCookie('expandstr','|'+tmpexpand+'|',3600*1000);
+            return true;
+        } else {
+            alert("zTree 正在下载数据中，请稍后展开节点。。。");
+            return false;
+        }
+    }
+    function onAsyncSuccess(event, treeId, treeNode, msg) {
+        var zTree = $(ELT).fn.zTree.getZTreeObj("treeDemo");
+        treeNode.icon = "";
+        zTree.updateNode(treeNode);
+        tmpexpand = getCookie('expandstr');
+        if (tmpexpand.indexOf('|'+treeNode.PATH + '|') < 0){
+            tmpexpand += '|' + treeNode.PATH;
+            setCookie('expandstr',tmpexpand + '|', 3600*1000);
+        }
+        //zTree.expandNode(treeNode, true, true);
+        refreshPage();
+        zTree.selectNode(treeNode.childs[0]);
+    }
+    function onAsyncError(event, treeId, treeNode, XMLHttpRequest, textStatus, errorThrown) {
+        var zTree = $(ELT).fn.zTree.getZTreeObj("treeDemo");
+        //alert("异步获取数据出现异常。");
+        treeNode.icon = "";
+        zTree.updateNode(treeNode);
+        //zTree.expandNode(treeNode, true, true);
+    }
+    function ajaxGetNodes(treeNode, reloadType) {
+        var zTree = $(ELT).fn.zTree.getZTreeObj("treeDemo");
+        if (reloadType == "refresh") {
+            //treeNode.icon = "static/theme/redmond/images/zTree/loading.gif";
+            addDiyDom(treeNode, reloadType);
+            zTree.updateNode(treeNode);
+            //zTree.expandNode(treeNode, true, true);
+        }
+        refreshPage();
+        zTree.reAsyncChildNodes(treeNode, reloadType, true);
+    }
+
+    $(ELT)(function(){
+    	$(ELT)('#freshtimeset').bind('click', function(){
+    		freshtime = parseInt($(ELT)('#freshtimeset').find("option:selected").text());
+    		if(!isNaN(freshtime)){
+    			clearInterval(intervalId);
+        		intervalId = setInterval('refreshPage()', freshtime * 1000);
+        	}    	
+        	else{
+        		clearInterval(intervalId);
+        	}
+    	});
+        if(!treeObj){
+            $(ELT).fn.zTree.init($(ELT)("#treeDemo"), setting, zNodes);
+        }
+    });
+</script>

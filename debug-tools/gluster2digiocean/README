@@ -1,0 +1,14 @@
+Usage: cl_string_replace.sh [source_path] --[option]
+
+    --gtod: put the gluster replace digiocean
+    --dtog: put the digiocean replace gluster
+Example:
+    ./cl_string_replace.sh  /root/source/gluster/ --gtod  -->完成gluster向digioceanfs的转换
+    ./cl_string_replace.sh  ./digiocean --dtog            -->完成digioceanfs向gluster的转换
+
+注意：该脚本不会改变源码,它会在和源码同级的目录下生成一个have-changed目录将转换成功的代码放在其中，
+      如果源码有改动，再次启动转化，在have-changed目录下转换的代码也会更新，保持和源码一致，只是名字发生变化
+
+                                                                                                          -- Made by chenglin
+
+ 

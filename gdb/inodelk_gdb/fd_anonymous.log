@@ -1,0 +1,70 @@
+client3_3_writev()
+{
+
+}
+
+server3_3_writev()
+{
+
+}
+
+server_resolve_fd()
+{
+        if(fd_no == GF_ANON_FD_NO) {
+                server_resolve_anonfd(){
+                        resolve_anonfd_simple(){
+                                state = CALL_STATE(frame);
+                                inode = inode_find();
+                                state->fd = fd_anonymous(inode);
+                        }
+                }
+        }
+}
+
+fd_anonymous()
+{
+        __fd_anonymous() {
+                fd = __fd_lookup_anonymous();
+                if (!fd) {
+                        fd = __fd_create();
+                        fd->anonymous = _gf_true;
+                        __fd_bind();
+                        __fd_ref();
+                }
+        }
+}
+
+posix_writev()
+{
+        posix_fd_ctx_get(fd){
+                __posix_fd_ctx_get (fd, this, pfd) {
+                        __fd_ctx_get(fd);
+                        fd_is_anonymous(fd);
+                        MAKE_HANDLE_PATH(real_path, gfid);
+                        pfd = CALLOC();
+                        pfd->fd = open(real_path);
+                        __fd_ctx_set (fd, this, pfd);
+                }
+        }
+
+}
+
+server_writev_cbk()
+{
+        /* prepare something args */
+        server_submit_reply(frame) {
+                if (frame) {
+                        state = CALL_STATE(frame);
+                        if (state) {
+                                free_state(state) {
+                                        if (state->fd) {
+                                                fd_unref(state->fd);
+                                                ...
+                                                until posix goto destroy this anonymous fd;
+                                        }
+                                }
+                        }
+                }
+        }
+}
+

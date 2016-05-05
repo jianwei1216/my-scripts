@@ -1,0 +1,169 @@
+#!/usr/bin/python
+#-*- coding: utf-8 -*-
+import sys
+import os
+import time
+import subprocess
+import tempfile
+import traceback
+import logging, logging.config
+from sysv_ipc import *
+SP_KEY = 2147483600
+
+def initLog():
+    try:
+        os.mkdir('/var/log/digioceanfs_manager')
+        os.system('touch /var/log/digioceanfs_manager/diskPlug.log')
+    except:
+        pass
+    logging.config.fileConfig('/usr/local/digioceanfs_manager/log.conf')
+
+def _debug(msgStr):
+    logger = logging.getLogger("diskPlug")
+    logger.error(msgStr)
+
+def changeSemaphore(op):
+    try:
+        sp = Semaphore(SP_KEY, 0, 0600)
+    except:
+        print "########### Semaphore not exist!!! ###########"
+    if op == 'remove':
+        sp.V()
+    elif op == 'add':
+        sp.P()
+
+def umount_disk(disk_dir):
+    ret = os.system('/bin/umount -lf %s' % disk_dir)
+    _debug("DISK_PLUG, umount %s return %s" % (disk_dir, ret))
+
+def mount_disk(disk_dir):
+    if disk_dir == "":
+        exit()
+    disk_id = disk_dir.split('/')[-1]
+    if disk_id == "wwn-":
+        exit()
+    if not os.path.ismount('/dev/disk/by-id/'+ disk_id):
+        ret = os.system('/bin/mount %s %s' % ('/dev/disk/by-id/'+ disk_id ,disk_dir))
+        time.sleep(10)
+        _debug("DISK_PLUG, mount %s return %s" % (disk_dir, ret))
+        
+def check_ro():
+    re = os.system("findmnt |grep 'root'|grep 'ro,'")
+    if re == 0:
+        return True
+    else:
+        return False
+
+def kill_pid(disk_dir):
+    if disk_dir == "":
+        exit()
+    disk_id = disk_dir.split('/')[-1]
+    if disk_id == "wwn-":
+        exit()
+    try:
+        os.system("touch /tmp/%s.proc" % disk_id)
+    except:
+        pass
+    #cmd = "ps aux |awk '$15 ~ \"%s\" {for(i=11;i<=NF;i++) printf $i\" \" > \"%s\"}'" % (disk_id,'/tmp/%s.proc' % disk_id)
+    #os.system(cmd)
+    ret = os.system("ps aux |grep %s|grep -v grep|grep -v disk_plug|awk '{print $2}'|xargs kill -9" % disk_id)
+    _debug("DISK_PLUG, kill digioceanfsd proc %s return %s" % (disk_id, ret))
+
+def find_service(pattern, path):
+    result = []
+    for root, dirs, files in os.walk(path):
+        for name in files:
+            if pattern in name:#fnmatch.fnmatch(name, pattern):
+                return name.split('.')[0]
+
+def get_uuid():
+    uuid = ''
+    fd = open('/var/lib/digioceand/digioceand.info')
+    lines = fd.readlines()
+    for line in lines:
+        if line.find("UUID=") >= 0:
+            return line.split("=")[1].strip()
+
+def get_port(hostname, service_name, disk_dir):
+    port = ''
+    _disk = disk_id = disk_dir.replace('/','-')
+    fd = open('/var/lib/digioceand/vols/%s/bricks/%s:%s' % (service_name, hostname, _disk))
+    lines = fd.readlines()
+    for line in lines:
+        if line.find("listen-port=") >= 0:
+            return line.split("=")[1].strip()
+
+def get_hostname():
+    hostname = ''
+    fd = open('/etc/digioceanfs/HOSTNAME')
+    line = fd.read()
+    return line.strip()
+
+def get_socketID(hostname, service_name, disk_dir):
+    socketId = ''
+    import hashlib
+    source_str = '/var/lib/digioceand/vols/%s/run/%s%s' % (service_name, hostname, disk_dir.replace('/', '-'))
+    mdObj = hashlib.md5(source_str)
+    return mdObj.hexdigest()
+
+def rebuild_proc(disk_dir):
+    disk_id = disk_dir.split('/')[-1]
+    _debug(disk_id)
+    if disk_id == "wwn-":
+        exit()
+    try:
+        service_name = find_service(disk_id, '/var/lib/digioceand/vols/')
+        brick_name = 'digioceanfs-'+disk_id
+        cmd_uuid = get_uuid()
+        hostname = get_hostname()
+        _debug(hostname)
+        port = get_port(hostname, service_name, disk_dir)
+        socket_id = get_socketID(hostname, service_name, disk_dir)
+    except Exception,e:
+        #_debug('%s %s %s %s %s %s ' % (service_name, brick_name, cmd_uuid, hostname, port, socket_id))
+        _debug(e)
+        _debug("DISK PLUG, caught exception: %s" % traceback.print_exc(e))
+    proc_str = '/usr/sbin/digioceanfsd -s %s --volfile-id %s.%s.%s -p /var/lib/digioceand/vols/%s/run/%s-%s.pid -S /var/run/%s.socket --brick-name %s -l /var/log/digioceanfs/bricks/%s.log --xlator-option *-posix.digioceand-uuid=%s --brick-port %s --xlator-option %s-server.listen-port=%s' % (hostname, service_name, hostname, brick_name, service_name, hostname, brick_name, socket_id, disk_dir, brick_name, cmd_uuid, port, service_name, port)
+    _debug("DISK PLUG, rebuild proc:\n")
+    _debug( "%s" % proc_str)
+    target_dir = os.path.join(disk_dir,'.digioceanfs/00/00')
+    if os.path.ismount(disk_dir): 
+        ret = os.system('mkdir -p %s; cd %s; ln -s ../../.. %s' % (target_dir, target_dir, '00000000-0000-0000-0000-000000000001'))
+        _debug("DISK_PLUG, create link on disk %s return %s" % (disk_dir,ret))
+    else:
+        _debug("DISK_PLUG, mount disk %s failed" % disk_dir)
+    ret = os.system(proc_str)
+    _debug("DISK_PLUG, wait 30 seconds to start digioceanfsd")
+    time.sleep(30)
+    if ret:
+        _debug("DISK_PLUG, digioceanfsd start service %s return %s" % (service_name, ret))
+    else:
+        _debug("DISK_PLUG, digioceanfsd start service %s return %s" % (service_name, ret))
+    # sync_disk
+    #cmd = 'find /cluster2/%s/ -d -exec getfattr -h -n trusted.ec.heal {} \; >/dev/null 2>&1 &' % service_name
+    #if not os.system('ps aux |grep %s' % cmd):
+    #    _debug('DISK_PLUG, execute cmd: %s' % cmd)
+    #    os.system(cmd)
+    #    _debug('DISK_PLUG, sync_disk begin ...')
+    #else:
+    #    _debug('DISK_PLUG, find sync_disk cmd still running')
+
+
+if __name__ == "__main__":
+    initLog()
+    if len(sys.argv) >=3:
+        disk_dir = sys.argv[2]
+        if sys.argv[1] == 'remove':
+            _debug("DISK_PLUG, found disk %s removed" % (disk_dir))
+            kill_pid(disk_dir)
+            umount_disk(disk_dir)
+            changeSemaphore('remove')
+            _debug("#####################################################")
+        elif sys.argv[1] == 'add':
+            _debug("DISK_PLUG, found disk %s add" % (disk_dir ))
+            if not check_ro():
+            #os.system('mount -a')
+                mount_disk(disk_dir)
+            rebuild_proc(disk_dir)
+            changeSemaphore('add')
+            _debug("#####################################################")

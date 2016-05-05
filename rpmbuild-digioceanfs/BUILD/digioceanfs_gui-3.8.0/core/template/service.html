@@ -1,0 +1,96 @@
+$def with (content)
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>$content.page_setup.title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <link href="/static/theme/redmond/jquery-ui-1.8.4.css" rel="stylesheet" type="text/css">
+    <link href="/static/theme/redmond/style.css" rel="stylesheet" type="text/css">
+    <link href="/static/theme/redmond/dataTable.css" rel="stylesheet" type="text/css">
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" type="text/css" href="/static/theme/redmond/ie6style.css" />
+    <![endif]-->
+    <!--[if IE 7]>
+    <link rel="stylesheet" type="text/css" href="/static/theme/redmond/ie7style.css" />
+    <![endif]-->
+    <script src="/static/js/lib/jquery.jqDock.min.js" type="text/javascript"></script>
+    <script src="/static/js/lib/jquery.listtolist.js" type="text/javascript"></script>
+    <script src="/static/js/lib/tooltip.dynamic.min.js" type="text/javascript"></script>
+    <script src="/static/js/lib/tooltip.slide.min.js" type="text/javascript"></script>
+    <script src="static/js/lib/jquery.dataTables.js" type="text/javascript"></script>
+    <script src="static/js/lib/jquery.treeTable-s.js" type="text/javascript"></script>
+    <script src="/static/js/lib/jquery-1.4.2.min.js" type="text/javascript"></script>
+    <script src="/static/js/lib/jquery-ui-1.8.4.min.js" type="text/javascript"></script>
+    <script src="/static/js/lib/utils.js" type="text/javascript"></script>
+    $for jsfile in content.page_setup.javascript:
+        <script src="/static/js/page/$jsfile" type="text/javascript"></script>
+    $for jsfile in content.page_setup.javascript_files:
+        <script src="/static/js/temp/$jsfile" type="text/javascript"></script>
+</head>
+<body>
+    <div id="header">
+        <dl class="head-info">
+            <dd>
+                <span>$content.session.user.name</span> | <a href="/logout">$_("logout")</a> | <a href="/">Home</a>
+            </dd>
+            <dt>
+                <form action="#">
+                    <label for="pagelang">Choose Language:</label>
+                    <select id="pagelang">
+                        <option value="zh_CN">Chinese</option>
+                        <option value="en_US">English</option>
+                    </select>
+                </form>
+            </dt>
+        </dl>
+        <div id="logo">&nbsp;</div>
+    </div>
+    <div id="navigator">
+        $if content.page_setup.breadcrumbs:
+            <div id="nav">
+                <ul>
+                    <li class="first"><a href="javascript:void(0)">&nbsp;</a></li>
+                    $for navigators in content.navigators:
+                        $if content.page_setup['breadcrumbs'][0] == navigators[0]:
+                            <li><a class="current" href="$navigators[2]">$navigators[1]</a></li>
+                        $else:
+                            <li><a href="$navigators[2]">$navigators[1]</a></li>
+                    <li class="last"><a href="javascript:void(0)">&nbsp;</a></li>
+                </ul>
+            </div>
+            <div id="shortcuts">
+                <span style="padding-left:15px;">$_("currlocate"):</span>
+                <a href="/">$_("index")</a>
+                $for key in content.page_setup.breadcrumbs:
+                    &nbsp;&nbsp;&gt;&nbsp;&nbsp;<a href="$content.shortcuts[key][1]">$content.shortcuts[key][0]</a>
+            </div>
+    </div>
+    <div id="box">
+        <div id="left">
+            <div id="menu">
+                <ul>
+                $for menuitem in content.menu_items:
+                    $if menuitem[0] == content.page_setup.currmenu:
+                        <li><a class="currmenu ui-corner-all" href="$menuitem[2]">$menuitem[1]</a></li>
+                    $elif menuitem[0] == 'fg':
+                        <li class="split">&nbsp;</li>
+                    $else:
+                        <li><a class="ui-corner-all" href="$menuitem[2]">$menuitem[1]</a></li>
+                </ul>
+            </div>
+            <div id="other">&nbsp;</div>
+        </div>
+        <div id="right">
+            <div id="content">
+                $:content.page_content
+            </div>
+        </div>
+    </div>
+    <div id="footer" class="ui-corner-all">
+        $:content.page_setup.footer
+    </div>
+</body>
+</html>

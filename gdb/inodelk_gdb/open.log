@@ -1,0 +1,309 @@
+#######################################################
+#---------------------->>>>open<<<<-------------------#
+#######################################################
+fuse_open()
+{
+        /* do something */
+}
+
+...
+
+ec_open()
+{
+        /* do something */
+}
+
+client_open ()
+{
+        args.loc = loc;
+        args.fd = fd;
+        args.xdata = xdata;
+        args.flags = flags;
+        wind client3_3_open();
+}
+
+client3_3_open()
+{
+        req.gfid = args->loc->inode->gfid;
+        req.xdata = args.xdata; 
+        req.flags = args.flags;
+        wind server3_3_open();
+}
+
+server3_3_open()
+{
+        args = (client's) req;
+        state->resolve.type = RESOLVE_MUST;
+        state->resolve.gfid = args.gfid;
+        state->flags = args.flags;
+        state->xdata = args.xdata;
+        server_resolve_inode(state->resolve.gfid);
+        wind posix_open();
+}
+
+posix_open()
+{
+        analysis real_path;
+        _fd = open(real_path);
+        _pfd = calloc(gf_posix_mt_posix_fd);
+        pfd->flags = flags;
+        pfd->fd = _fd;
+        fd_ctx_set(fd, this, pfd);
+        unwind server_open_cbk();
+}
+
+server_open_cbk()
+{
+        rps.xdata = xdata;
+        serv_ctx = server_ctx_get(client, this);
+                client_ctx_get(client);
+                ctx = calloc(gf_server_mt_server_conf_t);
+                ctx->fdtable = gf_fd_fdtable_alloc();
+                client_ctx_set(client, xlator, ctx);
+        fd_bind(fd);
+        fd_no = gf_fd_unused_get(serv_ctx->fdtable, fd);
+        fd_ref(fd);
+        rsp.fd = fd_no;
+        rsp.op_ret = op_ret;
+        rsp.op_errno = op_errno;
+        unwind client3_3_open_cbk();
+}
+
+client3_3_open_cbk()
+{
+        conf = this->private;
+        client_add_fd_to_saved_fds(local->fd, rps.fd);
+                gfid = _copy_gfid_from_inode_holders(fd,loc);
+                fdctx = calloc(gf_client_mt_clnt_fdctx_t);
+                fdctx->gfid = gfid;
+                fdctx->remote_fd = rps.fd;
+                fdctx->lk_ctx = fd_lk_ctx_ref(fd->lk_ctx);
+                fdctx->lk_heal_state = GF_LK_HEAL_DONE;
+                fdctx->reopen_done = client_default_reopen_done;
+                this_fd_set_ctx(fd, this, loc, fdctx);
+                list_add_tail(fdctx->sfd_pos, conf->saved_fds);
+        xdata = rps.xdata;
+        unwind ec_open_cbk();
+}
+
+...
+
+fuse_write_cbk()
+{
+        /* do something */
+}
+
+#######################################################
+#------------------->>>>write<<<<---------------------#
+#######################################################
+
+fuse_write()
+{
+        /* do something */
+}
+
+...
+
+ec_writev()
+{
+        /* do something */
+}
+
+client_writev()
+{
+        args.fd = fd;  
+        args.vector = vector;
+        args.count = count;
+        args.offset = off;
+        args.size = iov_len(vector, count);
+        args.flags = flags;
+        args.iobref = iobref;
+        args.xdata = xdata;
+
+        wind client3_3_writev();
+}
+
+client3_3_writev()
+{
+        conf = this->private;
+        remote_fd = CLIENT_GET_REMOTE_FD(args.fd);
+               remote_fd = client_get_remote_fd(xl, args.fd); 
+        frame->local = client_fd_fop_prepare_local(frame, args.fd, remote_fd);
+               local->fd = fd_ref(args.fd);
+        req.size = args.size;
+        req.offset = args.offset;
+        req.fd = remote_fd;
+        req.flag = args.flags;
+        req.gfid = args->fd->inode->gfid;
+        req.xdata = args.xdata;
+        wind server3_3_writev();
+}
+
+server3_3_writev()
+{
+        args = (client's)req;
+        state->resolve.type = RESOLVE_MUST;
+        state->resolve.fd_no = args.fd;
+        state->offset = args.offset;
+        state->size = args.size;
+        state->flags = args.flags;
+        state->iobref = args.iobref;
+        state->resolve.gfid = args.gfid;
+        state->payload_vector = args.msg.iov_base;
+        state->xdata = args.xdata;
+        server_resolve_fd(state->resolve.fd_no);
+                client = frame->root->client;
+                serv_ctx = server_ctx_get(client);
+                state->fd = gf_fd_fdptr_get(serv_ctx->fdtable, state->resolve.fd_no)
+        server_resolve_inode(state->resolve.gfid);
+        WIND posix_writev();
+}
+
+posix_writev()
+{
+        pfd = posix_fd_ctx_get(state->fd, this); 
+        _fd = pfd->fd;
+        posix_fdstat(_fd);
+        __posix_writev(_fd, state->vector, state->count, state->offset,flags);
+        _fill_writev_xdata(state->fd, xdata);
+        posix_fdstate(_fd);
+        UNWIND server_writev_cbk();
+}
+
+server_writev_cbk()
+{
+        rsp.xdata = xdata;
+        rsp.prestat = prebuf;
+        rsp.poststat = postbuf;
+        rsp.op_ret = op_ret;
+        rsp.op_errno = op_errno;
+        UNWIND client3_3_writev_cbk();
+}
+
+client3_3_writev_cbk()
+{
+        xdata = rsp.xdata;
+        prebuf = rsp.prestat;
+        postbuf = rsp.poststat;
+        UNWIND ec_writev_cbk(rsp.op_ret, rsp.op_errno, rsp.xdata);
+}
+
+...
+
+fuse_write_cbk()
+{
+        /* do something */
+}
+
+#######################################################
+#------------------->>>>close<<<<---------------------#
+#######################################################
+
+fuse_release()
+{
+        /* do something */
+}
+
+ec_gf_release()
+{
+        /* do something */
+}
+
+client_release()
+{
+        args.fd = fd;
+        WIND client3_3_release();
+}
+
+client3_3_release()
+{
+        fdctx = this_fd_del_ctx (args.fd, this);
+        remote_fd = fdctx->remote_fd;
+        lk_heal_state = fdctx->lk_heal_state;
+        fdctx->release = 1;
+        client_fdctx_destory(this, fdctx);
+        req.fd = fdctx->remote_fd;
+        WIND server3_3_release();
+}
+
+server3_3_release()
+{
+        args = req;
+        client = req->trans->xl_private;
+        serv_ctx = server_ctx_get(client);
+        gf_fd_put(serv_ctx->fdtable, args.fd);
+                fde = &fdtable->fdentries[fd];
+                fdptr = fde->fd;
+                fd_unref (fdptr);
+                        __fd_unref (fd);
+                        if (fd->refcount == 0)
+                                fd_destroy(fd);
+                                        for (i = 0; i < fd->xl_count; i++) {
+                                                if (fd->_ctx[i].key) {
+                                                        xl = fd->_ctx[i].xl_key;
+                                                        old_THIS = THIS;
+                                                        THIS = xl;
+                                                        if (xl->cbks->release)
+                                                                xl->cbks->release (xl, fd);
+                                                        THIS = old_THIS;
+                                                }
+                                        }
+}
+
+posix_release()
+{
+        pfd = fd_ctx_del(fd, this);        
+        pthread_mutex_lock (&priv->janitor_lock);
+        {
+                INIT_LIST_HEAD (&pfd->list);
+                list_add_tail (&pfd->list, &priv->janitor_fds);
+                pthread_cond_signal (&priv->janitor_cond);
+
+        }
+        pthread_mutex_unlock (&priv->janitor_lock);
+
+        LOCK (&priv->lock);
+        {
+                priv->nr_files--;
+
+        }
+        UNLOCK (&priv->lock);
+}
+
+posix_janitor_thread_proc ()
+{
+        while (1) {
+                pfd = janitor_get_next_fd ();
+                sys_close (pfd->fd)/sysclosedir(pfd->dir);
+        }
+}
+
+janitor_get_next_fd ()
+{
+        pthread_mutex_lock (&priv->janitor_lock);
+        {
+                if (list_empty (&priv->janitor_fds)) {
+                        time (&timeout.tv_sec);
+                        timeout.tv_sec += priv->janitor_sleep_duration;
+                        timeout.tv_nsec = 0;
+
+                        pthread_cond_timedwait (&priv->janitor_cond,
+                                        &priv->janitor_lock,
+                                        &timeout);
+                        goto unlock;
+
+                }
+
+                pfd = list_entry (priv->janitor_fds.next, struct posix_fd,
+                                list);
+
+                list_del (priv->janitor_fds.next);
+
+        }
+unlock:
+        pthread_mutex_unlock (&priv->janitor_lock);
+
+        return pfd;
+
+}
+

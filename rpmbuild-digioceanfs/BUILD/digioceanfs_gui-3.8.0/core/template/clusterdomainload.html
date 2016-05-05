@@ -1,0 +1,99 @@
+$def with (content)
+
+<form id="formclusterdomainset" method="post">
+    <fieldset>
+        <label for="clusterdomainname">$_("domainname")</label>
+        $if content.domainname:
+            <span>$content.domainname</span><br />
+        $else:
+            <div id="domainnameunsetelement">
+                <span id="clusterdomainnamespan">$_("unset")</span>
+                <a title="$_('set')" href="javascript:void(0);" onClick="clusterdomainnameset();" id="domainnameset">$_("set")</a>
+            </div>
+            <div id="domainnamesetelement" style="display:none">
+                <input type="text" id="clusterdomainname" name="clusterdomainname" class="ui-widget-content ui-corner-all" />
+                <a title="$_('save')" href="javascript:void(0);" onClick="clusterdomainnamesave();" id="domainnamesave">$_("save")</a>
+                <a title="$_('cancel')" href="javascript:void(0);" onClick="clusterdomainsetcancel();" id="domainnamesave">$_("cancel")</a>
+            </div>
+        <div class="mess-info ui-state-error ui-corner-all" style="line-height:25px;">
+            <p>
+                <span class="info-icon ui-icon ui-icon-alert"></span>
+                <strong>$_('Warnning'): </strong> $_('domainsetwarnning')
+            </p>
+         </div>
+    </fieldset>
+</form>
+<style>
+#formclusterdomainset a{
+    padding-left:20px;
+    text-decoration: none;
+    color: #0066AA;
+}
+</style>
+<script type="text/javascript">
+    $(ELT)('#formclusterdomainset').validate({
+        errorClass: "invalid",
+        rules: {
+            clusterdomainname: {
+                required: true,
+                inputName: true,
+                byterangelength: [3, 20]
+            }
+        },
+        messages: {
+            clusterdomainname: {
+                required: "请输入域名",
+                inputName: "输入只能包括英文字母、数字、短横线以及圆点",
+                byterangelength: "请确保输入的值在3-20个字节之间"
+            }
+        }
+    });
+    function clusterdomainnameset(){
+        $(ELT)('#domainnameunsetelement').hide();
+        $(ELT)("#domainnamesetelement").show();
+        $(ELT)(".mess-info").css('margin-left','120px');
+    }
+    function clusterdomainnamesave(){
+        var url = "/clusterdomainset?" + new Date().getTime();
+        var domainname = $(ELT)('#clusterdomainname').val();
+        if(!$(ELT)('#formclusterdomainset').valid()){
+            return false;
+        }
+        $(ELT).ajax({
+            url: url,
+            type: 'POST',
+            data: 'domainname=' + domainname,
+            dataType: 'text',
+            beforeSend: function(){
+                custLoading("$_('domainnamesettingnow')");
+            },
+            error: function(){
+                custAlert("$_('operfail')","Request Error!");
+            },
+            success: function(text){
+                if(isNaN(text)){
+                    $(ELT)('#loaddialog').dialog('close');
+                    custAlert("$_('operfail')",text);
+                }else{
+                    if(parseInt(text) == 0){
+                        $(ELT)('#clusterdomainnamespan').html($(ELT)('#clusterdomainname').val());
+                        $(ELT)('#domainnamesetelement').hide();
+                        $(ELT)('#domainnameunsetelement').show();
+                        $(ELT)('#domainnameset').hide();
+                        $(ELT)(".mess-info").css('margin-left','0px');
+                        $(ELT)('#loaddialog').dialog('close');
+                        custAlert("$_('opersucc')","$_('clusterdomainsetsucc')");
+                    }else{
+                        $(ELT)('#loaddialog').dialog('close');
+                        custAlert("$_('operfail')","$_('operfailinfo')");
+                    }
+                }
+            }
+        });
+    }
+    function clusterdomainsetcancel(){
+        $(ELT)('#domainnameunsetelement').show();
+        $(ELT)("#domainnamesetelement").hide();
+        $(ELT)(".mess-info").css('margin-left','0px');
+    }
+</script>

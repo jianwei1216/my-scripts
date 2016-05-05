@@ -1,0 +1,182 @@
+MD-RAID-MIB DEFINITIONS ::= BEGIN
+
+-- imports and exports
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, Integer32, Gauge32
+        FROM SNMPv2-SMI
+    DisplayString, TruthValue
+        FROM SNMPv2-TC
+    hackingExperimental
+        FROM HACKING-SNMP-MIB;
+
+mdRaidMIB MODULE-IDENTITY
+	LAST-UPDATED 	"201110080000Z"
+	ORGANIZATION 	"Hacking Networked Solutions Ltd"
+	CONTACT-INFO	"Max Hacking"
+	DESCRIPTION		"This MIB module defines objects for MD RAID data."
+	REVISION     	"201110080000Z"
+	DESCRIPTION		"First version"
+    ::= { mdRaid 1 }
+
+mdRaid		OBJECT IDENTIFIER ::= { hackingExperimental 2 }
+
+--
+
+mdRaidTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF SmdRaidArrayEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Table of HDD SMART information."
+    ::= { mdRaid 2 }
+
+mdRaidArrayEntry OBJECT-TYPE
+    SYNTAX      SmdRaidArrayEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "An entry containing a device and its statistics."
+    INDEX       { mdRaidArrayIndex }
+    ::= { mdRaidTable 1 }
+    
+    SmdRaidArrayEntry ::= SEQUENCE {
+   	mdRaidArrayIndex					Integer32,
+   	mdRaidArrayDev						DisplayString,
+   	mdRaidArrayVersion					DisplayString,
+   	mdRaidArrayUUID						DisplayString,
+   	mdRaidArrayLevel					DisplayString,
+   	mdRaidArrayLayout					DisplayString,
+   	mdRaidArrayChunkSize				DisplayString,
+   	mdRaidArraySize						DisplayString,
+   	mdRaidArrayDeviceSize				DisplayString,
+   	mdRaidArrayHealthOK					TruthValue,
+   	mdRaidArrayHasFailedComponents		TruthValue,
+   	mdRaidArrayHasAvailableSpares		TruthValue,
+   	mdRaidArrayTotalComponents   		Gauge32,
+   	mdRaidArrayActiveComponents   		Gauge32,
+   	mdRaidArrayWorkingComponents  		Gauge32,
+   	mdRaidArrayFailedComponents   		Gauge32,
+   	mdRaidArraySpareComponents			Gauge32
+}
+
+--   
+    
+mdRaidArrayIndex OBJECT-TYPE
+    SYNTAX      Integer32 (0..65535)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Reference index for each observed array."
+    ::= { mdRaidArrayEntry 1 }
+    
+mdRaidArrayDev OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The path to the DEV entry for this array."
+    ::= { mdRaidArrayEntry 2 }
+    
+mdRaidArrayVersion OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The super-block version used by this array."
+    ::= { mdRaidArrayEntry 3 }
+
+mdRaidArrayUUID OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The UUID string for this array."
+    ::= { mdRaidArrayEntry 4 }
+    
+mdRaidArrayLevel OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The RAID level employed by this array."
+    ::= { mdRaidArrayEntry 5 }
+    
+mdRaidArrayLayout OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The RAID layout employed by this array."
+    ::= { mdRaidArrayEntry 6 }
+
+mdRaidArrayChunkSize OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The chunk size used by this array."
+    ::= { mdRaidArrayEntry 7 }
+
+mdRaidArraySize OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The size of this array."
+    ::= { mdRaidArrayEntry 8 }
+
+mdRaidArrayDeviceSize OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The device size of this array."
+    ::= { mdRaidArrayEntry 9 }
+
+mdRaidArrayHealthOK OBJECT-TYPE
+    SYNTAX      TruthValue
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The current health status reported by this array."
+    ::= { mdRaidArrayEntry 10 }
+
+mdRaidArrayHasFailedComponents OBJECT-TYPE
+    SYNTAX      TruthValue
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "TRUE if this array has failed components, FALSE if all components are functioning."
+    ::= { mdRaidArrayEntry 11 }
+
+mdRaidArrayHasAvailableSpares OBJECT-TYPE
+    SYNTAX      TruthValue
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "TRUE if this array has available spares, FALSE if no spare devices are available."
+    ::= { mdRaidArrayEntry 12 }
+
+mdRaidArrayTotalComponents OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The total number of component devices associated with this array."
+    ::= { mdRaidArrayEntry 13 }
+
+mdRaidArrayActiveComponents OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of active component devices in use by this array."
+    ::= { mdRaidArrayEntry 14 }
+
+mdRaidArrayWorkingComponents OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of working component devices in use by this array."
+    ::= { mdRaidArrayEntry 15 }
+
+mdRaidArrayFailedComponents OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of failed component devices associated with this array."
+    ::= { mdRaidArrayEntry 16 }
+
+mdRaidArraySpareComponents OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The number of spare component devices available for use by this array."
+    ::= { mdRaidArrayEntry 17 }
+
+END

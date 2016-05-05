@@ -1,0 +1,141 @@
+
+ec_manager_writev()
+{
+        case EC_STATE_INIT:
+        case EC_STATE_LOCK:
+                ec_lock_prepare_fd(fop->fd);
+                ec_lock(source_file's inode);
+        case EC_STATE_DISPATCH:
+                ec_sleep(fop);
+                {
+                        ec_writev_start(fop) 
+                        {
+                                if (fop->oldfile) {
+                                        if (ec_writev2_judge()) {
+                                                ec_writev2_start();
+                                        }
+                                }
+                        }
+                }
+                ec_resume(fop, 0);
+        case EC_STATE_DELAYED_START:
+                ec_sleep(fop);
+                {
+                        ec_dispatch_all(fop);
+                        if (fop->writev2_fop) {
+                                ec_dispatch_all(fop->writev2_fop);
+                        }
+                }
+                ec_resume(fop, 0);
+        case EC_STATE_PREPARE_ANSWER:
+                if (fop->writev2_fop) {
+                        cbk2 = fop->writev2_fop->anwser;
+                        if (cbk->op_ret < 0 || cbk2->op_ret < 0) 
+                                ec_handle_writev2_cbk(cbk, cbk2, fop);
+                }
+        case EC_STATE_REPORT:
+                cbk;
+        case EC_STATE_LOCK_REUSE:
+                ec_lock_reuse();
+        case EC_STATE_UNLOCK:
+                ec_unlock();
+
+}
+
+
+int32_t ec_writev2_judge()
+{
+        int ret = 0;
+        loc = ec_loc_from_fd();
+        ec_copy(&fop->loc[0], &loc);
+        if (fop->lock_count > 0) {
+                ec_owner_copy();
+        }
+        cluster_getxattr(source_file's expand.offset/hold);
+        for (;;) {
+                if (expand.hold == 1) {
+                        ret = 1;
+                        break;
+                } else if (fop->offset < expand.offset) {
+                        ret = 1;
+                        break;
+                }
+        }
+        if (!ret) 
+                goto out;
+        build_digi_loc_inode();
+        cluster_lookup(digi_file);
+        gf_uuid_copy(digi_loc.uuid, digi_file's gfid);
+        digi_file_size = ia_size * (ec->fragments);
+        fop2 = ec_fop_data_allocate();
+        copy fop's args to fop2;
+        fop2->fd = fd_anonymous(digi_file.inode);
+        ec_set_inode_size(fop2->fd->inode, digi_file_size);
+
+        fop2->writev1_fop = fop;
+        fop->writev2_fop = fop2;
+out:
+        return ret;
+}
+
+ec_writev2_start()
+{
+        fop2 = fop->writev2_fop;
+        adjust head/size/tail;
+        
+        /* Using fop->frame not fop2->frame for child_readv(resume_parent_fop) */
+        if (fop->head)
+                ec_readv(ec_writev2_merge_head, fop->frame);
+        if (fop->tail)
+                ec_readv(ec_writev2_merge_tail, fop->frame);
+}
+
+ec_writev2_merge_head()
+{
+        fop1 = frame->local;
+        fop = fop1->writev2_fop; 
+}
+
+ec_writev2_merge_tail()
+{
+        fop1 = frame->local;
+        fop = fop1->writev2_fop; 
+}
+
+ec_complete()
+{
+        if (--fopw->winds==0) {
+                fop->anwser = cbk;
+                if (!fop->writev1_fop && !fop->writev2_fop) {
+                        resume = 1;
+                }
+                else if (!fop->writev1_fop && fop->writev2_fop) {
+                        /*This is user's fop*/
+                        resume = 1;
+                }
+                else if (fop->writev1_fop && fop->writev2_fop) {
+                        writev2 = 1;
+                        resume = 1;
+                }
+        }
+
+        if (resume) {
+                if (writev2) {
+                        ec_resume(fop->writev1_fop, 0);
+                } else {
+                        ec_resume(fop, 0);
+                }
+        }
+}
+
+
+
+
+
+
+
+
+
+
+
+

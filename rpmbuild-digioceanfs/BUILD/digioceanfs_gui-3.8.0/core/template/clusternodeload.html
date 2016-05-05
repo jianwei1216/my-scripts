@@ -1,0 +1,70 @@
+$def with (content)
+
+<table id="cluternodes" cellpadding="0" class="datatable ui-widget ui-widget-content">
+    <thead>
+        <tr>
+            <th>$_('clusternodehost')</th>
+            <th>$_('clusternodeipaddr')</th>
+            <th>$_('clusternodecifsstatus')</th>
+            <!--<th>$_('clusternodenfsstatus')</th>-->
+            <th>$_('clusternodestatus')</th>
+        </tr>
+    </thead>
+    <tbody>
+        $for clusternode in content.clusternodes:
+        	<script>
+			var buttons_$content.clusternodes.index(clusternode) = {
+				"$_('cancel')": function() {
+					$(ELT)(this).dialog('close');
+				},
+				"$_('delete')": function() {
+					$(ELT)(this).dialog('close');
+					clusternodedeletesingle("$clusternode['nodename']");
+				}
+			}
+			</script>
+            <tr>
+                <td class="node-name" style="width:180px;">
+                    <span class="opertext"><a href="/clusternodeview?node=$clusternode['nodename']">$clusternode["nodename"]</a></span>
+                    <dl class="opercommand">
+                    	$if _(clusternode['status'])==_('start'):
+                       		<dd><a title="$_('delete')" href="javascript:void(0);" onclick="javascript:clusternodedeletesingle('$clusternode['nodename']');" class="ui-icon ui-icon-inline ui-icon-trash">&nbsp;</a></dd>
+                        $else:
+                       		<dd><a title="$_('delete')" href="javascript:void(0);" onclick="javascript:custConfirm('$_('clusternodedelofflinetitle')','$_('clusternodedeloffline')',buttons_$content.clusternodes.index(clusternode));" class="ui-icon ui-icon-inline ui-icon-trash">&nbsp;</a></dd>
+                    </dl>
+                </td>
+                <td id="nodeip_$clusternode["nodename"]">$_(clusternode['ipaddr'])</td>
+                <td>
+                	<span class="opertext">$_(clusternode['cifsstatus'])</span>
+                    <dl class="opercommand">
+                        <dd><a title="$_('restart')" href="javascript:void(0);" onclick="javascript:clusternodecifsrestart('$clusternode['nodename']','$clusternode['cifsstatus']','$clusternode['status']');" class="ui-icon ui-icon-inline ui-icon-power">&nbsp;</a></dd>
+                    </dl>
+                </td>
+                <!--<td>
+                	<span class="opertext">$_(clusternode['nfsstatus'])</span>
+                    <dl class="opercommand">
+                        <dd><a title="$_('restart')" href="javascript:void(0);" onclick="javascript:clusternodenfsrestart('$clusternode['nodename']');" class="ui-icon ui-icon-inline ui-icon-power">&nbsp;</a></dd>
+                    </dl>
+                </td>-->
+                <td>
+                	<span class="opertext">$_(clusternode['status'])</span>
+                    <dl class="opercommand">
+                        <dd><a title="$_('ipmiset')" href="javascript:void(0);" onclick="javascript:clusternodeipmiset('$clusternode['nodename']');" class="ui-icon ui-icon-inline ui-icon-gear">&nbsp;</a></dd>
+                        <dd><a title="$_('restart')" href="javascript:void(0);" onclick="javascript:clusternoderestart('$clusternode['nodename']','$clusternode['status']');" class="ui-icon ui-icon-inline ui-icon-power">&nbsp;</a></dd>
+                    </dl>
+                </td>
+            </tr>
+    </tbody>
+</table>
+<script type="text/javascript">
+    $(ELT)(function(){
+        $(ELT)('#cluternodes').dataTable({
+			"bStateSave": true,			 
+            "bJQueryUI": true,
+            "sPaginationType": "full_numbers",
+            "oLanguage": {
+                "sUrl": "/static/js/temp/datatable_ZH"
+            }
+		});
+    });
+</script>

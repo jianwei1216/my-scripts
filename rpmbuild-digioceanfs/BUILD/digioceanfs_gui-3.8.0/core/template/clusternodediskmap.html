@@ -1,0 +1,322 @@
+$def with (content)
+
+<style>
+.raid_list{
+	width:512px;
+	margin-top:10px
+}
+.disk_description{
+	width:20%; 
+	float:right;
+	margin-top:10px 
+}
+.disk_table{
+	width:512px;
+	margin-top:10px;
+}
+.disk_table table{
+	width:100%;
+}
+.disk_table table td{
+	border:0;
+	padding-right:11px;
+	padding-left:3px;
+	padding-bottom:0;
+	padding-top:0;
+	vertical-align:middle;
+	font-weight:bold;
+	font-size:10px;
+	color:#fff;
+	width:25%;
+	height:30px;
+	background:url(../static/theme/redmond/images/diskbg_big.png);
+}
+.vg_table{
+	margin-top:10px;
+}
+.lv_table{
+	margin-top:10px;
+}
+</style>
+
+<!--磁盘状态描述-->
+<div class="disk_description">
+  <table class="main_table">
+    <thead>
+      <tr>
+        <th colspan="2">$_('clusternodediskstatus')</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><img src="../static/theme/redmond/images/diskunuse.png" style="width:20px;height:20px;" /></td>
+        <td>$_('unused')</td>
+      </tr>
+      <tr>
+        <td><img src="../static/theme/redmond/images/diskinuse.png" style="width:20px;height:20px;" /></td>
+        <td>$_('in_raid')</td>
+      </tr>
+      <tr>
+        <td><img src="../static/theme/redmond/images/diskinservice.png" style="width:20px;height:20px;" /></td>
+        <td>$_('in_service')</td>
+      </tr>
+      <tr>
+        <td><img src="../static/theme/redmond/images/global.png" style="width:20px;height:20px;" /></td>
+        <td>$_('raid_service')</td>
+      </tr>
+      <tr>
+        <td><img src="../static/theme/redmond/images/diskspare.png" style="width:20px;height:20px;" /></td>
+        <td>$_('hot_spare')</td>
+      </tr>
+      <tr>
+        <td><img src="../static/theme/redmond/images/diskinactive.png" style="width:20px;height:20px;" /></td>
+        <td>$_('inactive')</td>
+      </tr>
+      <tr>
+        <td><img src="../static/theme/redmond/images/diskdead.png" style="width:20px;height:20px;" /></td>
+        <td>$_('failed')</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!--磁盘阵列-->
+<div class="disk_table" id="disk_table">
+  <table border="0" cellpadding="0" cellspacing="0" style="margin-top:10px">
+    <thead>
+      <tr>
+        <th colspan="4">
+          $_('select')：
+          $if content.disk=='':
+              <select id="node_select" onChange="get_disk_map()">
+          $else:
+              <select id="node_select" disabled>
+          $if len(content.clusternodes)>0:
+          	$for clusternode in content.clusternodes:
+            	$if content.node==clusternode["nodename"]:
+            		<option value='$clusternode["nodename"]' selected>$clusternode["nodename"]</option>
+                $else:
+                	<option value='$clusternode["nodename"]'>$clusternode["nodename"]</option>
+          $else:
+          		<option value="">$_('none')</option>
+          </select>
+          <input type="hidden" id="map_disk" value="$content.disk" />
+        </th>
+      </tr>
+    </thead>
+    <tbody id="box_table"></tbody>
+  </table>
+  <br>
+  <strong>$_('cluster_diskmap_notice')</strong>
+</div>
+
+<script type="text/javascript">
+$(ELT)(document).ready(function(){
+	get_disk_map()
+});
+
+function get_disk_map(){
+    var node=$(ELT)('#node_select').val();
+    var disk=$(ELT)('#map_disk').val();
+	
+    if(node==''){
+        custAlert("$_('operfail')",'$_("nonodeselected")')
+        return false;
+    }
+	
+    var time=new Date().getTime();
+    var url="/clusternodediskmap?"+time;
+    $(ELT).ajax({
+        url: url,
+        type: 'POST',
+        data: 'node='+node,
+        dataType: 'JSON',
+        beforeSend: function(){
+            custLoading("$_('load data')");
+        },
+        success: function(text){
+            var diskinfo = text;
+            var raid_arr=[];
+            for(var k=0;k<diskinfo.length;k++){
+                var jobd=diskinfo[k].position.split("/");
+                if(jobd[1]){
+                    var jobd=parseInt(jobd[1]);
+                    //break;
+                }/*else{
+                    raid_arr.push(diskinfo[k]);
+                }*/
+                if(diskinfo[k].type=='raid'){
+                    raid_arr.push(diskinfo[k]);
+                }
+            }
+            switch(jobd){
+                case 6:
+                    var w=3;
+                    var h=2;
+                    break;
+				
+                case 8:
+                    var w=4;
+                    var h=2;
+                    break;
+				
+                case 12:
+                    var w=3;
+                    var h=4;
+                    break;
+				
+                case 16:
+                    var w=4;
+                    var h=4;
+                    break;
+				
+                case 24:
+                    var w=4;
+                    var h=6;
+                    break;
+				
+                default:
+                    var w=4;
+                    var h=4;
+                    break;
+            }
+            var box_str='';
+            for(var i=0;i<h;i++){
+                box_str+='<tr>';
+                for(var j=0;j<w;j++){
+                    var num=(h-i-1)*w+j+1;
+					
+                    var box_td='';
+                    for(var k=0;k<diskinfo.length;k++){
+                        var position=diskinfo[k].position.split("/");
+                        var position=Number(position[0]);
+                        if(position==num){
+                            if(disk==''){
+                                var a=1;
+                            }else{
+                                if(disk==diskinfo[k].devname){
+                                    var a=1;
+                                }else{
+                                    var a=2;
+                                }
+                            }
+                            if(a==1){
+                                var g_size=get_disk_g_size(diskinfo[k].size);
+                                if(diskinfo[k].status=='in_raid'){
+                                    for(var r=0;r<raid_arr.length;r++){
+                                        if(raid_arr[r].devname==diskinfo[k].raidname){
+                                            if(raid_arr[r].status=='used'){
+                                                var state=get_disk_state('raid_service');
+                                            }else{
+                                                var state=get_disk_state('in_raid');
+                                            }
+                                            if(diskinfo[k].type_in_raid=='spare'){
+                                                var state=get_disk_state('spare');
+                                            }else if(diskinfo[k].type_in_raid=='faulty'){
+                                            	var state=get_disk_state('faulty');
+                                            }
+                                            break;
+                                        }
+                                    }
+                                }else{
+                                    var state=get_disk_state(diskinfo[k].status);
+                                }
+                                box_td+='<td>';
+                                box_td+='<span style="width:20%;line-height:20px; float:left; margin-left:5px">'+g_size+'G</span>';
+                                box_td+='<span style="width:55px; text-align:center;  line-height:20px; margin-left:5px; float:left;">DISK'+num+'</span>';
+                                box_td+='<span style="width:15px; height:15px; float:right;  margin-top:2px;">'+state+'</span>';
+                                box_td+='</td>';
+                            }else{
+                                box_td+='<td>&nbsp;</td>';
+                            }
+                            break;
+                        }
+                    }
+                    if(box_td!=''){
+                        box_str+=box_td;
+                    }else{
+                        box_str+='<td>&nbsp;</td>';
+                    }
+                }
+                box_str+='</tr>';
+            }
+            $(ELT)('#box_table').html(box_str);
+            $(ELT)('#loaddialog').dialog('close');
+        }
+    });
+}
+
+function get_disk_state(status){
+    var state='';
+    switch(status){
+        case "used":
+            state='<img src="../static/theme/redmond/images/diskinservice.png" width="15" height="15" />';
+            break;
+		
+        case "unused":
+            state='<img src="../static/theme/redmond/images/diskunuse.png" width="15" height="15" />';
+            break;
+		
+        case "inactive":
+            state='<img src="../static/theme/redmond/images/diskinactive.png" width="15" height="15" />';
+            break;
+		
+        case "in_raid":
+            state='<img src="../static/theme/redmond/images/diskinuse.png" width="15" height="15" />';
+            break;
+		
+        case "raid_service":
+            state='<img src="../static/theme/redmond/images/global.png" width="15" height="15" />';
+            break;
+		
+        case "spare":
+            state='<img src="../static/theme/redmond/images/diskspare.png" width="15" height="15" />';
+            break;
+		
+        case "failed":
+            state='<img src="../static/theme/redmond/images/diskdead.png" width="15" height="15" />';
+            break;
+            
+        case "faulty":
+            state='<img src="../static/theme/redmond/images/diskdead.png" width="15" height="15" />';
+            break;
+		
+        default:
+            state='<img src="../static/theme/redmond/images/diskinuse.png" width="15" height="15" />';
+            break;
+    }
+    return state;
+}
+
+function get_disk_g_size(size){
+    var g_size;
+    var val=parseFloat(size);
+    //var Unit=size.toString().match(/[A-Z]{2}/);
+    //if(Unit){
+    switch('$content.unit'){
+        case 'KB':
+            g_size=val/(1024*1024);
+            break;
+			
+        case 'MB':
+            g_size=val/1024;
+            break;
+			
+        case 'GB':
+            g_size=val;
+            break;
+		
+        case 'TB':
+            g_size=val*1024;
+            break;
+		
+        default:
+            g_size=val/(1024*1024);
+            break;
+    }
+    //}else{
+        //g_size=val/(1024*1024);
+    //}
+    return parseInt(g_size);
+}
+</script>

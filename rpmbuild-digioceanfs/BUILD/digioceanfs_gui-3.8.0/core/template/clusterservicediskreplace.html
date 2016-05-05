@@ -1,0 +1,62 @@
+$def with (content)
+
+<style>
+.ui-autocomplete {
+max-height: 100px;
+overflow-y: auto;
+/* prevent horizontal scrollbar */
+overflow-x: hidden;
+}
+/* IE 6 doesn't support max-height
+* we use height instead, but this forces the menu to always be this tall
+*/
+* html .ui-autocomplete {
+height: 100px;
+}
+</style>
+
+<input type="hidden" id="unuse_disk_str" value="$content.unuse_disk_str" />
+<table>
+  <thead>
+    <th>$_("clusternodediskreplaced")</th>
+    <th>$_("clusterservicedevunused")</th>
+    <th>$_("format_raidinfo")</th>
+  </thead>
+  <tbody id="selected_disk_table">
+  <tr>
+    <td>$content.disk</td>
+    <td>
+      <input id="replace_disk" class="replace_disk" />
+      <button class="replace_disk_select" onclick="return(show_auto())">$_("select")</button>
+    </td>
+    <td><input type="checkbox" id="disk_replace_format" checked /></td>
+  </tr>
+  </tbody>
+</table>
+
+<div class="mess-info ui-state-highlight ui-corner-all" style="margin-top:10px;padding:8px;">
+    <p>
+        <strong>Tips: </strong> $_("formatdisktipinfo")
+    </p>
+</div>
+
+<script type="text/javascript">
+$(ELT)(document).ready(function(){
+	$(ELT)('.replace_disk_select').button({
+		text: false,
+		icons: {
+			primary: 'ui-icon-arrowthick-1-s' 
+		}
+	});
+	var backup_arr=$(ELT)('#unuse_disk_str').val().split(',');
+	$(ELT)('.replace_disk').autocomplete({
+		source: backup_arr
+	});
+});
+//显示备选磁盘列表
+function show_auto(){
+	//$(ELT)('.replace_disk').autocomplete("searcSh","");
+	$(ELT)('#replace_disk').autocomplete("search","node");
+	return false;
+}
+</script>

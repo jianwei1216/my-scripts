@@ -1,0 +1,15 @@
+v-test-1.0.110930
+1.update: add changelog.
+2.update: add afr_info page.
+3.update: add "findir.py" in utils.
+4.change: overwrite "clusterserviceviewload.html".
+5.fixbug: fix some view in English langauage.
+6.fixbug: fix condition of listing inactive raid. 
+7.update: add "clusterserviceviewtabspage.html".
+8.change: change view of page afr_info.
+9.update: add new page of afr_info.
+10.update: add version number in home page.
+11.update: complete afr_info page refresh.
+12.change: del one tab page on sync page.
+13.update: add redundancy validation.
+14.fixbug: start cifs before starting serivce is not allowed.

@@ -1,0 +1,2069 @@
+#-------------------------------operation message---------------------------------------
+msgid "clustersetmanagersucc"
+msgstr "Manager set succesefully"
+
+msgid "clustersetmanagerwarning"
+msgstr "Manager is not set, set now"
+
+msgid "clusterfirstlogin"
+msgstr "First login must be change password!"
+
+msgid "Setting manager now ..."
+msgstr "Setting Manager now ..."
+
+msgid "Reloading now ..."
+msgstr "Reloading now ..."
+msgid "logintomanage"
+msgstr "Management Login"
+
+msgid "login"
+msgstr "Login"
+msgid "session expired"
+msgstr "Login timeout"
+
+msgid "logout"
+msgstr "Logout"
+
+msgid "admin"
+msgstr "Admin"
+
+msgid "Home"
+msgstr "Home"
+
+msgid "language"
+msgstr "Language"
+
+msgid "username"
+msgstr "UserName"
+
+msgid "password"
+msgstr "Password"
+msgid "repassword"
+msgstr "Re-password"
+
+msgid "userip"
+msgstr "User ip address"
+
+msgid "userinfo"
+msgstr "User info"
+
+msgid "remember"
+msgstr "Remember me"
+
+msgid "next"
+msgstr "next"
+
+msgid "back"
+msgstr "Back"
+
+msgid "open"
+msgstr "Open"
+
+msgid "close"
+msgstr "Close"
+
+msgid "auto"
+msgstr "Auto"
+
+msgid "manul"
+msgstr "Manul"
+
+msgid "create"
+msgstr "Create"
+msgid "save"
+msgstr "Save"
+
+msgid "replace"
+msgstr "Replace"
+
+msgid "confirm"
+msgstr "Confirm"
+
+msgid "cancel"
+msgstr "Cancel"
+
+msgid "none"
+msgstr "None"
+
+msgid "update"
+msgstr "Update"
+
+msgid "edit"
+msgstr "Edit"
+
+msgid "detail"
+msgstr "Details"
+
+msgid "delete"
+msgstr "Delete"
+
+msgid "remove"
+msgstr "Remove"
+
+msgid "removeall"
+msgstr "Remove All"
+
+msgid "add"
+msgstr "Add"
+
+msgid "addall"
+msgstr "Add All"
+
+msgid "used"
+msgstr "Used"
+
+msgid "unused"
+msgstr "Unused"
+
+
+msgid "in_raid"
+msgstr "In RAID"
+
+msgid "in_service"
+msgstr "In Service"
+
+msgid "raid_service"
+msgstr "RAID in Service"
+
+msgid "hot_spare"
+msgstr "Hotspare"
+
+msgid "failed"
+msgstr "Failed"
+
+
+
+msgid "select"
+msgstr "Select"
+
+msgid "disks"
+msgstr "Disks"
+
+msgid "normal"
+msgstr "Normal"
+
+msgid "activation"
+msgstr "Activation"
+
+msgid "inactive"
+msgstr "Inactive"
+
+msgid "clear_raidinfo"
+msgstr "Clear Raid Info"
+
+msgid "format_raidinfo"
+msgstr "Format disk"
+
+msgid "reset_raidinfo"
+msgstr "Reset disk"
+
+msgid "started"
+msgstr "Started"
+msgid "restart"
+msgstr "Restart"
+
+msgid "manage"
+msgstr "Manage"
+
+msgid "start"
+msgstr "Start"
+
+msgid "extend"
+msgstr "Extend"
+
+msgid "stoped"
+msgstr "Stoped"
+
+msgid "stop"
+msgstr "Stop"
+
+msgid "destroy"
+msgstr "Destroy"
+
+msgid "fix"
+msgstr "Fix"
+
+msgid "default"
+msgstr "Default"
+
+msgid "afr"
+msgstr "Afr"
+
+msgid "strip"
+msgstr "Strip"
+
+msgid "Loading Data ..."
+msgstr "Loading Data ..."
+msgid "timeout"
+msgstr "Request timeout"
+
+msgid "Warnning"
+msgstr "Warnning"
+
+msgid "opersucc"
+msgstr "Operation Success!"
+msgid "operwarning"
+msgstr "Operation Warning"
+
+msgid "operfail"
+msgstr "Operation Fail!"
+
+msgid "confirmoper"
+msgstr "Confirm Operation!"
+
+msgid "operfailinfo"
+msgstr "Operation fail, Please connect Admin!"
+
+msgid "Request Error!"
+msgstr "Request fail, Please connect Admin!"
+
+msgid "Records is 0"
+msgstr "No Records!"
+
+msgid "From _START_ to _END_ item the total is _TOTAL_ "
+msgstr "From _START_ to _END_ item the total is _TOTAL_"
+
+msgid "show _MENU_ entries"
+msgstr "show _MENU_ entries"
+
+msgid "Unit _UNIT_"
+msgstr "Unit _UNIT_ "
+
+msgid "No Records Found!"
+msgstr "No Records Found!"
+
+msgid "Search"
+msgstr "Search"
+
+msgid "First Page"
+msgstr "First Page"
+
+msgid "Previous Page"
+msgstr "Previous Page"
+
+msgid "Next Page"
+msgstr "Next Page"
+
+msgid "Last Page"
+msgstr "Last Page"
+
+msgid "username_error"
+msgstr "only include 3-20 characters of 0-9 A-Z @ - . _ "
+
+msgid "password_error"
+msgstr "only include 6-20 characters of 0-9 A-Z @ - . _ "
+
+msgid "repassword_error"
+msgstr "Please input password again"
+
+msgid "filestatuslist"
+msgstr "File Status List"
+
+msgid "freshtime"
+msgstr "Fresh Time"
+
+msgid "seconds"
+msgstr "Seconds"
+
+msgid "nodename"
+msgstr "Node Name"
+
+msgid "deviceid"
+msgstr "Device ID"
+
+msgid "license"
+msgstr "License"
+
+msgid "productype"
+msgstr "Product Type"
+
+msgid "productserialnum"
+msgstr "Product Serial Number"
+
+msgid "softwareversion"
+msgstr "Software Version"
+
+msgid "password_modify"
+msgstr "Password Modify"
+
+msgid "old_password"
+msgstr "Old Password"
+
+msgid "new_password"
+msgstr "New Password"
+
+msgid "confirm_new_password"
+msgstr "Confirm password"
+
+msgid "old_password_please"
+msgstr "Please insert old password!"
+
+msgid "new_password_please"
+msgstr "Please insert new password!"
+
+msgid "password_length"
+msgstr "Password length can not less 6!"
+
+msgid "confirm_new_password_please"
+msgstr "Please confirm new password!"
+
+msgid "confirm_new_password_error"
+msgstr "Twice insert is different!"
+
+msgid "old_password_error"
+msgstr "Old password insert error!"
+
+msgid "password_modify_success"
+msgstr "Modify success,please login agin!"
+
+#-------------------------------navigator--------------------------------------------
+msgid "clusterhome"
+msgstr "Cluter Home"
+
+msgid "clusternode"
+msgstr "Storage Node"
+
+msgid "clustergroup"
+msgstr "Storage Group"
+
+msgid "clusterunit"
+msgstr "Storage Unit"
+
+msgid "clusterservice"
+msgstr "Storage Service"
+
+msgid "user_guide"
+msgstr "User Guide"
+
+msgid "step1"
+msgstr "Step 1"
+
+msgid "groupcreate"
+msgstr "Group Create"
+
+msgid "step2"
+msgstr "Step 2"
+
+msgid "nodecreate"
+msgstr "Create Node"
+
+msgid "step3"
+msgstr "Step 3"
+
+msgid "servicecreate"
+msgstr "Create Service"
+
+msgid "create_or_manage_groups"
+msgstr "Groups"
+
+msgid "create_or_manage_nodes"
+msgstr "Nodes"
+
+msgid "create_or_manage_services"
+msgstr "Services"
+
+msgid "distributed"
+msgstr "Distributed"
+
+msgid "replicated"
+msgstr "Replicated"
+
+msgid "striped"
+msgstr "Striped"
+
+msgid "distributed_striped"
+msgstr "Distributed Striped"
+
+msgid "distributed_replicated"
+msgstr "Distributed Replicated"
+
+msgid "striped_replicated"
+msgstr "Striped Replicated"
+
+#-------------------------------shotcuts----------------------------------------------
+msgid "currlocate"
+msgstr "Current Locate"
+
+msgid "index"
+msgstr "Home Page"
+
+#-------------------------------clustergroup----------------------------------
+msgid "clustergroupname"
+msgstr "Group Name"
+
+msgid "clustergroupnodes"
+msgstr "Group Nodes"
+
+msgid "clustergroupcreate"
+msgstr "Create Group"
+
+msgid "groupnamemustnotnull"
+msgstr "Please make sure group name is not none!"
+
+msgid "nonodeselected"
+msgstr "No node selected"
+
+msgid "clusternodeselected"
+msgstr "Selected"
+
+msgid "clustergroupnodetodel"
+msgstr "Delete Node"
+
+msgid "clustergroupcreatesucc"
+msgstr "Create group successful!"
+
+msgid "clustergroupaddsucc"
+msgstr "Add node successful!"
+
+msgid "clustergroupdeleteconfirm"
+msgstr "Do you want to delete this group?!"
+
+msgid "clustergroupdeletesucc"
+msgstr "Delete group successful!"
+
+msgid "clustergroupadd"
+msgstr "Add group"
+
+msgid "clustergroupedit"
+msgstr "Edit group"
+
+msgid "clustergroupeditsucc"
+msgstr "Update group successful!"
+
+msgid "nodewithoutgroupname"
+msgstr "Node without group"
+#-------------------------------clusternode--------------------------------------
+
+msgid "clusternodecreate"
+msgstr "New Node"
+
+msgid "creatingnodenow"
+msgstr "Creating Node Now ..."
+
+msgid "nodenamemustnotnull"
+msgstr "Please make sure node name is not none!"
+
+msgid "clusternodereplace"
+msgstr "Replace Node"
+
+msgid "clusternodeold"
+msgstr "Old Node"
+
+msgid "clusternodenew"
+msgstr "New node ipaddress"
+
+msgid "replacingnodenow"
+msgstr "Replacing Node Now ..."
+
+msgid "clusternodereplacesucc"
+msgstr "Replace node successful!"
+
+msgid "clusternodecreatebyconfig"
+msgstr "Add node by config"
+
+msgid "clusternodecreatesucc"
+msgstr "Add Node successful!"
+
+msgid "deletingnodenow"
+msgstr "Deleting Node Now ..."
+
+msgid "clusternodedeletesucc"
+msgstr "Delete node successful!"
+
+msgid "clusternodedeleteconfirm"
+msgstr "This operation may cause your data missing, do you want to continue?!"
+
+msgid "clusternodedelofflinetitle"
+msgstr "Delete off-line node"
+
+msgid "clusternodedeloffline"
+msgstr "1,Please add new node first.<br>2,Off-line node disk fail:use new disk replace old node service's disk.<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Off-line node disk normal£∫make all disk to new node£¨use new node's disk replace service's disk(don't format).<br>3,Delete off-line node."
+
+msgid "clusternodereplaceconfirm"
+msgstr "This operation may cause your data missing, do you want to continue?!"
+
+msgid "clusternodehost"
+msgstr "Storage Node"
+
+msgid "clusternodeipaddr"
+msgstr "Node Ipaddr"
+
+msgid "clusternodehostname"
+msgstr "Node Hostname"
+
+msgid "fillupclusternodeipaddr"
+msgstr "Node ipaddress must not be none!"
+
+msgid "clusternodecifsstatus"
+msgstr "Cluster Node CIFS Status"
+
+msgid "restartingcifsnow"
+msgstr "Restarting CIFS now"
+
+msgid "clusternodecifsrestartsucc"
+msgstr "Restart CIFS successful"
+
+msgid "clusterservicecifsaddusersucc"
+msgstr "Add CIFS user successful"
+
+msgid "clusterservicecifsdelusersucc"
+msgstr "Delete CIFS user successful"
+
+msgid "clusternodenfsstatus"
+msgstr "Cluster Node NFS Status"
+
+msgid "clusternodestatus"
+msgstr "Node status"
+msgid "restartingnfsnow"
+msgstr "Restarting NFS now"
+
+msgid "clusterservicenfsaddusersucc"
+msgstr "Add NFS user successful"
+
+msgid "clusterservicenfsdelusersucc"
+msgstr "Delete NFS user successful"
+
+msgid "clusternodenfsrestartsucc"
+msgstr "Restating NFS successful"
+
+msgid "clusternodeconfig"
+msgstr "Node config file"
+
+msgid "clusternodeview"
+msgstr "Details for node"
+
+msgid "clusternodediskinfo"
+msgstr "Disk Info"
+
+msgid "clusternoderaidcreate"
+msgstr "Create RAID"
+
+msgid "clusternoderaiddel"
+msgstr "Delete RAID"
+
+msgid "clusternoderaidset_hs"
+msgstr "Set Hotspare"
+
+msgid "clusternoderaid_active"
+msgstr "Active RAID"
+
+msgid "clusternodedisk_active"
+msgstr "Clear RAID Info"
+
+msgid "clusternodediskunused"
+msgstr "Disks"
+
+msgid "clusternodediskselected"
+msgstr "Selected"
+
+msgid "clusterraidlv"
+msgstr "RAID Level"
+
+msgid "clusterraidname"
+msgstr "RAID Name"
+
+msgid "raiddevmustnotnull"
+msgstr "Please select disks for RAID!"
+
+msgid "clusternoderaiddel_hs"
+msgstr "Delete Hotspare"
+
+msgid "clusternodedisk_hs"
+msgstr "Disks could be Del"
+
+msgid "clusternodedisk_update"
+msgstr "Update Disk Info"
+
+msgid "clusternodediskdev"
+msgstr "Disk Dev"
+
+msgid "clusternodedisksize"
+msgstr "Disk Size"
+
+msgid "clusternodediskmodel"
+msgstr "Disk Model"
+
+msgid "clusternodedisktype"
+msgstr "Disk Type"
+
+msgid "clusternodediskstatus"
+msgstr "Disk Status"
+
+msgid "clusternoderaidinfo"
+msgstr "RAID Info"
+
+msgid "clusternoderaidshowname"
+msgstr "RAID Name"
+
+msgid "clusternoderaidsize"
+msgstr "RAID Size"
+
+msgid "clusterraidsz"
+msgstr "Chunk Size"
+
+msgid "clusternoderaidstatus"
+msgstr "RAID Status"
+
+msgid "clusternodenetwork"
+msgstr "Net Config"
+
+msgid "clusternodenetbond"
+msgstr "Netcard Bond"
+
+msgid "clusternodedisk"
+msgstr "Disk Manage"
+
+msgid "clusternoderaid"
+msgstr "RAID Manage"
+
+msgid "clusternoderaid_inactive"
+msgstr "Inactive RAID"
+
+msgid "clusternoderaid_activenum"
+msgstr "Disks in RAID"
+
+msgid "creatingraidnow"
+msgstr "Creating RAID Now ..."
+
+msgid "deleteraidnow"
+msgstr "Deleting RAID Now ..."
+
+msgid "clusternoderaiddeleteconfirm"
+msgstr "Do you want to delete this RAID?!"
+
+msgid "clusternoderaiddeletesucc"
+msgstr "Delete RAID successful"
+
+msgid "clusternoderaidcreatesucc"
+msgstr "Create RAID successful"
+
+msgid "settinghotsparenow"
+msgstr "Setting Hotspare For RAID Now ..."
+
+msgid "settinghotsparesucc"
+msgstr "Set hotspare successful"
+
+msgid "raiddevforhotsparemustnotnull"
+msgstr "Please select hotspare for RAID"
+
+msgid "thereisnoraidnow"
+msgstr "RAID not exist, pleate create RAID first!"
+
+msgid "thereisnoraidtosethsnow"
+msgstr "Device for hot spare not found"
+
+msgid "raiddevtodelhotsparemustnotnull"
+msgstr "Pleate select hotspare"
+
+msgid "deletinghotsparenow"
+msgstr "Deleting Hotspare Now ..."
+
+msgid "deletinghotsparesucc"
+msgstr "Delete hotspare successful"
+
+msgid "nohotspare"
+msgstr "NO hot spare"
+msgid "nounuseddisk"
+msgstr "No disk found"
+
+msgid "updatingdiskinfonow"
+msgstr "Updating Disk Info Now ..."
+
+msgid "updatediskinfosucc"
+msgstr "Update disk info successful"
+
+msgid "activedisknow"
+msgstr "Activating Disk"
+
+msgid "activedisksucc"
+msgstr "Activce disk successful"
+
+
+msgid "op_not_raid"
+msgstr "This operation can't include RAID!"
+
+msgid "op_not_diffnode"
+msgstr "This operation can't cross node!"
+
+msgid "op_not_used"
+msgstr "This operation can't include used!"
+
+msgid "op_confirm"
+msgstr "This operation have risk,are you sure do this operation£ø"
+
+msgid "reset_disk_confirm"
+msgstr "This operation only when the disk is not in service but the state still show wrong message used!"
+
+msgid "activediskraid"
+msgstr "Activce disk can not include RAID!"
+
+msgid "clusterdiskformatconfirm"
+msgstr "Are you sure format disk of selected?"
+
+msgid "activeraidnow"
+msgstr "Activating RAID"
+
+msgid "activeraidsucc"
+msgstr "Activate RAID successful"
+
+msgid "noraidtoactive"
+msgstr "No RAID need to active"
+
+msgid "clusternodeinfo"
+msgstr "Node Info."
+
+msgid "clusternodechecklicensesucc"
+msgstr "Check license successful"
+
+msgid "clusternodereplace_nodisk"
+msgstr "Disk replace"
+
+msgid "clusternodediskreplaced"
+msgstr "Replaced disk"
+
+msgid "nowarnservice"
+msgstr ""
+
+msgid "serviceneedreplacedisknum"
+msgstr ""
+
+msgid "replacediskmustnotnull"
+msgstr "Please select replaced disk£°"
+
+msgid "replacenodisknow"
+msgstr "Replacing"
+
+msgid "clusternodereplacenodisksucc"
+msgstr "Replaced seccess£°"
+
+
+msgid "clusternodereplace_repeat"
+msgstr "Replaced disks have repeat£°"
+
+msgid "clusternodereplace_none"
+msgstr "Please insert replaced disk£°"
+
+msgid "clusternodereplace_insert_error"
+msgstr "Insert error,please insert disk who is in backup list£°"
+
+msgid "clusternodereplace_diff_node_confirm"
+msgstr "Replace disk'node and Replaced disk's node is different,are you sure continue£ø"
+
+msgid "clusternodereplace_size_confirm"
+msgstr "Replace disk size is small than replaced disk size,are you sure continue£ø"
+
+
+msgid "cluster_diskmap_notice"
+msgstr "Notice:The disk map from left bottom to right,from bottom to top(Example:The bottom from left is 1234,The second bottom from left is 5678)"
+
+
+#-------------------------------clusternodenetwork-------------------------------------
+msgid "clusternodeiface"
+msgstr "Netcard Interface"
+
+msgid "clusternodeifacecreate"
+msgstr "Add Vitrul Interface"
+
+msgid "clusternodeifacedev"
+msgstr "Dev Name"
+
+msgid "clusternodeifacetype"
+msgstr "Interface Type"
+
+msgid "clusternodeifaceaddress"
+msgstr "Ipaddress"
+
+msgid "clusternodeifacemac"
+msgstr "MAC Address"
+
+msgid "clusternodeifacebootup"
+msgstr "Active or not?"
+
+msgid "clusternodesetipaddr"
+msgstr "Set Ipaddress"
+
+msgid "settingipaddrnow"
+msgstr "Setting Ipaddress Now ..."
+
+msgid "clusternodesetipaddrsucc"
+msgstr "Set ipaddress successfuly"
+
+msgid "clusternodenicdev"
+msgstr "Net Dev"
+
+msgid "clusternewipaddr"
+msgstr "New Ipaddress"
+
+msgid "clusternewmask"
+msgstr "Netmask"
+
+msgid "clusternewgateway"
+msgstr "Gateway"
+
+msgid "clusternewbroadcast"
+msgstr "Broadcast"
+
+msgid "bonddevmustnotnull"
+msgstr "Devices for bond must not be null"
+
+msgid "clusternodesetbond"
+msgstr "Create Bond"
+
+msgid "settingbondnow"
+msgstr "Setting Bond Now ..."
+
+msgid "clusternodesetbondsucc"
+msgstr "Set bond successful"
+
+msgid "clusterifacedevunused"
+msgstr "Net dev not used"
+
+msgid "clusterifacedevselected"
+msgstr "Selected"
+
+msgid "clusternewifacelevel"
+msgstr "Bind level"
+
+msgid "deletebondnow"
+msgstr "Deleting Bond Now ..."
+
+msgid "bondipaddrmustnbechange"
+msgstr "Change bond ipaddr has be disable!"
+
+msgid "clusternodebonddeletesucc"
+msgstr "Delete bond successful"
+
+msgid "clusternodebonddeleteconfirm"
+msgstr "Do you want to delete this bond?!"
+
+
+
+#-------------------------------clusterservice-----------------------------------------
+msgid "clusterservicecreate"
+msgstr "Create Service"
+
+msgid "Create Service"
+msgstr "Create Service"
+
+msgid "clusterservicextend"
+msgstr "Service Extend"
+
+
+msgid "cluster_service_node"
+msgstr "Service Node"
+
+msgid "cluster_client_node"
+msgstr "Client Node"
+
+msgid "cluster_client_node_create"
+msgstr "Client Node create"
+
+msgid "cluster_client_node_ipaddr"
+msgstr "Client Node IP"
+
+msgid "cluster_client_node_status"
+msgstr "Client Node status"
+
+msgid "cluster_client_node_now"
+msgstr "Client Node status changing"
+
+msgid "cluster_client_node_succ"
+msgstr "Client Node status change success"
+
+msgid "cluster_service_del_client_node"
+msgstr "Please delete client node first!"
+
+msgid "ip_please"
+msgstr "Please insert IP address!"
+
+msgid "ip_exists"
+msgstr "This address has exists!"
+
+msgid "ip_can_not_connect"
+msgstr "This address can not connect!"
+
+msgid "ip_no_node"
+msgstr "This address is not node!"
+
+
+msgid "clusterserviceafrsyn"
+msgstr "Disk Syn"
+
+msgid "notstart"
+msgstr "NOT Started"
+
+msgid "fdcreating"
+msgstr "Creating File or Directory"
+
+msgid "metadatafixing"
+msgstr "Fixing meta-data"
+
+msgid "filefixing"
+msgstr "Fixing file"
+
+msgid "dirfixing"
+msgstr "Fixing directory"
+
+msgid "fixingnow"
+msgstr "Doing fix"
+
+msgid "OK"
+msgstr "OK"
+
+msgid "synsize"
+msgstr "Synchronized"
+
+msgid "source"
+msgstr "Source"
+
+msgid "target"
+msgstr "Target"
+
+msgid "speed"
+msgstr "Speed"
+
+msgid "procedure"
+msgstr "Status"
+
+msgid "filetree"
+msgstr "Tree"
+
+msgid "clusterservicelocalpro"
+msgstr "Local Prioritize"
+
+msgid "yes"
+msgstr "Yes"
+
+msgid "no"
+msgstr "No"
+
+msgid "clusterservicetype"
+msgstr "Service Type"
+
+msgid "clusterservicetype_none"
+msgstr "DEFAULT"
+
+msgid "clusterservicetype_afr"
+msgstr "AFR"
+
+msgid "clusterservicetype_strip"
+msgstr "STRIP"
+
+msgid "redundancy"
+msgstr "Redundancy"
+
+msgid "redundancy must not be none"
+msgstr "Not Null"
+
+msgid "iafr"
+msgstr "Is AFR"
+
+msgid "redundancy must not less than 2"
+msgstr "MUST NOT less than 2"
+
+msgid "redundancy must be int"
+msgstr "Num. ONLY"
+
+msgid "isafr"
+msgstr "Is Redundancy"
+
+msgid "istrip"
+msgstr "Is STRIP"
+
+msgid "stripnum"
+msgstr "STRIP Num"
+
+msgid "newvolume"
+msgstr "New Volume"
+
+msgid "addafr"
+msgstr "New AFR"
+
+msgid "addstrip"
+msgstr "New STRIP"
+
+msgid "disknumincorrect"
+msgstr "Incorrect Disk Num"
+
+msgid "clusterservicedevunused"
+msgstr "Dev Not Used"
+
+msgid "clusterservicedevselected"
+msgstr "Seleted"
+
+msgid "clusterservicename"
+msgstr "Service Name"
+
+msgid "clusterservicetotalsize"
+msgstr "Size"
+
+msgid "clusterserviceusedsize"
+msgstr "Used Size"
+
+msgid "clusterserviceusage"
+msgstr "Usage"
+
+msgid "clusterserviceraidlv"
+msgstr "Service Type"
+
+msgid "clusterservicestatus"
+msgstr "Service Status"
+
+msgid "creatingservicenow"
+msgstr "Creating Service Now ..."
+
+msgid "noservicename"
+msgstr "No Service Name!"
+
+msgid "nodiskselected"
+msgstr "No Disk Seleted!"
+
+msgid "clusterservicecreatesucc"
+msgstr "Create service successful"
+
+msgid "clusterservicestartconfirm"
+msgstr "Do you want to start this service?"
+
+msgid "startingservicenow"
+msgstr "Starting Service Now ..."
+
+msgid "clusterservicestartsucc"
+msgstr "Start service successful!"
+
+msgid "clusterservicestopconfirm"
+msgstr "Do you want to stop this service?"
+
+msgid "stoppingservicenow"
+msgstr "Stopping Service Now ..."
+
+msgid "clusterservicestopsucc"
+msgstr "Service Stopped!"
+
+msgid "clusterservicefixconfirm"
+msgstr "Do you want to fix this service?"
+
+msgid "fixingservicenow"
+msgstr "Fixing Service Now ..."
+
+msgid "clusterservicefixsucc"
+msgstr "Fix service successful!"
+
+msgid "deletingservicenow"
+msgstr "Deleting Service Now ..."
+
+msgid "clusterservicedeleteconfirm"
+msgstr "This operation may cause your data missing, do you want to continue?!"
+
+msgid "clusterservicedestroysucc"
+msgstr "Delete service successful!"
+
+
+msgid "clusterservicesharemanage"
+msgstr "Share Manage"
+
+msgid "clusterservicenfs_status"
+msgstr "NFS Status"
+
+msgid "clusterservicenfsmanage"
+msgstr "NFS Manage"
+
+msgid "nfsusermanage"
+msgstr "NFS User Manage"
+
+msgid "nfschecklinks"
+msgstr "Check Links"
+
+msgid "clusterservicenfsdellinksucc"
+msgstr "Delete NFS link successful"
+
+msgid "clusterservicecifsdellinksucc"
+msgstr "Delete CIFS link successful"
+
+msgid "targetip"
+msgstr "Target IP"
+
+msgid "clusterservicenfsstartconfirm"
+msgstr "Do you want to start NFS?"
+
+msgid "startingnfsnow"
+msgstr "Starting NFS Now ..."
+
+msgid "clusterservicenfsstartsucc"
+msgstr "Start NFS successful!"
+
+msgid "clusterservicenfsstopconfirm"
+msgstr "Do you want to stop NFS?"
+
+msgid "stoppingnfsnow"
+msgstr "Stopping NFS Now ..."
+
+msgid "clusterservicenfsstopsucc"
+msgstr "Stop NFS successful!"
+
+msgid "clusterservicecifs_status"
+msgstr "CIFS Status"
+
+msgid "clusterservicecifsmanage"
+msgstr "CIFS Manage"
+
+msgid "cifsusermanage"
+msgstr "CIFS User Manage"
+
+msgid "cifschecklinks"
+msgstr "Check Links"
+
+msgid "linknode"
+msgstr "Link Node"
+
+msgid "user"
+msgstr "User"
+
+msgid "pid"
+msgstr "Pid"
+
+msgid "linktime"
+msgstr "Link Time"
+
+msgid "clusterservicecifsstartconfirm"
+msgstr "Do you want to start CIFS?"
+
+msgid "startserivcefirst"
+msgstr "Start service first!"
+
+msgid "startcifsfirst"
+msgstr "Start CIFS First!"
+
+msgid "startnfsfirst"
+msgstr "Start NFS First!"
+
+msgid "startingcifsnow"
+msgstr "Starting CIFS Now ..."
+
+msgid "clusterservicecifsstartsucc"
+msgstr "Start CIFS successful!"
+
+msgid "clusterservicecifsstopconfirm"
+msgstr "Do you want to stop CIFS?"
+
+msgid "stoppingcifsnow"
+msgstr "Stopping CIFS Now ..."
+
+msgid "clusterservicecifsstopsucc"
+msgstr "Stop CIFS successful!"
+
+msgid "extendingservicenow"
+msgstr "Extending Service Now ..."
+
+msgid "clusterexservicesucc"
+msgstr "Extend service successful!"
+
+msgid "nodevavailable"
+msgstr "No dev available!"
+
+msgid "noservicefound"
+msgstr "Please create service first!"
+
+msgid "clusterservicedisk_mirrorname"
+msgstr "Mirror Name"
+
+msgid "clusterservicedisk_main"
+msgstr "Syn Disk"
+
+msgid "clusterservicedisk_processor"
+msgstr "Syn Status"
+
+msgid "clusterservicedisk_mirror"
+msgstr "Mirror Disk"
+
+msgid "clusterservicedisk_mirrorrestsize"
+msgstr "Syn Size"
+
+msgid "clusterservicedisk_mirrorresttime"
+msgstr "Left Time"
+
+msgid "clusterservicedisk_mirrorsynsize"
+msgstr "Syned Size"
+
+msgid "clusterservicedisk_mirrorspeed"
+msgstr "Syn Speed"
+#-------------------------------clusternotify--------------------------
+
+msgid "clusternotify"
+msgstr "Nodify"
+
+msgid "clusternotifyop"
+msgstr "Nodify Op"
+
+msgid "clusternotifytime"
+msgstr "Nodify Time"
+
+msgid "clusternotifyip"
+msgstr "Nodify IP"
+
+msgid "clusternotifypnode"
+msgstr "Nodify Node"
+
+msgid "clusternotifyevnet"
+msgstr "Nodify Event"
+
+msgid "clusternotifydetail"
+msgstr "Nodify Detail"
+
+msgid "clusternotifyfocusall"
+msgstr "Read All"
+
+msgid "clusternotifydelall"
+msgstr "Delete All readed"
+
+msgid "RaidEvent"
+msgstr "RAID"
+
+msgid "DiskEvent"
+msgstr "Disk"
+
+msgid "FileSystemEvent"
+msgstr "File system"
+
+msgid "failure"
+msgstr "read/write fail"
+
+msgid "Disk"
+msgstr "Disk"
+
+msgid "Position"
+msgstr "Position"
+
+msgid "noreport"
+msgstr "No report"
+
+msgid "Node"
+msgstr "Node"
+
+msgid "TargetIP"
+msgstr "Target IP"
+
+msgid "Ping"
+msgstr "PING Event"
+
+msgid "NetLink"
+msgstr "Net Link"
+
+msgid "Ethdevice"
+msgstr "Eth device"
+
+msgid "Linked"
+msgstr "Linked"
+
+msgid "No-link"
+msgstr "No-link"
+
+msgid "Linking"
+msgstr "Linking"
+
+msgid "On-line"
+msgstr "On-line"
+
+msgid "Off-line"
+msgstr "Off-line"
+
+msgid "SpeedDown"
+msgstr "Netcart speed down"
+
+msgid "SpeedResume"
+msgstr "Netcard speed resume"
+
+msgid "DeviceDisappeared"
+msgstr "Deivice Disppeared"
+
+msgid "RebuildStarted"
+msgstr "Rebuid Started"
+
+msgid "RebuildFinished"
+msgstr "Rebuild Finished"
+
+msgid "SpareActive"
+msgstr "Spare Active"
+
+msgid "FailSpare"
+msgstr "Fail Spare"
+
+msgid "Fail"
+msgstr "Fail"
+
+msgid "NewArray"
+msgstr "New Array"
+#-------------------------------pythonsysinfo--------------------------
+msgid "mounted filesystems"
+msgstr "Mounted Filesystems"
+
+msgid "mountpoint"
+msgstr "Mount Point"
+
+msgid "type"
+msgstr "type"
+
+msgid "partition"
+msgstr "partition"
+
+msgid "usage"
+msgstr "usage"
+
+msgid "free"
+msgstr "free"
+
+msgid "size"
+msgstr "size"
+
+msgid "totals"
+msgstr "total"
+
+msgid "days"
+msgstr "day(s)"
+
+msgid "hours"
+msgstr "hour(s)"
+
+msgid "minutes"
+msgstr "minute(s)"
+
+msgid "system information"
+msgstr "System Information"
+
+msgid "cpu speed"
+msgstr "CPU Speed"
+
+msgid "cache size"
+msgstr "CACHE size"
+
+msgid "virtualization"
+msgstr "Virtualization"
+
+msgid "bus speed"
+msgstr "bus speed"
+
+msgid "system bogomips"
+msgstr "System Bogomips"
+
+msgid "cpu temp"
+msgstr "CPU Temporature"
+
+msgid "hardware information"
+msgstr "Hardware Info."
+
+msgid "Processors"
+msgstr "Processors"
+
+msgid "PCI"
+msgstr "PCI Devices"
+
+msgid "IDE"
+msgstr "IDE Devices"
+
+msgid "SCSI"
+msgstr "SCSI Devices"
+
+msgid "USB"
+msgstr "USB Devices"
+
+msgid "memory usage"
+msgstr "Memory Usage"
+
+msgid "physical memory"
+msgstr "Physical Memory"
+
+msgid "kernel + applications"
+msgstr "Kernel and applications"
+
+msgid "buffers"
+msgstr "Buffers"
+
+msgid "cached"
+msgstr "Cached"
+
+msgid "disk swap"
+msgstr "Spare Hard Drive"
+
+msgid "interface"
+msgstr "Device"
+
+msgid "network usage"
+msgstr "Network Usage"
+
+msgid "recieved"
+msgstr "recieved"
+
+msgid "transfered"
+msgstr "Transfered"
+
+msgid "error/drops"
+msgstr "Error/Loss"
+
+msgid "voltage"
+msgstr "Voltage"
+
+msgid "static information"
+msgstr "Static Info."
+
+msgid "hostname"
+msgstr "Hostname"
+
+msgid "listening ip"
+msgstr "Listening IP"
+
+msgid "kernel version"
+msgstr "Kernel Version"
+
+msgid "distro name"
+msgstr "Distribution"
+
+msgid "uptime"
+msgstr "uptime"
+
+msgid "current users"
+msgstr "users"
+
+msgid "load averages"
+msgstr "load averages"
+
+msgid "dynamic information"
+msgstr "dynamic info."
+
+msgid "system vitals"
+msgstr "infrastructure info."
+
+msgid "Partition disk ..."
+msgstr "Partition disk ..."
+
+msgid "Create volen file ..."
+msgstr "Create volen file ..."
+
+msgid "Update disk ..."
+msgstr "Update disk ..."
+
+msgid "Finding system disk ..."
+msgstr "Finding system disk ..."
+
+msgid "Finding plug in disk ..."
+msgstr "Finding plug in disk ..."
+
+msgid "Finding plug out disk ..."
+msgstr "Finding plug out disk ..."
+
+msgid "Init service ..."
+msgstr "Init service ..."
+
+msgid "Check out service status ..."
+msgstr "Check out service status ..."
+
+msgid "Check out cifs status ..."
+msgstr "Check out cifs status ..."
+
+msgid "Check out nfs status ..."
+msgstr "Check out nfs status ..."
+
+#-------------------------------error code--------------------------
+#group error code
+
+msgid "10000"
+msgstr "Illegal device serail number"
+
+msgid "10001"
+msgstr "Group Name in use already"
+
+msgid "10002"
+msgstr "Deleting Non-existent Group Name"
+msgid "10003"
+msgstr "Changing Non-existent Group Name"
+
+msgid "10004"
+msgstr "Changing to an EXIST Group Name"
+
+msgid "10005"
+msgstr "Query for Status on Non-existent Host"
+
+msgid "10006"
+msgstr "Query for Non-existent Group Name"
+
+msgid "10007"
+msgstr "Node had Included in the Group. "
+
+#node error code
+msgid "11096"
+msgstr "Adding IP in Use"
+
+msgid "11097"
+msgstr "Node Name should only include 3-20 characters of 0-9 A-Z @ - . _ "
+
+
+msgid "11098"
+msgstr "Adding Node CANNOT be connected, please DOUBLE CHECK network"
+
+
+msgid "11099"
+msgstr "Service on Adding Node is NOT Available"
+
+
+msgid "11100"
+msgstr "Invail IP of Adding Node"
+
+
+msgid "11101"
+msgstr "Duplicated Node in Configured File"
+
+
+msgid "11102"
+msgstr "Adding Already EXIST Node or the IP belong to the Node in the cluster"
+
+
+msgid "11103"
+msgstr "Node belong to NON-existent Group"
+
+
+msgid "11104"
+msgstr "Removing Non-existent Node"
+
+
+msgid "11105"
+msgstr "Removing in used node is FORBIDDEN!"
+
+
+msgid "11106"
+msgstr "Setting Non-existent Node to Group"
+
+
+msgid "11107"
+msgstr "Node is non-existent or unavailable"
+
+
+msgid "11108"
+msgstr "NOT Found"
+
+
+msgid "11109"
+msgstr "CANNOT establish connection, please start service first"
+
+
+msgid "11110"  
+msgstr "Updating NON-EXIST Node hard drive info."
+
+
+msgid "11111"  
+msgstr "Updating UNCONNECTED node hard drive info."
+
+
+msgid "11112"  
+msgstr "Adding Node ip is already in hosts conf. file"
+
+
+msgid "11113"  
+msgstr "Adding Node name is already in hosts conf. file"
+
+
+msgid "11114"  
+msgstr "(Fatal) Cached file in node is CONFICT with the one of service. Some hard drive is marked as unused in cached, but marked as in used in service conf. file"
+
+
+msgid "11115"  
+msgstr "Setting IP to NON-EXISTENT node"
+
+
+msgid "11116"
+msgstr "Setting IP to NO Network adapter"
+
+
+msgid "11117"
+msgstr "Setting IP is already EXIST"
+
+
+msgid "11118"
+msgstr "CANNOT set IP, unable connect"
+
+
+msgid "11119"  
+msgstr "Fail to set IP"
+
+
+msgid "11120"  
+msgstr "Replace NON-EXISTENT Node"
+
+
+msgid "11121"  
+msgstr "Replace as already EXIST node"
+
+
+msgid "11122"
+msgstr "Replace Node Name is already EXIST"
+
+
+msgid "11123"  
+msgstr "Replace Failed, as Part of connections failed"
+
+
+msgid "11124" 
+msgstr "Invalid IP"
+
+
+msgid "11125" 
+msgstr "Fail to get replaced hard drive info. while Replacing"
+
+
+msgid "11126"  
+msgstr "Replace Failed, UNMEET Requirement"
+
+
+msgid "11127"  
+msgstr "Fail to deactivate hard drive while Replacing"
+
+
+msgid "11128"  
+msgstr "Replacing node without drive in use"
+
+
+
+
+msgid "11328"
+msgstr "NON-EXISTENT node"
+
+
+msgid "11329"
+msgstr "CANNOT bind less than 2 network adapters"
+
+
+msgid "11330"
+msgstr "Unknown binding mode"
+
+
+msgid "11331"
+msgstr "Binding Failed"
+
+
+msgid "11332"
+msgstr "Binding to NON-EXISTENT network adapter"
+
+
+msgid "11333"
+msgstr "Major Network adapter should be included in Binding"
+
+
+msgid "11334"
+msgstr "FAIL to connect"
+
+
+msgid "11345"
+msgstr "NON-EXISTENT node"
+
+
+msgid "11346"
+msgstr "Fail to remove Bound Adapter"
+
+
+msgid "11347"
+msgstr "Binding to NON-EXIST Network Adapter"
+
+
+msgid "12001"  
+msgstr "Hard drive is already started"
+
+
+msgid "12002"  
+msgstr "Fail to Mount Hard Drive"
+
+
+msgid "12003"  
+msgstr "Hard Drive is already stopped"
+
+
+msgid "12004"  
+msgstr "Hard Drive is stopped(dirty pid file)"
+
+
+msgid "12005"  
+msgstr "Hard Drive is stopped already"
+
+
+msgid "12006"  
+msgstr "Starting NON-EXISTENT Hard Drive"
+
+
+msgid "12007"  
+msgstr "NON-EXISTENT Hard Drive"
+
+
+msgid "12008"  
+msgstr "Hard Drive WITHOUT port"
+
+
+msgid "12009"
+msgstr "Port is set, but not in used"
+
+
+msgid "12010"
+msgstr "Already in used, but not started"
+
+
+msgid "12011"  
+msgstr "Starting Hard Drive is setting to NO service"
+
+
+msgid "13101"  
+msgstr "Searched Service is NOT FOUND"
+
+
+msgid "13102"  
+msgstr "Creating EXIST service"
+
+
+msgid "13103"  
+msgstr "Unmatched Naming Format of Hard Drive"
+
+
+msgid "13104"  
+msgstr "Setting Hard Drive on NON-EXISTENT Node"
+
+
+msgid "13105"  
+msgstr "Hard Drive NON-EXISTENT"
+
+
+msgid "13106"  
+msgstr "Hard Drive is Already in used"
+
+
+msgid "13107"  
+msgstr "Starting NON-EXISTENT Service"
+
+
+msgid "13108"  
+msgstr "Stopping NON-EXISTENT Service"
+
+
+msgid "13109"  
+msgstr "Destorying NON-EXISTENT Service"
+
+
+msgid "13110"  
+msgstr "Listing Status on NON-EXISTENT Service"
+
+
+msgid "13111"  
+msgstr "Adding Hard Drive to NON-EXISTENT Service"
+
+
+msgid "13212"  
+msgstr "Hard Drive Naming ERROR While Extending"
+
+
+msgid "13213"  
+msgstr "Hard Drive for Extending on NON-EXISTENT Node"
+
+
+msgid "13214"  
+msgstr "Extending By NON-EXISTENT Hard Drive"
+
+
+msgid "13215"  
+msgstr "Extending By Hard Drive ALREADY IN USE"
+
+
+msgid "13216"  
+msgstr "New Serive includes Node UNCONNECTED"
+
+
+msgid "13217"  
+msgstr "Fixing NON-EXISTENT Service"
+
+
+msgid "13218"
+msgstr "INVALID RAID LEVEL"
+
+
+msgid "13219"
+msgstr "Service of Redundancy Requires Dual Hard Drives"
+
+
+msgid "13220"
+msgstr "Extending Service RAID1 Requires Dual Hard Drives"
+
+
+msgid "13221"
+msgstr "Fail to Fix Service"
+
+
+msgid "13222"
+msgstr "Export NON-EXISTENT Service CIFS"
+
+
+
+
+msgid "13223" 
+msgstr "Stopping Serivce IN USE"
+
+
+#Âà†Èô§ÊúçÂä°Êó?
+
+msgid "13224" 
+msgstr "Removing Service IN USE"
+
+
+#Êâ©ÂÖÖÂÆπÈáèÊó?
+msgid "13225" 
+msgstr "Extending Failed"
+
+
+msgid "13226" 
+msgstr "Export NON-EXISTENT Service NFS"
+
+
+msgid "13227" 
+msgstr "Service of Proivding AFR SYNC Info DOES NOT AVAILABLE"
+
+
+msgid "13228" 
+msgstr "Querying SYNC Info. from NON-AFR RAID LEVEL"
+
+
+msgid "13229" 
+msgstr "Trigging NON-EXISTENT AFR Service"
+
+msgid "13230" 
+msgstr "No CIFS user given"
+
+msgid "13231" 
+msgstr "No CIFS password given"
+
+msgid "13232" 
+msgstr "Add CIFS user failed"
+
+msgid "13233" 
+msgstr "Delete CIFS user failed"
+
+msgid "13234" 
+msgstr "No NFS user given"
+
+msgid "13235" 
+msgstr "Add NFS user failed"
+
+msgid "13236" 
+msgstr "Delete NFS user failed"
+
+msgid "13237" 
+msgstr "Stop CIFS failed, checkout link status"
+
+msgid "13238" 
+msgstr "Stop NFS failed, checkout link status"
+
+msgid "14001"
+msgstr "Creating RAID Failed, Double Check the Connection of RAID, SiVP!"
+
+
+msgid "14002"
+msgstr "Creating RAID Failed, NON-EXISTENT Hard Drive Included!"
+
+
+msgid "14003"
+msgstr "Creating RAID Failed, EJECTED Hard Drive Included!"
+
+
+msgid "14004"
+msgstr "Creating RAID Failed, Included Hard Drive On NON-EXISTENT Node!"
+
+
+msgid "14005"
+msgstr "Creating RAID Failed, Included Hard Drive Already In Use!"
+
+
+msgid "14006"
+msgstr "New RAID is Including Hard Drive less than 2"
+
+
+msgid "14007"
+msgstr "RAID LEVEL ERROR"
+
+
+msgid "14008"
+msgstr "CHUNK SIZE ERROR"
+
+
+msgid "14009"
+msgstr "RAID6 Requires More than 4 Hard Drive!"
+
+
+msgid "14010"
+msgstr "RAID10 Requires More than 4 Hard Drive!"
+
+
+msgid "14011"
+msgstr "Creating RAID Failed!"
+
+
+msgid "14107"
+msgstr "Removing RAID Failed from NON-EXISTENT Node!"
+
+
+msgid "14108"
+msgstr "Removing NON-EXISTENT RAID Failed!"
+
+
+msgid "14109"
+msgstr "Removing UN-RAID, Failed!"
+
+
+msgid "14110"
+msgstr "Removing RAID In Use, Failed!"
+
+
+msgid "14111"
+msgstr "Removing NON-EXISTENT RAID Failed(Node Info.)!"
+
+
+msgid "14112"
+msgstr "Removing UN-RAID Failed(Node Info.)"
+
+
+msgid "14113"
+msgstr "Removing RAID In Use, Failed!"
+
+
+
+
+msgid "14214"
+msgstr "Please check the CONNECTION to RAID!"
+
+
+msgid "14215"
+msgstr "NON-EXISTENT RAID!"
+
+
+msgid "14216"
+msgstr "NOT RAID Device!"
+
+
+#
+
+msgid "14317"
+msgstr "RAID on NON-EXISTENT Node"
+
+
+msgid "14318"
+msgstr "NON-EXISTENT RAID"
+
+
+msgid "14319"
+msgstr "NOT RAID Drive"
+
+
+msgid "14320"
+msgstr "Setting NON-EXISTENT Hot Spare"
+
+
+msgid "14321"
+msgstr "Setting NON-EXISTENT Hot Spare Already In Use"
+
+
+msgid "14322"
+msgstr "NON-EXISTENT RAID(Node Info.)"
+
+
+msgid "14323"
+msgstr "NOT RAID(Node Info.)"
+
+
+msgid "14324"
+msgstr "Setting NON-EXISTENT Hot Spare"
+
+
+msgid "14325"
+msgstr "Setting Hot Spare Already In Use"
+
+
+msgid "14326"
+msgstr "Current RAID Level DOSE NOT Support Hot Spare"
+
+
+msgid "14327"
+msgstr "Setting Hot Spare Failed"
+
+
+
+
+msgid "14427"
+msgstr "RAID On NON-EXISTENT Node"
+
+
+msgid "14428"
+msgstr "NON-EXISTENT RAID"
+
+
+msgid "14429"
+msgstr "NOT RAID"
+
+
+msgid "14430"
+msgstr "Removing Hard Drive is NOT in RAID or NOT Hot Spare"
+
+
+msgid "14431"
+msgstr "NON-EXISTENT RAID(Node Info.)"
+
+
+msgid "14432"
+msgstr "Hard Drive NOT In RAID(Node info.)"
+
+
+msgid "14433"
+msgstr "Removing Hard Drive NOT in RAID or NOT Hot Spare(Node Info.)"
+
+
+msgid "14434"
+msgstr "Removing Hot Spare Failed"
+
+msgid "14501"
+msgstr "Error in node manager"
+
+
+msgid "14641"
+msgstr "RAID On Node NON-EXISTENT or UNCONNETED"
+
+
+msgid "14642"
+msgstr "Cleaning Up NON-EXISTENT RAID"
+
+
+msgid "14643"
+msgstr "Operation Failed"
+
+msgid "15000"
+msgstr "Please login first"
+
+msgid "15001"
+msgstr "User not exist"
+
+msgid "15002"
+msgstr "Login password error"
+
+msgid "15003"
+msgstr "Admin in use"
+
+msgid "16001"
+msgstr "Manager is not set"
+
+msgid "16002"
+msgstr "Confliction in Manager Setting"
+
+msgid "16003"
+msgstr "Node Manager Error"
+
+msgid "16004"
+msgstr "Set Manager failed"
+
+msgid "16005"
+msgstr "Query manager IP failed"
+
+msgid "load data"                
+msgstr "Loading data ..."
+
+msgid "input only include that"
+msgstr "Input should only include characters of 0-9 A-Z @ - . _ "
+
+msgid "please make sure that"
+msgstr "Input should only 3-20 characters"

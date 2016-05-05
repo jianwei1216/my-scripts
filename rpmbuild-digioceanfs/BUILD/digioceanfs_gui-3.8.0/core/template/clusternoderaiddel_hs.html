@@ -1,0 +1,90 @@
+$def with (content)
+
+<form id="formclusterraiddel_hs" method="post">
+    <fieldset>
+        <div>
+            <label for="clusterraidname">$_("clusterraidname")</label>
+            <select name="clusterraidname" id="clusterraidname" style="width:170px" onchange="getRaidHsDev();">
+            $if len(content.clusternoderaid)>0:
+                $for raid in content.clusternoderaid:
+                    <option>$raid</option>
+            $else:
+            	<option>$_('none')</option>
+            </select>
+        </div>
+        <br />
+        <div style="float:left;margin-left:20px;">
+            <p>$_("clusternodedisk_hs")</p>
+            <select id="clusternodedisk_hs" name="clusternodedisk_hs" style="height:150px;" class="ui-widget-content ui-corner-all" multiple="true">
+            </select>
+        </div>
+        <div style="float:left;height:35px;line-height:35px;margin:0 20px;margin-top:40px;">    
+            <ul>
+                <li><button id="nodeadd">$_("add")</button></li>
+                <li><button id="noderemove">$_("remove")</button></li>
+                <li><button id="nodeaddall">$_("addall")</button></li>
+                <li><button id="noderemoveall">$_("removeall")</button></li>
+            </ul>
+        </div>
+        <div style="margin:0 20px;">
+            <p>$_("clusternodediskselected")</p>
+            <select name="clusterraiddev_hs" id="clusterraiddev_hs" style="height:150px;" class="ui-widget-content ui-corner-all" multiple="true">
+            </select><br /><br />
+        </div>
+        <label>&nbsp;</label>
+    </fieldset>
+</form>
+<script type="text/javascript">
+    function getRaidHsDev(){
+        var data = 'clusterraidname=' + $(ELT)('#clusterraidname').val();
+        var url = '/clusternoderaiddel_select?' + new Date().getTime();
+        checkSession();
+        $ELT .ajax({
+            url: url,
+            type: 'POST',
+            data: data,
+            dataType: 'JSON',
+            success:function(text){
+                $(ELT)('#clusternodedisk_hs').html('');
+                var devlist = text;
+                if(devlist.length > 0){
+                    for(var i = 0; i < devlist.length; i++){
+                        $(ELT)('#clusternodedisk_hs').append('<option value=' + devlist[i] + '>' + devlist[i] +'</option>');
+                    }
+                }
+                /*else{
+                    $(ELT)('#clusternodedisk_hs').append('<option class="static">$_("nohotspare")</option>');
+                }*/
+            }
+        });
+    }
+    $(ELT)(function(){
+        getRaidHsDev();
+        $(ELT)("#clusternodedisk_hs").dblclick(function() {$(ELT).listtolist("clusternodedisk_hs","clusterraiddev_hs","move",false);});
+        $(ELT)("#clusterraiddev_hs").dblclick(function() {$(ELT).listtolist("clusterraiddev_hs","clusternodedisk_hs","move",false);});
+        $(ELT)("#nodeadd").button({
+            text: false,
+            icons: {
+                primary: "ui-icon-triangle-1-e"
+            }
+        }).bind("click",function() {$(ELT).listtolist("clusternodedisk_hs","clusterraiddev_hs","move",false);return false;});
+        $(ELT)("#noderemove").button({
+            text: false,
+            icons: {
+                primary: "ui-icon-triangle-1-w"
+            }
+        }).bind("click",function() {$(ELT).listtolist("clusterraiddev_hs","clusternodedisk_hs","move",false);return false;});
+        $(ELT)("#nodeaddall").button({
+            text: false,
+            icons: {
+                primary: "ui-icon-seek-next"
+            }
+        }).bind("click",function() {$(ELT).listtolist("clusternodedisk_hs","clusterraiddev_hs","move",true);return false;});
+        $(ELT)("#noderemoveall").button({
+            text: false,
+            icons: {
+                primary: "ui-icon-seek-prev"
+            }
+        }).bind("click",function() {$(ELT).listtolist("clusterraiddev_hs","clusternodedisk_hs","move",true);return false;});
+    });
+</script>

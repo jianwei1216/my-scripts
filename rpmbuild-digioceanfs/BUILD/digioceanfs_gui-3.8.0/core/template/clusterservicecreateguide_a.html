@@ -1,0 +1,32 @@
+$def with (content)
+
+<form id="formclusterservice" method="post">
+    <fieldset class="createdialog">
+        <p>$_("clusterservicename"):</p>
+        <div id="clusterservicename_div">
+            <input type="text" id="clusterservicename" name="clusterservicename" class="ui-widget-content ui-corner-all" />
+        </div>
+        <label>&nbsp;</label>
+    </fieldset>
+</form>
+<script type="text/javascript">
+$(ELT)(function(){   
+    $(ELT)('#formclusterservice').validate({
+        errorClass: "invalid",
+        rules: {
+            clusterservicename:{
+                required: true,
+                inputName: true,
+                byterangelength: [3, 10]
+            }
+        },
+        messages: {
+            clusterservicename: {
+                required: "$_('noservicename')",
+                inputName: "输入只能包括英文字母、数字和@、短横线、下划线以及圆点",
+                byterangelength: "请确保输入的值在3-10个字节之间"
+            }
+        }
+    });
+});
+</script>

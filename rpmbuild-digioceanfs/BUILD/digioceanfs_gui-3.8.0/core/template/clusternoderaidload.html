@@ -1,0 +1,543 @@
+$def with (content)
+<form id="form_disk"> 
+  <table id="disktable" cellpadding="0" class="datatable ui-widget ui-widget-content ui-corner-all">
+      <thead>
+          <tr>
+              <th style="width:4%"><input type="checkbox" onClick="check_all(this)" /></th>
+              <th style="width:16%">$_("clusternodediskdev")</th>
+              <th style="width:20%">$_("clusternode")</th>
+              <th style="width:12%">$_("clusternodedisktype")</th>
+              <th style="width:21%">$_("clusternodediskmodel")</th>
+              <th style="width:15%">$_("clusternodedisksize")</th>
+              <th style="width:12%">$_("clusternodediskstatus")</th>
+          </tr>
+      </thead>
+      <tbody>
+          $for disk in content.clusternodediskinfo:
+              $if disk['type'] == 'raid':
+                  <tr id="$disk['nodename']_$disk['devname']" style="cursor:pointer;" class="raid">
+                      <td style="width:10px">
+                      $if content.is_unused == '1' and disk['status'] == 'used':
+                          <input type="checkbox" class="edit_arr" value="$disk['nodename']:$disk['devname']" disabled />
+                      $else:
+                          <input type="checkbox" class="edit_arr" value="$disk['nodename']:$disk['devname']" onClick="checked_num(this);event.stopPropagation();" />
+                      </td>
+                      
+                      <td>
+                      <span class="opertext">$disk['devname']</span>
+                      $if content.is_unused == '0':
+                          <dl class="opercommand">
+                              <dd><a title="$_('delete')" href="javascript:void(0);" onclick="javascript:clusternoderaiddel('$disk['nodename']','$disk['devname']');event.cancelBubble=true;" class="ui-icon ui-icon-inline ui-icon-trash">&nbsp;</a></dd>
+                          </dl>
+                      </td>
+                      
+                      <td>
+                      <span class="opertext"><a href="/clusternodeview?node=$disk['nodename']">$disk['nodename']</a></span>
+                      $if disk['position']!='-':
+                          <dl class="opercommand">
+                              <dd><a title="$_('Position')" href="javascript:void(0);" onclick="javascript:clusternodediskmap('$disk['nodename']')" class="ui-icon ui-icon-zoomin">&nbsp;</a></dd>
+                          </dl>
+                      </td>
+                      <td>$disk['type']</td>
+                      <td>$disk['vandor']</td>
+                      <td class="clustertotalsize" id="$disk['nodename']_$disk['devname']_size">
+                      $disk['size']&nbsp;
+                      $if disk['size']!='-':
+                          $content.unit
+                      </td>
+                      <td>$_(disk['status'])<input type="hidden" id="$disk['nodename']_$disk['devname']_status" value="$disk['status']" /></td>
+                  </tr>
+                  
+              $elif disk['status'] == 'inactive':
+                  <tr id="$disk['devname']">
+                      <td style="width:10px">
+                      $if content.is_unused == '1' and disk['status'] == 'used':
+                          <input type="checkbox" class="edit_arr" value="$disk['nodename']:$disk['devname']" disabled />
+                      $else:
+                          <input type="checkbox" class="edit_arr" value="$disk['nodename']:$disk['devname']" onClick="checked_num(this)" />
+                      </td>
+                      
+                      <td>
+                      <span class="opertext">DISK $(disk['dposition'])($disk['devname'])</span>
+                      $if content.is_unused == '0':
+                          <!--<dl class="opercommand">
+                              <dd><a title="$_('clear_raidinfo')" href="javascript:void(0);" onclick="javascript:clusternodedisk_active('$disk['devname']');event.cancelBubble=true" class="ui-icon ui-icon-inline ui-icon-transferthick-e-w">&nbsp;</a></dd>
+                          </dl>-->
+                      $if disk['position']!='-':
+                          <dl class="opercommand">
+                              <dd><a title="$_('Position')" href="javascript:void(0);" onclick="javascript:clusternodediskmap('$disk['nodename']','$disk['devname']')" class="ui-icon ui-icon-zoomin">&nbsp;</a></dd>
+                          </dl>
+                      </td>
+                      
+                      <td>
+                      <span class="opertext"><a href="/clusternodeview?node=$disk['nodename']">$disk['nodename']</a></span>
+                      $if disk['position']!='-':
+                          <dl class="opercommand">
+                              <dd><a title="$_('Position')" href="javascript:void(0);" onclick="javascript:clusternodediskmap('$disk['nodename']')" class="ui-icon ui-icon-zoomin">&nbsp;</a></dd>
+                          </dl>
+                      </td>
+                      <td>$disk['type']</td>
+                      <td>$disk['vandor']</td>
+                      <td class="clustertotalsize" id="$disk['nodename']_$disk['devname']_size">
+                      $disk['size']&nbsp;
+                      $if disk['size']!='-':
+                          $content.unit
+                      </td>
+                      <td>$_(disk['status'])<input type="hidden" id="$disk['nodename']_$disk['devname']_status" value="$disk['status']" /></td>
+                  </tr>
+              $elif disk['status'] != 'in_raid':
+                  <tr id="$disk['devname']" class="normal_disk">
+                      <td style="width:10px">
+                      $if content.is_unused == '1' and disk['status'] == 'used':
+                          <input type="checkbox" class="edit_arr" value="$disk['nodename']:$disk['devname']" disabled />
+                      $else:
+                          <input type="checkbox" class="edit_arr" value="$disk['nodename']:$disk['devname']" onClick="checked_num(this)" />
+                      </td>
+                      
+                      <td>
+                      <span class="opertext">DISK $(disk['dposition'])($disk['devname'])</span>
+                      $if disk['position']!='-':
+                          <dl class="opercommand">
+                              <dd><a title="$_('Position')" href="javascript:void(0);" onclick="javascript:clusternodediskmap('$disk['nodename']','$disk['devname']')" class="ui-icon ui-icon-zoomin">&nbsp;</a></dd>
+                          </dl>
+                      </td>
+                      
+                      <td>
+                      <span class="opertext"><a href="/clusternodeview?node=$disk['nodename']">$disk['nodename']</a></span>
+                      $if disk['position']!='-':
+                          <dl class="opercommand">
+                              <dd><a title="$_('Position')" href="javascript:void(0);" onclick="javascript:clusternodediskmap('$disk['nodename']')" class="ui-icon ui-icon-zoomin">&nbsp;</a></dd>
+                          </dl>
+                      </td>
+                      <td>$disk['type']</td>
+                      <td>$disk['vandor']</td>
+                      <td class="clustertotalsize" id="$disk['nodename']_$disk['devname']_size">
+                      $disk['size']&nbsp;
+                      $if disk['size']!='-':
+                          $content.unit
+                      </td>
+                      <td>$_(disk['status'])<input type="hidden" id="$disk['nodename']_$disk['devname']_status" value="$disk['status']" /></td>
+                  </tr>		
+      </tbody>
+  </table>
+  <div class="raid_info" style="display: none">
+      <table>
+      $for disk in content.clusternodediskinfo:
+          $for raid in content.clusternoderaidinfo:
+               $if raid['raidname'] == disk['devname'] and raid['nodename'] == disk['nodename']:
+                    <tr class="raid_disk" title="$disk['nodename']_$disk['devname']">
+                    	<td style="width:10px">&nbsp;</td>
+                        <td><span class="opertext">DISK $(raid['dposition'])($raid['devname'])</span><dl class="opercommand"><dd><a title="$_('Position')" href="javascript:void(0);" onclick=javascript:clusternodediskmap("$disk['nodename']","$raid['devname']") class="ui-icon ui-icon-zoomin">&nbsp;</a></dd></dl></td>
+                        <td>$raid["nodename"]</td>
+                        <td>$raid["type"]</td>
+                        <td>$raid["vandor"]</td>
+                        <td>$raid["size"]&nbsp;$content.unit</td>
+                        <td>$raid["type_in_raid"]</td>
+                    </tr>
+       </table>
+   </div>
+</form>
+
+<script type="text/javascript">
+    var oTable = $(ELT)('#disktable');
+    $(ELT)(function(){
+        var datatable = oTable.DataTable({
+            "bStateSave": true,			 
+            "bJQueryUI": true,
+            //select: true,
+            "sPaginationType": "full_numbers",
+            "sDom": '<"H"lufr>t<"F"ip>',
+            "oLanguage": {
+                "sUrl": "/static/js/temp/datatable_ZH"
+            },
+            "aoColumnDefs": [ { "bSortable": false, "aTargets": [ 0 ] }],  
+            "fnInitComplete": function(){
+            	if(getCookie('unit')){
+                    $(ELT)('.size_type option[value='+ getCookie('unit') +']').attr('selected', true);
+                }else{
+                    var unit = $(ELT)('.clustertotalsize').html().split('&nbsp;')[1];
+                    $(ELT)('.size_type option[value='+unit+']').attr('selected', true);
+                }
+                $(ELT)('.size_type').bind('change', function(){
+                    var Unit=$(ELT)(this).val();
+                    var url="/clusternoderaidload?" + new Date().getTime();
+                    checkSession();
+                    $(ELT).ajax({
+                        url: url,
+                        type: 'POST',
+                        data: 'unit=' + Unit,
+                        dataType: 'JSON',
+                        beforeSend: function(){
+                            custLoading("$_('Loading Data ...')");
+                        },
+                        success: function(text){
+                            $(ELT)('#loaddialog').dialog('close');
+                            setCookie('unit', Unit, 1);             //set 1 day for cookie
+                            var diskinfo = text;
+                            for(i=0;i<diskinfo.length;i++){
+                                if(diskinfo[i].size&&diskinfo[i].size!='-'){
+                                    var cellData = diskinfo[i].size + '&nbsp;' + Unit;
+                                    //oTable.fnUpdate(cellData, i, 5);
+                                    datatable.cell(i,5).data(cellData).draw();
+                                }
+                            }
+                            //checked_num();
+                        }  
+                    });
+                });
+                //控制RAID子磁盘弹出
+                $(ELT)('.raid').each(function(){
+                	var check_id = $(ELT)(this).attr('id');
+            		var node_name = check_id.split('_')[0];
+            		var raid_name = check_id.split('_')[1];
+                	$(ELT)(this).bind('click', function(){
+                		var url="/clusternoderaidprogress?" + new Date().getTime();
+	                    checkSession();
+	                    $(ELT).ajax({
+	                        url: url,
+	                        type: 'POST',
+	                        data: 'node_name=' +node_name + '&raidname=' + raid_name,
+	                        dataType: 'JSON',
+	                        success: function(text){
+	                            var _raidinfo = text;
+	                            var raid_info_array = _raidinfo.progress.split(',');
+	                            if (raid_info_array.length > 1){
+	                            	var raid_percent = raid_info_array[0] + ' %($_("synced"))';
+	                            	var raid_time = raid_info_array[1]+' min($_("leftsynctime"))';
+	                            	var raid_speed = raid_info_array[2]+' ($_("syncspeed"))';
+	                            	var raid_info_str = '<span class="raid_info_detail">'+raid_percent +'</span><span class="raid_info_detail">' +raid_time + '</span><span class="raid_info_detail">'+raid_speed+'</span>';
+	                            }else{
+	                            	var raid_percent = raid_info_array[0] + ' %($_("synced"))';
+	                            	var raid_time = 'NaN' + ' min($_("leftsynctime"))';
+	                            	var raid_speed = 'NaN'+' ($_("syncspeed"))';
+	                            	var raid_info_str = '<span class="raid_info_detail">'+raid_percent +'</span><span class="raid_info_detail">' +raid_time + '</span><span class="raid_info_detail">'+raid_speed+'</span>';
+	                            }
+	                            $(ELT)('#'+raid_name+'_info').html(raid_info_str);
+	                            $(ELT)('#'+raid_name+'_status').html(_raidinfo.status);
+	                        }
+                    	});
+                    	var raid_disk_line = '';
+                    	$(ELT)(".raid_disk").each(function(){
+                    		if ($(ELT)(this).attr('title') == check_id){
+                    			raid_disk_line += '<tr>'+$(ELT)(this).html()+'</tr>';
+                    		}
+                    	});
+	                    var raidinfo = String();
+	                    raidinfo = '<span for="rate">RAID同步信息:&nbsp;</span><span class="raid_info"  id="'+raid_name+'_info"></span><span for="status">RAID状态: </span><span class="raid_info"  id="'+raid_name+'_status"></span>';
+	                    raidinfo += raid_disk_line;
+                        var raid_row = datatable.row('#' + fixID(check_id));
+                        if (raid_row.child.isShown()){
+                            raid_row.child.hide();
+                        } else {
+                            raid_row.child("<table>" + raid_info + "<table>").show();
+                        }
+                    });
+                });
+                $(ELT)('#disktable_length').css('width','150px');
+                $(ELT)('.search_filter').css('width','100px');
+                $(ELT)('.page_num').css('width','60px');
+
+                /*$(ELT)('.page_num').change(function(){
+                    checked_num();										 
+                });
+                $(ELT)('.search_filter').keyup(function(){
+                    checked_num();										 
+                });
+                $(ELT)('.ui-state-default').click(function(){
+                    checked_num();													
+				});*/
+            }
+        });
+		/*datatable.on('select', function(e, dt, type, indexes){
+			alert('select');
+			alert(type);
+		});
+		datatable.on('deselect', function(e, dt, type, indexes){
+			alert('deselect');
+			alert(type);
+		});*/
+        //alert(datatable);
+    });
+
+    //全部选择/取消 
+    function check_all(this_checkbox){
+		var datatable = $(ELT)("#disktable").DataTable();
+		var disk_arr=[];
+        var rowsNode = datatable.rows().nodes();
+        //过滤搜索内容
+        var filter = $(ELT)("#form_disk input[type=search]").val();
+        for(var i=0;i<rowsNode.length;i++){
+        	var rowObj = $(ELT)(rowsNode[i]);
+        	var foundFlag = rowObj[0].innerText.indexOf(filter);
+            var selectObj = rowObj.find('.edit_arr');
+            var statusObj = rowObj.find('input[type="hidden"]');
+            if (statusObj[0].value == "used")
+                continue;
+        	if(foundFlag >= 0){
+        		if(this_checkbox.checked){
+            		rowObj.addClass('selected');
+            		selectObj.attr("checked", true);
+            		var arr=selectObj.val().split(':');
+                    arr.push(rowObj.find('.clustertotalsize').html());
+                    disk_arr.push(arr);
+            	}else{
+            		rowObj.removeClass('selected');
+            		selectObj.attr("checked", false);
+            	}
+        	}
+        }
+        show_checked_num(disk_arr.length);
+        show_disk_pair(disk_arr);
+    }
+
+    //选择计数
+    function checked_num(obj){
+    	var datatable = $(ELT)("#disktable").DataTable();
+        var disk_arr=[];
+        var selectObj = $(ELT)(obj);
+        if(selectObj.attr("checked")){
+        	selectObj.parent().parent().addClass('selected');
+        }else{
+        	selectObj.parent().parent().removeClass('selected');
+        }
+        var selectRows = datatable.rows('.selected').nodes();
+        //console.log(selectRows.length);
+        for(var i=0; i<selectRows.length;i++){
+        	var row = $(ELT)(selectRows[i]);
+        	if(row.hasClass('selected')){
+        		var arr=row.find('.edit_arr').val().split(':');
+                arr.push(row.find('.clustertotalsize').html());
+                disk_arr.push(arr);
+        	}
+        }
+        //console.log(disk_arr);
+        show_checked_num(disk_arr.length);
+        show_disk_pair(disk_arr);
+    }
+
+    //显示已选择数
+    function show_checked_num(checked_num){
+        if(!$(ELT)('#checked_num').html()){
+            $(ELT)('#disktable_unit').append('$_("clusternodediskselected")&nbsp;<span id="checked_num">'+checked_num+'</span>&nbsp;$_("Disk")');
+        }else{
+            $(ELT)('#checked_num').html(checked_num);
+        }
+    }
+
+    //获取配对
+    function show_disk_pair(disk_arr){
+        var afr_num = parseInt($(ELT)('#afr_num').html());
+        var strip_num = parseInt($(ELT)('#strip_num').html());
+        var disperse_num = parseInt($(ELT)('#disperse_num').html());
+        var disk_num = parseInt($(ELT)('#disk_num').html());
+        if($(ELT)('#afr_num').html() || $(ELT)('#strip_num').html() || $(ELT)('#disperse_num').html()){
+            if($(ELT)('#afr_num').html()){
+                afr_num=parseInt($(ELT)('#afr_num').html());
+                disk_num=0;
+                disperse_num=0;
+            }
+            if($(ELT)('#strip_num').html()){
+                strip_num=parseInt($(ELT)('#strip_num').html());
+            }
+            if($(ELT)('#disperse_num').html()){
+                disk_num=parseInt($(ELT)('#disk_num').html());
+                disperse_num=parseInt($(ELT)('#disperse_num').html());
+            }
+            if(disk_arr.length==0){
+                var a=2;
+            }else{
+                if(afr_num){
+                    if(disk_arr.length%afr_num ==0){   //冗余服务
+                        var a = 1;
+                    }else{
+                        var a = 2;
+                    }
+                }
+                if(strip_num){
+                    if(disk_arr.length%strip_num ==0){    //分片服务
+                        var a = 1;
+                    }else{
+                        var a = 2;
+                    }
+                }
+                if(disk_num){
+                    if(disk_arr.length%disk_num ==0){    //N+M冗余服务
+                        var a = 1;
+                    }else{
+                        var a = 2;  //所选个数不是冗余数或者纠错卷中磁盘数的整数倍
+                    } 
+                }
+                if(disk_num && afr_num && !disperse_num){
+                    if(disk_arr.length%(afr_num*strip_num)==0){     //冗余分片服务
+                        var a = 1;    
+                    }else{
+                    	var a = 2;
+                    }
+                }else if(!disk_num && afr_num && !disperse_num){		//冗余服务
+                	if(disk_arr.length%(afr_num)==0){     //冗余分片服务
+                        var a = 1;    
+                    }else{
+                    	var a = 2;
+                    }
+                }else{
+                	if(disk_arr.length >= disk_num && disk_arr.length%disk_num==0){		//N+M
+                		var a = 1;
+                	}else{
+                		var a = 2;
+                	}
+                }
+            }
+        }else{
+            var a=3;    //无冗余
+        }
+	
+        var total=0;
+        var Unit='';
+        var all_size=[];
+	
+        for(var i=0;i<disk_arr.length;i++){
+            switch(a){
+                case 1:
+                    var size_arr=disk_arr[i][2].split('&nbsp;');
+                    all_size.push(parseFloat(size_arr[0]));
+                    Unit=size_arr[1];
+                    break;
+			
+                case 2:
+                    break;
+			
+                case 3:
+                    var size_arr=disk_arr[i][2].split('&nbsp;');
+                    total+=parseFloat(size_arr[0]);
+                    Unit=size_arr[1];
+                    break;
+            }
+        }
+        function sortNumber(a,b){
+            return a - b
+        }
+        if(a==1){
+            all_size=all_size.sort(sortNumber);
+            for(var i=0;i<all_size.length;i+=1){
+                total+=all_size[i];
+            }
+        }
+        total=total.toFixed(2);
+        if(!$(ELT)('#pair_size').html()){
+        	var targetObj = $(ELT)('#disktable_unit');
+            if(a==2){
+                if(!strip_num && afr_num){    //冗余
+                    targetObj.append('&nbsp;&nbsp;&nbsp;<span id="pair_size">$_("notmatchafrnum")</span>');
+                    $(ELT)("#pair_size").addClass('disk-not-match');
+                }else if(strip_num && !afr_num){    //分片
+                    targetObj.append('&nbsp;&nbsp;&nbsp;<span id="pair_size">$_("notmatchstripnum")</span>');
+                    $(ELT)("#pair_size").addClass('disk-not-match');
+                }else if(strip_num && afr_num){    //冗余分片
+                    targetObj.append('&nbsp;&nbsp;&nbsp;<span id="pair_size">$_("notmatchafrandstripnum")</span>');
+                    $(ELT)("#pair_size").addClass('disk-not-match');
+                }else{    //N+M冗余
+                	targetObj.append('&nbsp;&nbsp;&nbsp;<span id="pair_size">$_("notmatchdispersenum")</span>');
+                	$(ELT)("#pair_size").addClass('disk-not-match');
+                }
+            }else{
+            	if(disperse_num && disk_num){
+            		var percent = 1-parseFloat(disperse_num)/parseFloat(disk_num);
+            		if(percent == 0 ){
+            			$(ELT)('#disktable_unit').append('&nbsp;&nbsp;&nbsp;<span id="pair_size">$_("totals")&nbsp;'+total+'&nbsp;'+Unit+'</span>');
+                		$(ELT)("#pair_size").removeClass('disk-not-match');
+            		}
+            		else{
+	            		total=(total*percent).toFixed(2);
+	            		$(ELT)('#disktable_unit').append('&nbsp;&nbsp;&nbsp;<span id="pair_size">$_("totals")&nbsp;'+total+'&nbsp;'+Unit+'</span>');
+	            		$(ELT)("#pair_size").removeClass('disk-not-match');
+            		}
+            	}else{
+                	$(ELT)('#disktable_unit').append('&nbsp;&nbsp;&nbsp;<span id="pair_size">$_("totals")&nbsp;'+total+'&nbsp;'+Unit+'</span>');
+                	$(ELT)("#pair_size").removeClass('disk-not-match');
+                }
+            }
+        }else{
+            if(a==2){
+                if(!strip_num && afr_num){
+                    $(ELT)('#pair_size').html('$_("notmatchafrnum")');
+                    $(ELT)("#pair_size").addClass('disk-not-match');
+                }else if(!afr_num && strip_num){
+                    $(ELT)('#pair_size').html('$_("notmatchstripnum")');
+                    $(ELT)("#pair_size").addClass('disk-not-match');
+                }else if(afr_num && strip_num){
+                    $(ELT)('#pair_size').html('$_("notmatchafrandstripnum")');
+                    $(ELT)("#pair_size").addClass('disk-not-match');
+                }else{
+                	$(ELT)('#pair_size').html('$_("notmatchdispersenum")');
+                	$(ELT)("#pair_size").addClass('disk-not-match');
+                }
+            }else{
+            	if(disperse_num && disk_num){
+            		var percent = 1-parseFloat(disperse_num)/parseFloat(disk_num);
+            		if(percent == 0){
+            			$(ELT)('#pair_size').html('$_("totals")&nbsp;'+total+'&nbsp;'+Unit);
+						$(ELT)("#pair_size").removeClass('disk-not-match');
+            		}else{
+            			total=(total*percent).toFixed(2);
+						$(ELT)('#pair_size').html('$_("totals")&nbsp;'+total+'&nbsp;'+Unit);
+						$(ELT)("#pair_size").removeClass('disk-not-match');
+					}
+            	}else{
+            		if(afr_num){
+						$(ELT)('#pair_size').html('$_("totals")&nbsp;'+total/afr_num+'&nbsp;'+Unit);
+						$(ELT)("#pair_size").removeClass('disk-not-match');
+					}else{
+						$(ELT)('#pair_size').html('$_("totals")&nbsp;'+total+'&nbsp;'+Unit);
+						$(ELT)("#pair_size").removeClass('disk-not-match');
+					}
+                }
+                //$(ELT)('#pair_size').html('$_("totals")&nbsp;'+total+'&nbsp;'+Unit);
+            }
+        }
+    }
+
+    //盘位
+    function clusternodediskmap(node,disk){
+        var title="$_('Position')";
+        if(!node){
+            node=''
+        }
+        if(disk){
+            title+=' - '+node+':'+disk;
+        }else{
+            disk='';
+        }
+	
+        var time=new Date().getTime();
+        var url="/clusternodediskmap?"+time+"&node="+node+"&disk="+disk;
+	
+        $(ELT)("body").append('<div id="pop_div_disk_map" class="pop_div"></div>');
+        $(ELT)("#pop_div_disk_map").dialog({
+            bgiframe: true,								   
+            modal: true,				 
+            autoOpen:false,
+            resizable:false,
+            width:720,
+            height:360,
+            title:title,
+            open:function(){
+                custLoading("$_('Loading Data ...')");
+            },
+            close:function(){
+                $(ELT)(this).remove();
+            },
+            buttons:{
+                "$_('confirm')": function() {
+                    $(ELT)(this).dialog('close');
+                }
+            }
+        });
+        $(ELT)("#pop_div_disk_map").load(url,'',function(){
+            $(ELT)('#loaddialog').dialog('close');											
+        });
+        $(ELT)("#pop_div_disk_map").dialog("open");
+    }
+
+
+</script>
+

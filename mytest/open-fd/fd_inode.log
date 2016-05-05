@@ -1,0 +1,126 @@
+Breakpoint 1 at 0x7f23e2308572: file ec-inode-read.c, line 948.
+Continuing.
+[Switching to Thread 0x7f23dbfff700 (LWP 10685)]
+
+Breakpoint 1, ec_open (frame=0x7f23d004ae9c, this=0x7f23dc0997d0, target=18446744073709551615, minimum=-2, func=0x7f23ef47543b <default_open_cbk>, data=0x0, loc=0x7f23d002ef48, flags=32770, fd=0x7f23d000370c, xdata=0x0) at ec-inode-read.c:948
+948	    ec_cbk_t callback = { .open = func };
+$1 = (struct _inode *) 0x7f23d405a3dc
+$2 = 0
+#0  ec_open (frame=0x7f23d004ae9c, this=0x7f23dc0997d0, target=18446744073709551615, minimum=-2, func=0x7f23ef47543b <default_open_cbk>, data=0x0, loc=0x7f23d002ef48, flags=32770, fd=0x7f23d000370c, xdata=0x0) at ec-inode-read.c:948
+#1  0x00007f23e22e77b4 in ec_gf_open (frame=0x7f23d004ae9c, this=0x7f23dc0997d0, loc=0x7f23d002ef48, flags=32770, fd=0x7f23d000370c, xdata=0x0) at ec.c:1012
+#2  0x00007f23e20b19b3 in dht_open (frame=0x7f23d001e86c, this=0x7f23dc09a270, loc=0x7f23d002ef48, flags=32770, fd=0x7f23d000370c, xdata=0x0) at dht-inode-read.c:111
+#3  0x00007f23ef47ec84 in default_open (frame=0x7f23d001e86c, this=0x7f23dc09ad10, loc=0x7f23d002ef48, flags=32770, fd=0x7f23d000370c, xdata=0x0) at defaults.c:1852
+#4  0x00007f23e1c3146c in ra_open (frame=0x7f23d00307fc, this=0x7f23dc09b7b0, loc=0x7f23d002ef48, flags=32770, fd=0x7f23d000370c, xdata=0x0) at read-ahead.c:187
+#5  0x00007f23ef47ec84 in default_open (frame=0x7f23d00307fc, this=0x7f23dc09c250, loc=0x7f23d002ef48, flags=32770, fd=0x7f23d000370c, xdata=0x0) at defaults.c:1852
+#6  0x00007f23e181a1a8 in ioc_open (frame=0x7f23d0068a9c, this=0x7f23dc09ccf0, loc=0x7f23d002ef48, flags=32770, fd=0x7f23d000370c, xdata=0x0) at io-cache.c:836
+#7  0x00007f23e160edef in qr_open (frame=0x7f23d004c83c, this=0x7f23dc09d790, loc=0x7f23d002ef48, flags=32770, fd=0x7f23d000370c, xdata=0x0) at quick-read.c:675
+#8  0x00007f23e14037ef in ob_fd_wake (this=0x7f23dc09e230, fd=0x7f23d000370c) at open-behind.c:202
+#9  0x00007f23e14038de in open_and_resume (this=0x7f23dc09e230, fd=0x7f23d000370c, stub=0x7f23d004199c) at open-behind.c:240
+#10 0x00007f23e1403ee2 in ob_open (frame=0x7f23d004e13c, this=0x7f23dc09e230, loc=0x7f23d0025470, flags=32770, fd=0x7f23d006805c, xdata=0x0) at open-behind.c:329
+#11 0x00007f23ef47ec84 in default_open (frame=0x7f23d004e13c, this=0x7f23dc0803b0, loc=0x7f23d0025470, flags=32770, fd=0x7f23d006805c, xdata=0x0) at defaults.c:1852
+#12 0x00007f23e0fe1cb9 in io_stats_open (frame=0x7f23d005889c, this=0x7f23dc080e50, loc=0x7f23d0025470, flags=32770, fd=0x7f23d006805c, xdata=0x0) at io-stats.c:2103
+#13 0x00007f23ef47ec84 in default_open (frame=0x7f23d005889c, this=0x7f23dc0818f0, loc=0x7f23d0025470, flags=32770, fd=0x7f23d006805c, xdata=0x0) at defaults.c:1852
+#14 0x00007f23e0dbe219 in meta_open (frame=0x7f23d005889c, this=0x7f23dc0818f0, loc=0x7f23d0025470, flags=32770, fd=0x7f23d006805c, xdata=0x0) at meta.c:64
+#15 0x00007f23e7217670 in fuse_open_resume (state=0x7f23d0025450) at fuse-bridge.c:2103
+#16 0x00007f23e720dc64 in fuse_fop_resume (state=0x7f23d0025450) at fuse-bridge.c:536
+#17 0x00007f23e720b9ba in fuse_resolve_done (state=0x7f23d0025450) at fuse-resolve.c:637
+#18 0x00007f23e720ba90 in fuse_resolve_all (state=0x7f23d0025450) at fuse-resolve.c:664
+#19 0x00007f23e720b99b in fuse_resolve (state=0x7f23d0025450) at fuse-resolve.c:628
+#20 0x00007f23e720ba67 in fuse_resolve_all (state=0x7f23d0025450) at fuse-resolve.c:660
+#21 0x00007f23e720baee in fuse_resolve_continue (state=0x7f23d0025450) at fuse-resolve.c:680
+#22 0x00007f23e720af8d in fuse_resolve_inode (state=0x7f23d0025450) at fuse-resolve.c:338
+#23 0x00007f23e720b98d in fuse_resolve (state=0x7f23d0025450) at fuse-resolve.c:625
+#24 0x00007f23e720ba12 in fuse_resolve_all (state=0x7f23d0025450) at fuse-resolve.c:653
+#25 0x00007f23e720bb2c in fuse_resolve_and_resume (state=0x7f23d0025450, fn=0x7f23e7217058 <fuse_open_resume>) at fuse-resolve.c:692
+#26 0x00007f23e7217782 in fuse_open (this=0x714be0, finh=0x7f23d0046dd0, msg=0x7f23d0046df8) at fuse-bridge.c:2119
+#27 0x00007f23e72241a0 in fuse_thread_proc (data=0x714be0) at fuse-bridge.c:4879
+#28 0x00007f23ee746a51 in start_thread () from /lib64/libpthread.so.0
+#29 0x00007f23ee0b093d in clone () from /lib64/libc.so.6
+[Switching to Thread 0x7f23e31c8700 (LWP 10681)]
+
+Breakpoint 1, ec_open (frame=0x7f23dc232bac, this=0x7f23dc0997d0, target=18446744073709551615, minimum=-2, func=0x7f23ef47543b <default_open_cbk>, data=0x0, loc=0x7f23d00419dc, flags=32770, fd=0x7f23d006805c, xdata=0x0) at ec-inode-read.c:948
+948	    ec_cbk_t callback = { .open = func };
+$3 = (struct _inode *) 0x7f23d405a3dc
+$4 = 0
+#0  ec_open (frame=0x7f23dc232bac, this=0x7f23dc0997d0, target=18446744073709551615, minimum=-2, func=0x7f23ef47543b <default_open_cbk>, data=0x0, loc=0x7f23d00419dc, flags=32770, fd=0x7f23d006805c, xdata=0x0) at ec-inode-read.c:948
+#1  0x00007f23e22e77b4 in ec_gf_open (frame=0x7f23dc232bac, this=0x7f23dc0997d0, loc=0x7f23d00419dc, flags=32770, fd=0x7f23d006805c, xdata=0x0) at ec.c:1012
+#2  0x00007f23e20b19b3 in dht_open (frame=0x7f23dc21708c, this=0x7f23dc09a270, loc=0x7f23d00419dc, flags=32770, fd=0x7f23d006805c, xdata=0x0) at dht-inode-read.c:111
+#3  0x00007f23ef47ec84 in default_open (frame=0x7f23dc21708c, this=0x7f23dc09ad10, loc=0x7f23d00419dc, flags=32770, fd=0x7f23d006805c, xdata=0x0) at defaults.c:1852
+#4  0x00007f23e1c3146c in ra_open (frame=0x7f23dc1e396c, this=0x7f23dc09b7b0, loc=0x7f23d00419dc, flags=32770, fd=0x7f23d006805c, xdata=0x0) at read-ahead.c:187
+#5  0x00007f23ef47ec84 in default_open (frame=0x7f23dc1e396c, this=0x7f23dc09c250, loc=0x7f23d00419dc, flags=32770, fd=0x7f23d006805c, xdata=0x0) at defaults.c:1852
+#6  0x00007f23e181a1a8 in ioc_open (frame=0x7f23dc224fac, this=0x7f23dc09ccf0, loc=0x7f23d00419dc, flags=32770, fd=0x7f23d006805c, xdata=0x0) at io-cache.c:836
+#7  0x00007f23e160edef in qr_open (frame=0x7f23dc2380ac, this=0x7f23dc09d790, loc=0x7f23d00419dc, flags=32770, fd=0x7f23d006805c, xdata=0x0) at quick-read.c:675
+#8  0x00007f23ef47a018 in default_open_resume (frame=0x7f23d004e13c, this=0x7f23dc09e230, loc=0x7f23d00419dc, flags=32770, fd=0x7f23d006805c, xdata=0x0) at defaults.c:1410
+#9  0x00007f23ef49ca5c in call_resume_wind (stub=0x7f23d004199c) at call-stub.c:2052
+#10 0x00007f23ef4a574a in call_resume (stub=0x7f23d004199c) at call-stub.c:2571
+#11 0x00007f23e140353d in ob_wake_cbk (frame=0x7f23d0013cec, cookie=0x7f23d004c83c, this=0x7f23dc09e230, op_ret=0, op_errno=0, fd_ret=0x7f23d000370c, xdata=0x0) at open-behind.c:170
+#12 0x00007f23ef4755bc in default_open_cbk (frame=0x7f23d004c83c, cookie=0x7f23d0068a9c, this=0x7f23dc09d790, op_ret=0, op_errno=0, fd=0x7f23d000370c, xdata=0x0) at defaults.c:994
+#13 0x00007f23e1818f15 in ioc_open_cbk (frame=0x7f23d0068a9c, cookie=0x7f23d00307fc, this=0x7f23dc09ccf0, op_ret=0, op_errno=0, fd=0x7f23d000370c, xdata=0x0) at io-cache.c:605
+#14 0x00007f23e1c30da9 in ra_open_cbk (frame=0x7f23d00307fc, cookie=0x7f23d001e86c, this=0x7f23dc09b7b0, op_ret=0, op_errno=0, fd=0x7f23d000370c, xdata=0x0) at read-ahead.c:101
+#15 0x00007f23e20b1142 in dht_open_cbk (frame=0x7f23d001e86c, cookie=0x7f23d004ae9c, this=0x7f23dc09a270, op_ret=0, op_errno=0, fd=0x7f23d000370c, xdata=0x0) at dht-inode-read.c:50
+#16 0x00007f23ef4755bc in default_open_cbk (frame=0x7f23d004ae9c, cookie=0x7f23d00310ec, this=0x7f23dc0997d0, op_ret=0, op_errno=0, fd=0x7f23d000370c, xdata=0x0) at defaults.c:994
+#17 0x00007f23e230844a in ec_manager_open (fop=0x7f23d00310ec, state=5) at ec-inode-read.c:915
+#18 0x00007f23e22f1264 in __ec_manager (fop=0x7f23d00310ec, error=0) at ec-common.c:1937
+#19 0x00007f23e22ed6ac in ec_resume (fop=0x7f23d00310ec, error=0) at ec-common.c:307
+#20 0x00007f23e22ed892 in ec_complete (fop=0x7f23d00310ec) at ec-common.c:380
+#21 0x00007f23e2307caf in ec_open_cbk (frame=0x7f23d0026f0c, cookie=0x1, this=0x7f23dc0997d0, op_ret=0, op_errno=0, fd=0x7f23d000370c, xdata=0x0) at ec-inode-read.c:783
+#22 0x00007f23e25964e2 in client3_3_open_cbk (req=0x7f23d004791c, iov=0x7f23d004795c, count=1, myframe=0x7f23d00235bc) at client-rpc-fops.c:464
+#23 0x00007f23ef22f396 in rpc_clnt_handle_reply (clnt=0x7f23dc0546a0, pollin=0x7f23dc20fcb0) at rpc-clnt.c:759
+#24 0x00007f23ef22f7b6 in rpc_clnt_notify (trans=0x7f23dc0a3790, mydata=0x7f23dc0546d0, event=RPC_TRANSPORT_MSG_RECEIVED, data=0x7f23dc20fcb0) at rpc-clnt.c:887
+#25 0x00007f23ef22bac7 in rpc_transport_notify (this=0x7f23dc0a3790, event=RPC_TRANSPORT_MSG_RECEIVED, data=0x7f23dc20fcb0) at rpc-transport.c:538
+#26 0x00007f23e47ee85b in socket_event_poll_in (this=0x7f23dc0a3790) at socket.c:2285
+#27 0x00007f23e47eedb1 in socket_event_handler (fd=13, idx=8, data=0x7f23dc0a3790, poll_in=1, poll_out=0, poll_err=0) at socket.c:2398
+#28 0x00007f23ef4df7bc in event_dispatch_epoll_handler (event_pool=0x70ed50, event=0x7f23e31c7e70) at event-epoll.c:570
+#29 0x00007f23ef4dfbaa in event_dispatch_epoll_worker (data=0x74d280) at event-epoll.c:673
+#30 0x00007f23ee746a51 in start_thread () from /lib64/libpthread.so.0
+#31 0x00007f23ee0b093d in clone () from /lib64/libc.so.6
+
+Program received signal SIGINT, Interrupt.
+[Switching to Thread 0x7f23ef932700 (LWP 10675)]
+0x00007f23ee7472ad in pthread_join () from /lib64/libpthread.so.0
+Num     Type           Disp Enb Address            What
+1       breakpoint     keep y   0x00007f23e2308572 in ec_open at ec-inode-read.c:948
+	breakpoint already hit 2 times
+        p fd->inode
+        p fd->inode->fd_count
+        bt
+        c
+Delete all breakpoints? (y or n) Undefined command: "ls".  Try "help".
+No breakpoints or watchpoints.
+No breakpoints or watchpoints.
+Breakpoint 2 at 0x7f23e25a9fc5: file client-rpc-fops.c, line 4356.
+Continuing.
+[Switching to Thread 0x7f23e31c8700 (LWP 10681)]
+
+Breakpoint 2, client3_3_writev (frame=0x7f23dc2399ac, this=0x7f23dc096d50, data=0x7f23e31c7420) at client-rpc-fops.c:4356
+4356	        clnt_args_t    *args     = NULL;
+4357	        int64_t         remote_fd = -1;
+4358	        clnt_conf_t    *conf     = NULL;
+4359	        gfs3_write_req  req      = {{0,},};
+4360	        int             op_errno = ESTALE;
+4361	        int             ret      = 0;
+4363	        if (!frame || !this || !data)
+4366	        args = data;
+4367	        conf = this->private;
+4369	        CLIENT_GET_REMOTE_FD (this, args->fd, FALLBACK_TO_ANON_FD,
+4371	        ret = client_fd_fop_prepare_local (frame, args->fd, remote_fd);
+$5 = 1
+client_fd_fop_prepare_local (frame=0x7f23dc2399ac, fd=0x7f23d003c0ec, remote_fd=1) at client-helpers.c:335
+335	        xlator_t     *this  = NULL;
+336	        clnt_conf_t  *conf  = NULL;
+337	        clnt_local_t *local = NULL;
+Quit
+$6 = 1
+338	        int          ret    = 0;
+340	        this = frame->this;
+341	        conf = this->private;
+343	        if (!frame || !fd) {
+348	        frame->local = mem_get0 (this->local_pool);
+349	        if (frame->local == NULL) {
+354	        local = frame->local;
+355	        local->fd = fd_ref (fd);
+A debugging session is active.
+
+	Inferior 1 [process 10675] will be detached.
+
+Quit anyway? (y or n) Detaching from program: /usr/sbin/glusterfsd, process 10675

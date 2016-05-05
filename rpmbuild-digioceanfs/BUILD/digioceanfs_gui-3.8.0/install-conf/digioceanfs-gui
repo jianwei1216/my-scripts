@@ -1,0 +1,38 @@
+#!/bin/sh
+case "$1" in
+  start)
+		nginx
+		spawn-fcgi -d /usr/local/digioceanfs_gui -f /usr/local/digioceanfs_gui/app.py -a 0.0.0.0 -p 9002
+		echo "digioceanfs-gui started"
+	    ;;
+  stop)
+		kill `pgrep -f /usr/local/digioceanfs_gui/app.py`
+		nginx -s stop
+		echo "digioceanfs-gui stopped"
+    	;;
+  restart)
+		digioceanfs-gui stop
+		digioceanfs-gui start
+    	;;
+  status)
+        if pgrep -f /usr/local/digioceanfs_gui/app.py >/dev/null
+        then
+            echo "digioceanfs-gui running"
+            exit 0
+        else
+            echo "digioceanfs-gui not running"
+            exit 3
+        fi
+        ;;
+  reload)
+  		nginx -s reload
+		echo "Reloading..."
+		;;
+  *)
+	echo "Usage: $0 {start|stop|restart|status|reload}" >&2
+        exit 1
+        ;;
+
+esac
+ 
+exit 0

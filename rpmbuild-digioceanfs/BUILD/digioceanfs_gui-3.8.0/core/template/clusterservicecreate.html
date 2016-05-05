@@ -1,0 +1,140 @@
+$def with (content)
+
+<form id="formclusterservice" method="post">
+    <fieldset class="createdialog">
+        <div>
+            <label for="clusterservicename">$_("clusterservicename"):</label>
+            <input type="text" id="clusterservicename" name="clusterservicename" class="ui-widget-content ui-corner-all" /><br /><br />
+        </div>
+        <div>
+            <label for="clusterservicetype">$_("clusterservicetype"):</label>
+            <div id="clusterservicetype">
+                <ul>
+                    <li>
+                        <p><input type="checkbox" id="clusterservicetype_none" name="clusterservicetype_none" checked onclick="setNone();"/>
+                        $_("clusterservicetype_none")</p>
+                    </li>
+                    <li>
+                        <p><input type="checkbox" id="clusterservicetype_afr" name="clusterservicetype_afr" onclick="setRadio();"/>
+                        $_("clusterservicetype_afr")</p>
+                    </li>
+                    <li>
+                        <p><input type="checkbox" id="clusterservicetype_strip" name="clusterservicetype_strip" onclick="setRadio();" disabled/>
+                        $_("clusterservicetype_strip")</p>
+                    </li>
+                </ul>
+            </div>
+        </div><br />
+        <div style="float:left;margin-left:40px;">
+            <p>$_("clusternodeipaddr")</p><br />
+            <select name="clusternodeipaddr" id="clusternodeipaddr" style="height:150px;" class="ui-widget-content ui-corner-all" multiple="true" onchange="getUnusedDisk();">
+                $for ip in content.clusternodeip:
+                    <option value="$ip">$ip</option>
+            </select>
+        </div>
+        <div class="left">
+            <p>$_("clusterservicedevunused")</p><br />
+            <select id="clusternodedev" name="clusternodedev" style="height:150px;" class="ui-widget-content ui-corner-all" multiple="true">
+            </select>
+        </div>
+        <div class="center">
+            <ul>
+                <li><button id="serviceadd">$_("add")</button></li>
+                <li><button id="serviceremove">$_("remove")</button></li>
+                <li><button id="serviceaddall">$_("addall")</button></li>
+                <li><button id="serviceremoveall">$_("removeall")</button></li>
+            </ul>
+        </div>
+        <div class="right">
+            <p>$_("clusterservicedevselected")</p><br />
+            <select id="clusternewservicedev" name="clusternewservicedev" style="height:150px;" class="ui-widget-content ui-corner-all" multiple="true">
+            </select>
+        </div>
+        <label>&nbsp;</label>
+    </fieldset>
+</form>
+<script type="text/javascript">
+function setNone(){
+    $(ELT)('#clusterservicetype_afr').attr('checked','');
+    $(ELT)('#clusterservicetype_strip').attr('checked','');
+}
+function setRadio(){
+    $(ELT)('#clusterservicetype_none').attr('checked','');
+}
+function getUnusedDisk(){
+    var nodeip = $(ELT)('#clusternodeipaddr').val();
+    var data = 'clusternodeipaddr=' + nodeip;
+    checkSession();
+    $ELT .ajax({
+        url: '/clusterservicecreatedialog',
+        type: 'GET',
+        data: data,
+        dataType: 'JSON',
+        success:function(text){
+            $(ELT)('#clusternodedev').html('');
+            if(text != '{}'){
+                var devdict = text;
+                var clusternewservicedev = [];
+                $(ELT)('#clusternewservicedev option').each(function(){clusternewservicedev.push($(ELT)(this).val());});
+                if(devdict.clusterdiskunused.length == 0){
+                    $(ELT)("<option>$_('nodevavailable')</option>").appendTo("#clusternodedev");
+                }
+                else if(clusternewservicedev.length == 0){
+                    for(var i = 0; i < devdict.clusterdiskunused.length; i++){
+                        $(ELT)('.tooltip').remove();
+                        $(ELT)("<option class='diskinfo' value='"+ devdict.clusterdiskunused[i] + "' title='" + devdict.clusternodediskinfo[i] + "'>" + devdict.clusterdiskunused[i] + "</option>").appendTo("#clusternodedev");
+                        $(ELT)(".diskinfo[title]").tooltip({ position: "top right"});
+                    }
+                }
+                else{
+                    for(var i = 0; i < devdict.clusterdiskunused.length; i++){
+                        var flag = 1;
+                        for(var j = 0; j < clusternewservicedev.length; j++){
+                            if(devdict.clusterdiskunused[i] == clusternewservicedev[j]){
+                                flag = 0;
+                                break;
+                            }
+                        }
+                        if(flag){
+                            $(ELT)('.tooltip').remove();
+                            $(ELT)("<option class='diskinfo' value='"+ devdict.clusterdiskunused[i] + "' title='" + devdict.clusternodediskinfo[i] + "'>" + devdict.clusterdiskunused[i] + "</option>").appendTo("#clusternodedev");
+                            $(ELT)(".diskinfo[title]").tooltip({ position: "top right"});
+                        }
+                    }
+                }
+            }
+            else{
+                $(ELT)("<option>$_('nodevavailable')</option>").appendTo("#clusternodedev");
+            }
+        }
+    });
+}    
+$(ELT)(function(){
+    $(ELT)("#clusternodedev").dblclick(function() {$(ELT).listtolist("clusternodedev","clusternewservicedev","move",false);});
+    $(ELT)("#clusternewservicedev").dblclick(function() {$(ELT).listtolist("clusternewservicedev","clusternodedev","move",false);});
+    $(ELT)("#serviceadd").button({
+        text: false,
+        icons: {
+            primary: "ui-icon-triangle-1-e"
+        }
+    }).bind("click",function() {$(ELT).listtolist("clusternodedev","clusternewservicedev","move",false);return false;});
+    $(ELT)("#serviceremove").button({
+        text: false,
+        icons: {
+            primary: "ui-icon-triangle-1-w"
+        }
+    }).bind("click",function() {$(ELT).listtolist("clusternewservicedev","clusternodedev","move",true);return false;});
+    $(ELT)("#serviceaddall").button({
+        text: false,
+        icons: {
+            primary: "ui-icon-seek-next"
+        }
+    }).bind("click",function() {$(ELT).listtolist("clusternodedev","clusternewservicedev","move",false);return false;});
+    $(ELT)("#serviceremoveall").button({
+        text: false,
+        icons: {
+            primary: "ui-icon-seek-prev"
+        }
+    }).bind("click",function() {$(ELT).listtolist("clusternewservicedev","clusternodedev","move",true);return false;});
+});
+</script>

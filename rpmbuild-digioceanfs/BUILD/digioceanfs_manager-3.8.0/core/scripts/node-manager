@@ -1,0 +1,188 @@
+#!/bin/sh
+# chkconfig: 2345 99 80
+### BEGIN INIT INFO
+# Provides:       digioceanfs-manager 
+# Required-Start: $remote_fs nfs-common $portmap $time 
+# Required-Stop:  $remote_fs nfs-common $portmap $time
+# Default-Start:  2 3 4 5
+# Default-Stop:   0 1 6 
+# Description:    Prepare for digioceanfs-manager
+### END INIT INFO
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+WORKDIR=/usr/local/digioceanfs_manager
+APACHECTL=`which digioceanfs-gui`
+SYSTEMCTL=`which systemctl`
+DIGIGUI=`which digioceanfs-gui`
+
+#. /lib/lsb/init-functions
+#. /etc/init.d/functions
+
+case "$1" in
+  start)
+		if ps axu |grep client.py |grep -v 'grep' >/dev/null
+    	then
+        	echo "Digiclient is running"
+        	/usr/bin/digioceanfs-client stop
+        fi
+        #stop nfs-server.service
+        $SYSTEMCTL stop nfs
+        #stop digioceanfs-client
+        /usr/bin/digioceanfs-client stop
+		modprobe fuse
+		mdadm --monitor --scan --daemonise 
+		cd $WORKDIR >/dev/null
+		/bin/bash dev.sh -n &>/dev/null
+	    #check digioceand
+	    if pidof digioceand>/dev/null
+	    then
+	        echo "digioceand running"
+	    else
+	        echo "digioceand not running, start now ..."
+	    	$SYSTEMCTL start digioceand
+	    fi
+	    #start digioceanfs-gui
+	    /usr/bin/digioceanfs-gui start
+	    ;;
+  stop)
+		cd $WORKDIR >/dev/null
+		/bin/bash dev.sh -s &>/dev/null
+		$SYSTEMCTL stop digioceand
+	    /usr/bin/digioceanfs-gui stop
+    ;;
+  status)
+        #if pidof python node_manager.pyc >/dev/null
+        if ps axu |grep node_manager.pyc |grep -v 'grep' >/dev/null
+        then
+            echo "node manager running"
+            exit 0
+        else
+            echo "node manager not running"
+            exit 3
+        fi
+        ;;
+  reload)
+		echo "Reloading..."
+		;;
+  force-reload)
+		echo "Reloading..."
+		;;
+  init-mvl)
+	echo -e "Detecting marvell iocard drivers!"
+	mvl_core=$(rpm -qa |grep 'mrvl_vsa-1.2')
+	mvl_support=$(rpm -qa |grep 'mrvl_vsa_support-1.2')
+	if [ -z $mvl_core ]
+	then
+		echo -e "No marvell iocard drivers found!"
+		exit 1
+	fi
+
+	if [ -z $mvl_support ]
+	then
+		echo -e "No marvell iocard support tools found!"
+		exit 1
+	fi
+	echo "Initing ..."
+	service vsa stop
+	#cd /opt/marvell/bin
+	#./vsa_factory_reset.sh
+	service vsa start
+	vsa add vsaid 0
+	vsadisk list
+	vsadisk init vsaid vsa-0 diskid all
+	vsarg create vsaid vsa-0 disklist all
+	vsact create vsaid vsa-0 rgid rg-0 type=cache
+	vsact list
+	;;
+  init-mvldisk)
+	disks_all=$(digi_partition --list |grep -v 'mvsa')
+	for disk in $disks_all
+	do
+		pdisk=$(ls /dev/disk/by-path/ -l |grep "${disk}"|awk '{print $9}')
+		ndisk=$(ls /dev/disk/by-path/ -l |grep "${disk}"|awk '{print $11}')
+		pndisk=${pdisk}" "${ndisk}
+		if [[ "$pndisk" == *"$ndisk"* ]]
+		then
+			init_disks=$disk" "$init_disks
+		fi
+	done
+	if [[ -n $init_disks ]]
+	then
+		init_disks_len=${#init_disks}
+		echo -e "Notice: input args should only be <all> or <disk_name>"
+		while [[ -n ${init_disks_len} ]]
+		do	
+			case $disk_name in
+			  all)
+				echo "All disk will be inited"
+				for d in $init_disks
+				do
+					pdisk=$(ls /dev/disk/by-path/ -l |grep "${d}"|awk '{print $9}')
+					vsaobj create ctid ct-0 device=/dev/disk/by-path/${pdisk} name=mvsablk_`hostname`_${d}
+					init_disks=${init_disks/${d}}
+				done
+				shift ; shift 
+				;;
+			  quit)
+				exit 1
+				shift ; shift ;;
+			  *)
+				pdisk=$(ls /dev/disk/by-path/ -l |grep "${disk_name}"|awk '{print $9}')
+				echo -e "Please input disk name to init: $init_disks"
+				read disk_name
+				if [[ "$init_disks" == *"$disk_name"* ]]
+				then
+					vsaobj create ctid ct-0 device=/dev/disk/by-path/${pdisk} name=mvsablk_`hostname`_${disk_name}
+					init_disks=${init_disks/${disk_name}}
+					echo -e "Success!"
+				else
+					echo -e "Illgal disk name"
+				fi 
+				shift ; shift 
+				;;
+			esac
+			init_disks_len=$(echo "$init_disks" | grep -o "[^ ]\+\( \+[^ ]\+\)*")
+		done
+	else
+		echo -e "No disks need to init!"
+	fi
+	;;
+  clear)
+    	echo "Clear all configure file on node ..."
+    	killall digioceanfsd
+    	killall digioceanfs
+    	cd $WORKDIR >/dev/null
+    	/bin/bash dev.sh -s &>/dev/null
+    	$SYSTEMCTL stop digioceand
+    	rm /etc/digioceanfs/vols/* -rf
+    	rm /var/lib/digioceand/* -rf
+    	/bin/bash dev.sh -cn &>/dev/null
+		sleep 1
+		/bin/bash dev.sh -cm &>/dev/null
+		echo "Clear all configure file on node complete ..."
+    	;;
+  restart)
+		node-manager stop &>/dev/null
+		sleep 1
+		node-manager start &>/dev/null
+		;;
+  debug)
+  		echo "Enable debug mode of node-manager ..."
+		cd $WORKDIR >/dev/null
+		/bin/bash dev.sh --debug-node-manager &>/dev/null
+		if pidof digioceand>/dev/null
+	    then
+	        echo "digioceand running"
+	        exit 0
+	    else
+	        echo "digioceand not running, start now ..."
+	    $SYSTEMCTL start digioceand
+	    fi
+		;;
+  *)
+	echo "Usage: $0 {start|stop|restart|status|init-mvl|init-mvldisk|clear|debug}" >&2
+        exit 1
+        ;;
+esac
+ 
+exit 0
+	

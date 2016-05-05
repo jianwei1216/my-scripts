@@ -1,0 +1,43 @@
+$def with (content)
+<div id="toolbar" class="ui-corner-all">
+    <button id="btnclusternodecreate">$_("clusternodecreate")</button>
+</div>
+<table id="cluternodes" cellpadding="0" class="datatable ui-widget ui-widget-content">
+    <thead>
+        <tr>
+            <th>$_('clusternodehost')</th>
+            <th>$_('clusternodeipaddr')</th>
+            <th>$_('clusternodestatus')</th>
+        </tr>
+    </thead>
+    <tbody>
+        $if content.clusternodes:
+            $for clusternode in content.clusternodes:
+                <tr>
+                    <td style="width:120px;">
+                        <span class="opertext"><a href="/clusternodeview?node=$clusternode['nodename']">$clusternode["nodename"]</a></span>
+                        <dl class="opercommand">
+                            <dd><a title="$_('delete')" href="javascript:void(0);" onclick="javascript:clusternodedeletesingle('$clusternode['nodename']');" class="ui-icon ui-icon-inline ui-icon-trash">&nbsp;</a></dd>
+                        </dl>
+                    </td>
+                    <td>$_(clusternode['ipaddr'])</td>
+                    <td>$_(clusternode['status'])</td>
+                </tr>
+    </tbody>
+</table>
+<script type="text/javascript">
+    $(ELT)(function(){
+        $(ELT)('#cluternodes').dataTable({
+            "bJQueryUI": true,
+            "sPaginationType": "full_numbers",
+            "oLanguage": {
+                "sUrl": "/static/js/temp/datatable_ZH"
+            }
+		});
+        $(ELT)('#btnclusternodecreate').button({
+            icons: {
+                primary: 'ui-icon-plusthick'
+            }
+        }).bind('click',clusternodecreate);
+    });
+</script>

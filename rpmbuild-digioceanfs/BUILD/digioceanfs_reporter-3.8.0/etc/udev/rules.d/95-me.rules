@@ -1,0 +1,5 @@
+# path=/etc/udev/rules.d/
+ACTION=="add",KERNEL=="sd[a-z]*",RUN+="/usr/bin/python /usr/local/digiserver/udevclient.pyc add-%k"
+ACTION=="remove",KERNEL=="sd[a-z]*",RUN+="/usr/bin/python /usr/local/digiserver/udevclient.pyc rm-%k"
+#ACTION=="add",KERNEL=="sd[a-z]*",RUN+="/usr/bin/touch /home/%k-add.txt"
+#ACTION=="remove",KERNEL=="sd[a-z]*",RUN+="/usr/bin/touch /home/%k-remove.txt"

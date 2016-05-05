@@ -1,0 +1,13 @@
+[Unit]
+Description=digioceanfs-gui Service
+After=graphical.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/digioceanfs-gui start
+Restart=on-abort
+
+
+[Install]
+WantedBy=multi-user.target

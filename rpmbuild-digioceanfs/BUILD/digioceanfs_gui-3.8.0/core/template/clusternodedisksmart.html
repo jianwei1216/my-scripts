@@ -1,0 +1,162 @@
+$def with (content)
+
+<div id="toolbar" class="ui-corner-all">
+    <button id="batchdisksmartshort">$_("batchdisksmartshort")</button>
+    <button id="batchdisksmartlong">$_("batchdisksmartlong")</button>
+    <button id="batchrefresh">$_("update")</button>
+</div>
+
+<div id="ds_pcontent">
+    
+</div>
+
+<script tyep="text/javascript">
+    $(ELT)(function(){
+        $(ELT)('#batchdisksmartshort').button({
+            icons: {
+                primary: 'ui-icon-gear'
+            }
+        }).bind('click',batchdisksmartshort);
+	$(ELT)('#batchdisksmartlong').button({
+            icons: {
+                primary: 'ui-icon-gear'
+            }	
+        }).bind('click',batchdisksmartlong);
+	$(ELT)('#batchrefresh').button({
+            icons: {
+                primary: 'ui-icon-refresh'
+            }	
+        }).bind('click',clusternodedisksmartload);
+
+        clusternodedisksmartload(); 
+    })
+    function clusternodedisksmartload(){
+        var url = "/clusternodedisksmartload?" + new Date().getTime();
+        $(ELT).ajax({
+            url: url,
+            data: 'is_service=' + $(ELT)('#is_service').val(),
+            dataType: 'html',
+            beforeSend: function(){
+                custLoading("$_('Loading Data ...')");
+            },
+            success: function(text){
+                $(ELT)('#loaddialog').dialog('close');
+                $(ELT)('#ds_pcontent').html(text);
+            }
+        });
+    }
+    function batchdisksmartshort(){
+        var disk_arr=new Array();
+        try{
+            $(ELT)('input[type=checkbox][name=operdisk]').each(function(){
+                if($(ELT)(this).attr("checked")){
+                    disk_arr.push("clusternodesmartdev="+$(ELT)(this).val());
+                }
+            })
+        }catch(e){
+            custAlert("$_('operfail')",e);
+            return false;
+        }
+        if(disk_arr == ''){
+            custAlert("$_('operfail')","$_('selectsmartdiskfirst')");
+            return false;
+        }
+        var disk_str=disk_arr.join("&");
+        checkSession();
+        var url = '/clusternodesmartstart?' + new Date().getTime();
+        var buttons = {
+            "$_('cancel')": function() {
+                $(ELT)(this).dialog('close');
+            },
+            "$_('confirm')": function() {
+                $(ELT)(this).dialog('close');
+                $(ELT).ajax({
+                    url: url,
+                    type: 'POST',
+                    data: 'smarttype=short' + '&' + disk_str,
+                    dataType: 'text',
+                    beforeSend: function(){
+                        custLoading("$_('clusternodesmartstartnow')");
+                    },
+                    error: function(){
+                        custAlert("$_('operfail')","Request Error!");
+                    },
+                    success: function(text){
+                        if(isNaN(text)){
+                            $(ELT)('#loaddialog').dialog('close');
+                            clusternodedisksmartload();
+                            custAlert("$_('operfail')",text + " " + "$_('clusternodesmartstartfailed')");
+                        }
+                        else{
+                            if(parseInt(text) == 0){
+                                $(ELT)('#loaddialog').dialog('close');
+                                clusternodedisksmartload();
+                                custAlert("$_('opersucc')","$_('clusternodesmartstartsucc')");
+                            }else{
+                                custAlert("$_('operfail')","$_('operfailinfo')");
+                            }
+                        }
+                    }
+                });
+            }
+        };
+        custConfirm("$_('confirmoper')","$_('clusternodesmartstartconfirm')",buttons);
+    }
+    function batchdisksmartlong(){
+        var disk_arr=new Array();
+        try{
+            $(ELT)('input[type=checkbox][name=operdisk]').each(function(){
+                if($(ELT)(this).attr("checked")){
+                    disk_arr.push("clusternodesmartdev="+$(ELT)(this).val());
+                }
+            })
+        }catch(e){
+            custAlert("$_('operfail')",e);
+            return false;
+        }
+        if(disk_arr == ''){
+            custAlert("$_('operfail')","$_('selectsmartdiskfirst')");
+            return false;
+        }
+        var disk_str=disk_arr.join("&");
+        checkSession();
+        var url = '/clusternodesmartstart?' + new Date().getTime();
+        var buttons = {
+            "$_('cancel')": function() {
+                $(ELT)(this).dialog('close');
+            },
+            "$_('confirm')": function() {
+                $(ELT)(this).dialog('close');
+                $(ELT).ajax({
+                    url: url,
+                    type: 'POST',
+                    data: 'smarttype=long' + '&' + disk_str,
+                    dataType: 'text',
+                    beforeSend: function(){
+                        custLoading("$_('clusternodesmartstartnow')");
+                    },
+                    error: function(){
+                        custAlert("$_('operfail')","Request Error!");
+                    },
+                    success: function(text){
+                        if(isNaN(text)){
+                            $(ELT)('#loaddialog').dialog('close');
+                            clusternodedisksmartload();
+                            custAlert("$_('operfail')",text + " " + "$_('clusternodesmartstartfailed')");
+                        }
+                        else{
+                            if(parseInt(text) == 0){
+                                $(ELT)('#loaddialog').dialog('close');
+                                clusternodedisksmartload();
+                                custAlert("$_('opersucc')","$_('clusternodesmartstartsucc')");
+                            }else{
+                                custAlert("$_('operfail')","$_('operfailinfo')");
+                            }
+                        }
+                    }
+                });
+            }
+        };
+        custConfirm("$_('confirmoper')","$_('clusternodesmartstartconfirm')",buttons);
+    }
+</script>

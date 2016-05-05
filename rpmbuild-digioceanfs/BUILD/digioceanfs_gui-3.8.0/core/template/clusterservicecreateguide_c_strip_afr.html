@@ -1,0 +1,248 @@
+$def with (content)
+
+<form id="formclusterservice" method="post">
+    <fieldset class="createdialog">
+        <div class="left">
+            <p>$_("clusterservicedevunused")</p><br />
+            <select id="clusterservicedisks" name="clusterservicedisks" style="height:150px;" class="ui-widget-content ui-corner-all" multiple="true">
+                $for disk in content.clusterservicediskinfo:
+                    <option>$disk['nodename']:$disk['devname']</option>
+            </select>
+        </div>
+        <div class="center">
+            <ul>
+                <li><button id="diskadd">$_("add")</button></li>
+                <li><button id="diskremove">$_("remove")</button></li>
+                <li><button id="diskaddall">$_("addall")</button></li>
+                <li><button id="diskremoveall">$_("removeall")</button></li>
+            </ul>
+        </div>
+        <div class="right">
+            <p>$_("clusternodeselected")</p>
+            <p class="tip_words"></p>
+            <select name="clusterservicestripdisks" id="clusterservicestripdisks" style="height:150px;" class="ui-widget-content ui-corner-all" multiple="true">
+            </select><br /><br />
+        </div>
+        <button id="newstrips" style="margin-left:20px;">$_("newvolume")</button>
+        <button id="addstrips">$_("addstrip")</button>
+        <div id="strips">
+        </div>
+        <label>&nbsp;</label>
+    </fieldset>
+</form>
+<script type="text/javascript">
+    $(ELT)(function(){
+        $(ELT)('p.tip_words').html('$_("select")'+ ' ' + disks_num + ' ' +'$_("disks")');
+        $(ELT)('#formclusterservice').validate({
+            errorClass: "invalid",
+            rules: {
+                clusterservicestripdisks: {
+                    required: true,
+                    minlength: disks_num,
+                    maxlength: disks_num 
+                }
+            },
+            messages: {
+                clusterservicestripdisks: {
+                    required: "$_('nodiskselected')",
+                    minlength: "$_('disknumincorrect')",
+                    maxlength: "$_('disknumincorrect')"
+                }
+            }
+        });
+        $(ELT)('#stripform').validate({
+        });
+
+        $(ELT)("#clusterservicestripdisks").dblclick(function() {$(ELT).listtolist("clusterservicestripdisks","clusterservicedisks","move",false);});
+        $(ELT)("#clusterservicedisks").dblclick(function() {$(ELT).listtolist("clusterservicedisks","clusterservicestripdisks","move",false);});
+        $(ELT)("#diskadd").button({
+            text: false,
+            icons: {
+                primary: "ui-icon-triangle-1-e"
+            }
+        }).bind("click",function() {$(ELT).listtolist("clusterservicedisks","clusterservicestripdisks","move",false);return false;});
+        $(ELT)("#diskremove").button({
+            text: false,
+            icons: {
+                primary: "ui-icon-triangle-1-w"
+            }
+        }).bind("click",function() {$(ELT).listtolist("clusterservicestripdisks","clusterservicedisks","move",false);return false;});
+        $(ELT)("#diskaddall").button({
+            text: false,
+            icons: {
+                primary: "ui-icon-seek-next"
+            }
+        }).bind("click",function() {$(ELT).listtolist("clusterservicedisks","clusterservicestripdisks","move",true);return false;});
+        $(ELT)("#diskremoveall").button({
+            text: false,
+            icons: {
+                primary: "ui-icon-seek-prev"
+            }
+        }).bind("click",function() {$(ELT).listtolist("clusterservicestripdisks","clusterservicedisks","move",true);return false;});
+        $(ELT)("#newstrips").button({
+            icons: {
+                primary: "ui-icon-plus"
+            }
+        }).bind("click",function(){
+            var volume_id = 'volume_' + $(ELT)('#strips ul').length;
+            var mirror_num = parseInt(sub_volume_num);
+            var servicestrip = [];
+            var disks = "";
+            $(ELT)('#clusterservicestripdisks option').each(function(){servicestrip.push($(ELT)(this).html());});
+            for(i=0;i<servicestrip.length;i++){
+                if(disks == ""){
+                    disks = servicestrip[i];
+                }
+                else{
+                    disks += "<=>" + servicestrip[i];
+                }
+            }
+            if(!$(ELT)('#clusterservicestripdisks').valid()){
+                return false;
+            }
+            else{
+                if($(ELT)("input[name='li_input']")){
+                    $(ELT)("input[name='li_input']").each(function(){$(ELT)(this).removeAttr("checked");});
+                }
+                $(ELT)('#strips').append('<ul class="ul_content" id="'+ volume_id +'"><li class="li_input_content"><input class="li_input" type="radio" name="li_input" checked/></li><li class="ui-corner-all" id="'+ volume_id +'_li_1"><a href="#" class="ui-corner-all" role="button"><span class="ui-icon ui-icon-closethick">close</span></a><span class="content">' + disks + '</span></li></ul>');
+                $(ELT)("input[name='li_input']:checked").parent().append('<input type="hidden" class="flag_input" value="1" id="'+ volume_id + '_input' +'" name="' + volume_id + '_input" />')
+                $(ELT)('#clusterservicestripdisks option').each(function(){$(ELT)(this).remove();});
+                var input_id = '#'+ volume_id +'_input';
+                var input_name = $(ELT)("input[name='li_input']:checked").parent().parent().find(input_id).attr('id');
+                var obj = {};
+                //obj[input_name] = 'Unfinished';
+                obj[input_name] = mirror_num - parseInt($(ELT)("input[name='li_input']:checked").next('input').val());
+                $(ELT)('#formclusterservice').validate().showErrors(obj);
+            }
+            $(ELT)('input[name="li_input"]').bind('change',function(){
+                var input_name = $(ELT)(this).next('input').attr('id');
+                var obj = {};
+                if($(ELT)(this).next('input').val() >= mirror_num){
+                    obj[input_name] = 'Finished';
+                }
+                else{
+                    obj[input_name] = mirror_num - parseInt($(ELT)(this).next('input').val());
+                }
+                $(ELT)('#formclusterservice').validate().showErrors(obj);
+            });
+            $(ELT)("#strips ul #" + volume_id + "_li_1 a").bind("click", function(){
+                var strip = $(ELT)($(ELT)(this).parent().find('span.content')).html().split('&lt;=&gt;');
+                for(i=0;i<strip.length;i++){
+                    $(ELT)("#clusterservicedisks").append('<option>' + strip[i]  + '</option>');
+                }
+                if($(ELT)(this).parent().parent().find('li').length == 2){
+                    $(ELT)(this).parent().parent().find(volume_id +'_input').val(parseInt($(ELT)(this).parent().parent().find(volume_id +'_input').val()) - 1);
+                    if($(ELT)(this).next('input').val() >= mirror_num){
+                        obj[input_name] = 'Finished';
+                    }
+                    else{
+                        obj[input_name] = mirror_num - parseInt($(ELT)(this).next('input').val());
+                    }
+                    $(ELT)('#formclusterservice').validate().showErrors(obj);
+                    $(ELT)(this).parent().parent().remove();
+                }
+                else{
+                    $(ELT)(this).parent().parent().find(volume_id +'_input').val(parseInt($(ELT)(this).parent().parent().find(volume_id +'_input').val()) - 1);
+                    if($(ELT)(this).next('input').val() >= mirror_num){
+                        obj[input_name] = 'Finished';
+                    }
+                    else{
+                        obj[input_name] = mirror_num - parseInt($(ELT)(this).next('input').val());
+                    }
+                    $(ELT)('#formclusterservice').validate().showErrors(obj);
+                    $(ELT)(this).parent().remove();
+                }
+                return false;
+            });
+            return false;
+        });
+        $(ELT)("#addstrips").button({
+            icons: {
+                primary: "ui-icon-plus"
+            }
+        }).bind("click",function(){
+            var mirror_num = parseInt(sub_volume_num);  //mirror number
+            var servicestrip = [];  //store strip disks
+            var disks = "";
+            var volume_id = $(ELT)("input[name='li_input']:checked").parent().parent().attr('id');
+            var input_id = '#'+ volume_id +'_input';
+            var input_name = $(ELT)("input[name='li_input']:checked").parent().parent().find(input_id).attr('id');
+            var obj = {};
+            $(ELT)('#clusterservicestripdisks option').each(function(){servicestrip.push($(ELT)(this).html());});
+            for(i=0;i<servicestrip.length;i++){
+                if(disks == ""){
+                    disks = servicestrip[i];
+                }
+                else{
+                    disks += "<=>" + servicestrip[i];
+                }
+            }
+            //check the disk number
+            if(!$(ELT)('#clusterservicestripdisks').valid()){
+                return false;
+            }
+            //check the volume is selected
+            else if(volume_id == undefined){
+                $(ELT)('#formclusterservice').validate().showErrors({'clusterservicestripdisks':'novolumeselected'}); 
+            }
+            //check if the volume exist
+            else if($(ELT)('#strips ul').length == 0){
+                $(ELT)('#formclusterservice').validate().showErrors({'clusterservicestripdisks':'novolumexist'}); 
+            }
+            else{
+                var input_obj = $(ELT)("input[name='li_input']:checked").parent().parent().find(input_id);
+                //check if the volume is full
+                if(input_obj.val() >= mirror_num){
+                    obj[input_name] = 'Finished';
+                    $(ELT)('#formclusterservice').validate().showErrors(obj);
+                }
+                else{
+                    //obj[input_name] = mirror_num - $(ELT)(this).next('input').val();
+                    obj[input_name] = mirror_num - parseInt($(ELT)("input[name='li_input']:checked").next('input').val());
+                    var li_num = $(ELT)('#'+volume_id).children('li').length + '';
+                    $(ELT)("input[name='li_input']:checked").parent().parent().append('<li class="ui-corner-all" id="' + volume_id + '_li_' + li_num + '"><a href="#" class="ui-corner-all" role="button"><span class="ui-icon ui-icon-closethick">close</span></a><span class="content">'+disks+'</span></li>');
+                    input_obj.val(parseInt(input_obj.val()) + 1);
+                    if(input_obj.val() >= mirror_num){
+                        obj[input_name] = 'Finished';
+                    }
+                    else{
+                        obj[input_name] = mirror_num - parseInt($(ELT)("input[name='li_input']:checked").next('input').val());
+                    }
+                    $(ELT)('#clusterservicestripdisks option').each(function(){$(ELT)(this).remove();});
+                    $(ELT)('#formclusterservice').validate().showErrors(obj);
+                }
+            }
+            $(ELT)("#strips ul #" + volume_id + '_li_' + li_num + " a").bind("click", function(){
+                var strip = $(ELT)($(ELT)(this).parent().find('span.content')).html().split('&lt;=&gt;');
+                for(i=0;i<strip.length;i++){
+                    $(ELT)("#clusterservicedisks").append('<option>' + strip[i]  + '</option>');
+                }
+                if($(ELT)(this).parent().parent().find('li').length == 2){
+                    $(ELT)(this).parent().parent().find(input_id).val(parseInt($(ELT)(this).parent().parent().find(input_id).val()) - 1);
+                    if($(ELT)(this).next('input').val() >= mirror_num){
+                        obj[input_name] = 'Finished';
+                    }
+                    else{
+                        obj[input_name] = mirror_num - parseInt($(ELT)(this).next('input').val());
+                    }
+                    $(ELT)('#formclusterservice').validate().showErrors(obj);
+                    $(ELT)(this).parent().parent().remove();
+                }
+                else{
+                    $(ELT)(this).parent().parent().find(input_id).val(parseInt($(ELT)(this).parent().parent().find(input_id).val()) - 1);
+                    if($(ELT)(this).next('input').val() >= mirror_num){
+                        obj[input_name] = 'Finished';
+                    }
+                    else{
+                        //obj[input_name] = 'Unfinished';
+                        obj[input_name] = mirror_num - parseInt($(ELT)(this).next('input').val());
+                    }
+                    $(ELT)('#formclusterservice').validate().showErrors(obj);
+                    $(ELT)(this).parent().remove();
+                }
+                return false;
+            });
+            return false;
+        });
+    });
+</script>

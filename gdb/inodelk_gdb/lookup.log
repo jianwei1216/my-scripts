@@ -1,0 +1,77 @@
+fuse_lookup()
+{
+        /* do something */
+}
+
+...
+
+ec_lookup()
+{
+        /* do something */
+}
+
+client_lookup()
+{
+        args.loc = loc;
+        args.xdata = xdata;
+
+        WIND client3_3_lookup();
+}
+
+client3_3_lookup()
+{
+        if (args.loc->parent)
+                req.gfid = args->loc->pargfid; 
+        else
+                req.gfid = args->loc->gfid;
+        if (args.loc->name)
+                req.bname = args.loc->name;
+        else
+                req.bname = "";
+        req.xdata = xdata;
+        
+        WIND server3_3_lookup();
+}
+
+server3_3_lookup()
+{
+        args = (client's)req;   
+        state->resolve.type = RESOLVE_DONTCASE;
+        if (args.bname && args.bname!="")
+                state->resolve.pargfid = args.pargfid;
+                state->resolve.bname = args.bname;
+        else
+                state->resolve.gfid = args.gfid;
+
+        WIND posix_lookup();
+}
+
+posix_lookup()
+{
+       if (state->pargfid == NULL || state->bname = "")  
+               MAKE_INODE_HANDLE(nameless lookup);
+       else 
+               MAKE_ENTRY_HANDLE(parent, bname);
+}
+
+server_lookup_cbk()
+{
+        
+}
+
+client3_3_lookup_cbk()
+{
+        
+}
+
+ec_lookup_cbk()
+{
+        
+}
+
+...
+
+fuse_lookup_cbk()
+{
+        
+}

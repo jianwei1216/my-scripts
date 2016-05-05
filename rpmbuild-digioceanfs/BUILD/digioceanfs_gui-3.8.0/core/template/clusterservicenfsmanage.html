@@ -1,0 +1,22 @@
+$def with (content)
+
+<div id="nfsmanage">
+    <div id="tabs">
+        <ul>
+            <li><a href="/clusterservicenfsusermanage?service_name=$content.service_name">$_('nfsusermanage')</a></li>
+            <li><a href="/clusterservicenfschecklinks?service_name=$content.service_name">$_('nfschecklinks')</a></li>
+        </ul>
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(ELT)(function() {
+        $(ELT)( "#tabs" ).tabs({
+	        ajaxOptions: {
+	        	error: function( xhr, status, index, anchor ) {
+					$(ELT)( anchor.hash ).html("Couldn't load this tab. We'll try to fix this as soon as possible. " + "If this wouldn't be a demo." );
+				}
+			}
+        });
+    });
+</script>

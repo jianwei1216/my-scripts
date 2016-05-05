@@ -1,0 +1,10 @@
+[sequential-write]
+rw=write
+directory=/cluster2/test
+iodepth=32
+ioengine=libaio
+numjobs=1
+size=16G
+bs=4k
+direct=1
+name=sequential_write

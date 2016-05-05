@@ -1,0 +1,22 @@
+$def with (content)
+
+<form id="formclusterraidset_hs" method="post">
+    <fieldset>
+        <div>
+            <label>$_("clusternodediskselected")</label>
+            <span id="clusternewraiddev"></span>
+        </div>
+        <br>
+        <div>
+            <label for="clusterraidlv">$_("clusterraidname")</label>
+            <select name="clusterraidname" id="clusterraidname">
+                $if not content.clusternoderaid:
+                    <option>$_("none")</option>
+                $else:
+                    $for raid in content.clusternoderaid:
+                        <option>$raid</option>
+            </select>
+        </div>
+        <label>&nbsp;</label>
+    </fieldset>
+</form>

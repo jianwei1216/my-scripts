@@ -1,0 +1,102 @@
+
+
+ write a file
+ 1. open file --> fd
+ 2. write (fd, "something", len)
+ 3. close (fd)
+    
+               ec(2+1)                         ec(3+2)
+     fuse:     fd_t(brick0/1/2)                (no brick3/4)
+     entrylk:  inodelk parent inode
+     inodelk:  inodelk file inode
+     hold:     cluster_rename(xattr.hold=1)    close(fd)-->reopen(file)
+     unlock:   unlock file inode   
+     unlock:   unlock parent inode
+    
+
+
+-----> expand <------
+     ec_expand_data 
+     {
+         1. fd = cluster_open(digi_file)
+         2. read sourcefile
+         3. write digifile
+         4. when end-of-file --> rename
+               inodelk parent's inode
+               inodelk file's inode
+               rename(xattr.hold=1)
+               unlock file's inode
+               unlock parent's inode
+         5. close(fd)
+     }
+
+-----> user <--------
+     fd = fuse_open(file) 
+     bind(fd(brick1/2/3))
+     fuse_write(fd,data)
+     ec_write(fd,data)
+     {
+       1. find old_ec and expanding
+       2. expanding end-of-file
+       3. write sourcefile and digifile
+       4. after rename is over
+       5. find new_ec
+       6. write source_file with oldfd ???
+       7. how to map the add's brick when we use the oldfd???
+     }
+     close(fd)
+
+ -----> server rename <-------
+     sever3_3_rename
+     {
+        prepare loc/loc2
+        wind rename
+     }
+
+     sheil_rename
+     {
+        /* do something */
+     }
+
+     posix_rename
+     {
+        rename(digi_file, source_file)
+        unlink(digi_file's gfid_name's file)
+        stat(source_file)
+        cbk results
+     }
+
+     sheil_rename_cbk
+     {
+        /* do something */
+     }
+
+     server_rename_cbk
+     {
+        find(loc2.parent, loc2.name, loc2.node)
+        inode_unlink(loc2.name'dentry)
+        inode_unref(loc2.inode)
+        inode_rename
+            inode_link(loc2.name, loc.inode) --> re-create(loc2.name'dentry)
+            inode_unlink(loc.dentry)
+       -----------------------------------------
+        don't delete loc2.name dentry inode
+        delete loc.name dentry and inode
+     }
+
+----> server write <----
+     server3_3_writev
+     {
+             
+     }
+     
+     posix_writev
+     { 
+
+     }
+
+     server_writev_cbk
+     {  
+
+     }
+

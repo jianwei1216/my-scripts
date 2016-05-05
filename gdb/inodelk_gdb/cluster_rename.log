@@ -1,0 +1,22 @@
+
+inodelk parent
+inodelk inode
+{
+        if ((rename_success_count != ec->nodes) 
+             && (rename_success_count >= ec->fragments)) {
+                delete failed_subvolume's source_file;
+        } else if (rename_success_count < ec->fragments){
+                /* Note: rename_failed_subvolume must be the ec->last_ec->mask */
+                if (rename_failed_count >= ec->last_ec->fragments)
+                        delete all digi_files;
+
+        }
+}
+unlock inode
+unlock parent
+
+
+
+
+
+

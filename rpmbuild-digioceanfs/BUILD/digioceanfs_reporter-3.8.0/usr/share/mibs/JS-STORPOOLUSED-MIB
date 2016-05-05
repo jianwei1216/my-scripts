@@ -1,0 +1,66 @@
+STORPOOLUSED-MIB DEFINITIONS ::= BEGIN
+
+-- imports and exports
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, Integer32, Gauge32
+        FROM SNMPv2-SMI
+    DisplayString, TruthValue
+        FROM SNMPv2-TC
+    hackingExperimental
+        FROM HACKING-SNMP-MIB;
+
+StorpoolUsedMIB MODULE-IDENTITY
+        LAST-UPDATED    "201210150000Z"
+        ORGANIZATION    "Hacking Networked Solutions Ltd"
+        CONTACT-INFO    "Max Hacking"
+        DESCRIPTION             "This MIB module defines objects for storpool used."
+        REVISION        "201303210000Z"
+        DESCRIPTION             "Derived from DISKIO-MIB ex UCD."
+    ::= { StorpoolUsed 1 }
+
+StorpoolUsed      OBJECT IDENTIFIER ::= { hackingExperimental 5 }
+
+StorpoolUsedTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF SStorpoolUsedEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Table of HDD SMART information."
+    ::= { StorpoolUsed 2 }
+
+StorpoolUsedEntry OBJECT-TYPE
+    SYNTAX      SStorpoolUsedEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "An entry containing a device and its statistics."
+    INDEX       { StorpoolUsedIndex }
+    ::= { StorpoolUsedTable 1 }
+
+    SStorpoolUsedEntry ::= SEQUENCE {
+        StorpoolUsedIndex                Integer32,
+        StorpoolUsedName         DisplayString,
+        StorpoolUsedUsed         DisplayString
+}
+
+StorpoolUsedIndex OBJECT-TYPE
+    SYNTAX      Integer32 (0..65535)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Reference index for each observed device."
+    ::= { StorpoolUsedEntry 1 }
+
+StorpoolUsedName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Storpool name"
+    ::= { StorpoolUsedEntry 2 }
+
+StorpoolUsedUsed OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Storpool Used"
+    ::= { StorpoolUsedEntry 3 }
+
+END

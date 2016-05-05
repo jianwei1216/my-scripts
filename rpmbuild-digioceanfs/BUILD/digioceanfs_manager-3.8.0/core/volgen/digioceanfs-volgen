@@ -1,0 +1,268 @@
+#!/usr/bin/python
+
+import getopt, sys, os, string
+from optparse import OptionParser,OptionGroup,make_option
+
+prefix = "/usr"
+
+if not (prefix + "/share/digioceanfs") in sys.path:
+    sys.path.append(prefix + "/share/digioceanfs")
+
+from CreateVolfile import *
+from CreateBooster import *
+
+def check_duplicate_entry(args):
+    """Check duplicate entries in incoming arguments"""
+    _tmp = []
+    for server in args:
+        if server not in _tmp:
+            _tmp.append (server)
+        else:
+            print "Duplicate arguments detected (%s)" % server
+            raise ValueError
+
+    return
+
+def args2dict(args):
+
+    keyvalue = {}
+    for arg in args:
+        if int(arg.find(':')) == -1:
+            continue
+        first = arg.split(':', 2)[1]
+        keyvalue[first] = []
+
+    for arg in args:
+        if int(arg.find(':')) == -1:
+            continue
+        host     = arg.split(':', 2)[1]
+        port_dir = arg.split(':', 2)[2]
+        port     = port_dir.split('/')[0]
+        dir      = port_dir[len(port):]
+        keyvalue[host].append ([port,dir])
+#        if arg.split(':')[1] not in keyvalue[first]:
+#            if arg.split(':')[1][0] != '/':
+#                print "Absolute export path required for %s" % arg
+#                raise ValueError
+#            keyvalue[first].append (arg.split(':')[1])
+
+    return keyvalue
+
+def args2array(args):
+
+    array = []
+
+    for arg in args:
+        if int(arg.find(':')) == -1:
+            continue
+        array.append(arg)
+
+    return array
+
+def generate_volume_files ():
+
+    usage_str = "%prog: -n <VOLUMENAME> -t <TRANSPORT> -p <NUMBER> -a <AUTH> -r <TYPE>"
+    version_str = "%prog 3.0"
+    desc_str = "A tool to generate volume files for GlusterFS."
+
+    parse = OptionParser(usage=usage_str, version=version_str, description=desc_str)
+
+    # Basic option list
+    group = OptionGroup(parse, "Basic Options")
+    group.add_option("-n", "--name", dest="volume_name",
+                help="<volume-name>")
+    group.add_option("-t", "--transport", dest="transport_type",
+                default="tcp", help="tcp,ib-verbs default: tcp")
+    group.add_option("-p", "--port", type="int",
+                dest="port", default=6996,
+                help="<port> number")
+    group.add_option("-a", "--auth", dest="auth_param", default="*",
+                help="comma seperated ip range")
+    group.add_option("-r", "--raid", dest="raid_type",
+                help="0|1|01|2")
+    group.add_option("-l", "--local_prioritize", dest="local_prioritize", default="0",
+                help="0|1")
+    group.add_option("--nfs", action="store_true", dest="need_nfs",
+                default=False, help="booster nfs reexport")
+    group.add_option("--cifs", action="store_true", dest="need_cifs",
+                default=False, help="booster cifs reexport")
+    group.add_option("--vol-type", dest="vol_type",
+                default="export", help="vol file type:mount/export/combine/extend")
+    group.add_option("-m", "--mount-point", dest="mount_point",
+                default="/cluster", help="the mount point of cluster")
+    group.add_option("-s", "--mserver-port", dest="mserver_port",
+                default="60001", help="the mserver port number")
+    group.add_option("--layout-version", dest="layout_version",
+                default="1", help="layout version number initiated")
+    group.add_option("--afr-num", dest="afr_num", type="int",
+                default=2, help="the number to afr a file")
+    group.add_option("--afr-byhand", dest="afr_byhand", action="store_true",
+                default=False, help="whether create afr replication automatically")
+    group.add_option("--stripe-num", dest="stripe_num", type="int", 
+                default=4, help="the number to stripe a file")
+
+    #these options only for extend and shrink
+    group.add_option("--old-vol-file", dest="old_vol_file",
+                default="", help="old vol file path")
+
+    group.add_option("--extend-vol-file", dest="extend_vol_file",
+                default="", help="extend vol file path")
+
+    parse.add_option_group(group)
+
+    # CIFS option list
+    group = OptionGroup(parse, "CIFS Options")
+    group.add_option("--username", dest="cifs_username",
+                     default="gluster", help="<cifs_username>")
+    group.add_option("--guest", action="store_true",
+                     dest="enable_guest", default=False,
+                     help="enable guest access")
+    parse.add_option_group(group)
+    # NFS option list
+
+    # Advanced option list
+    group = OptionGroup(parse, "Advanced Options")
+    group.add_option("--ibdev", type="int", dest="ib_dev",
+                     default=1, help="Infiniband device number <N>")
+    group.add_option("-c", "--conf-dir", dest="conf_dir",
+                     help="output directory for volume files")
+    group.add_option("--volume-size-server", dest="size_server",
+                     help="volume size for each server")
+    group.add_option("--volume-size-client", dest="size_client",
+                     help="volume size for each client")
+
+    parse.add_option_group(group)
+
+    group = OptionGroup(parse, "Extra Options")
+    group.add_option("--unused", action="store_true",
+                     dest="unused", default=False,
+                     help="enable unused options")
+    group.add_option("--debug", action="store_true",
+                     dest="debug", default=False,
+                     help="add all debug modules to volumes")
+
+    parse.add_option_group(group)
+
+    (options, args) = parse.parse_args()
+
+    if options.vol_type != "combine" and options.vol_type != "apart":
+        if options.volume_name is None:
+            print "Error: volume name is mandatory, please provide volume name"
+            raise ValueError
+
+    if options.transport_type:
+        transports = options.transport_type.split(',')
+        for transport in transports:
+            if (transport != "tcp" and transport != "ib-verbs"):
+                print "Error: --transport: option " + transport + \
+                    " is not valid transport type"
+                raise ValueError
+
+    if options.raid_type:
+        if (options.raid_type != "0"  and 
+            options.raid_type != "1"  and
+            options.raid_type != "10" and
+            options.raid_type != "2"):
+            pass
+#            print "no raid"
+#            print "Error: --raid: option " + str(options.raid_type) + " is not valid raid type"
+#            raise ValueError
+
+
+    check_duplicate_entry(args)
+
+    server_dict = {}
+
+#    print "args:%s"%(args)
+
+    server_dict = args2dict(args)
+
+#    print "server_dict:%s"%(server_dict)
+
+    server_array = args2array(args)
+
+    if options.vol_type != "combine" and options.vol_type != "apart":
+        if len (server_dict.keys()) == 0:
+            print "Error: no servers provided, please provide atleast one server"
+            raise ValueError
+
+    if options.raid_type == "1":
+        if (len(server_array) % options.afr_num) != 0:
+            print "raid type (%s) and number of volumes (%d) invalid" % (options.raid_type,
+                                                                         len(server_array))
+            raise ValueError
+
+    if options.raid_type == "0":
+        if (len(server_array) % options.stripe_num) != 0:
+            print "raid type (%s) and number of volumes (%d) invalid" % (options.raid_type,
+                                                                         len(server_array))
+            raise ValueError
+
+    if options.raid_type == "01":
+        if (len(server_array) % (options.stripe_num * options.afr_num)):
+            print "raid type (%s) and number of volumes (%d) invalid" % (options.raid_type,
+                                                                         len(server_array))
+            raise ValueError
+
+    if options.vol_type == "export":
+        for server in server_dict.keys():
+            create_exp = CreateVolfile (server_dict, server,
+                                        None, transports,
+                                        options, None)
+            try:
+                create_exp.create_export_volfile ()
+            except IOError, (errno, strerror):
+                print "Got %s creating server volfiles for %s" % (strerror, server)
+
+    elif options.vol_type == "mount":
+        for transport in transports:
+            create_mnt = CreateVolfile (server_dict, None,
+                                        transport, transports,
+                                        options, server_array)
+            try:
+                create_mnt.create_mount_volfile ()
+            except IOError, (errno, strerror):
+                print "Got %s creating client volfiles for transport '%s'" % (strerror, transport)
+
+    elif options.vol_type == "extend":
+        create_mnt = CreateVolfile (server_dict, None,
+                                    transport, transports,
+                                    options, server_array)
+        try:
+            create_mnt.create_extend_volfile()
+        except IOError, (errno, strerror):
+            print "Got %s creating client volfiles for transport '%s'" % (strerror, transport)
+
+    elif options.vol_type == "combine":
+        create_mnt = CreateVolfile (server_dict, None,
+                                    transport, transports,
+                                    options, server_array)
+        try:
+            create_mnt.append_extend_volfile ()
+        except IOError, (errno, strerror):
+            print "Got %s creating client volfiles for transport '%s'" % (strerror, transport)
+
+    elif options.vol_type == "apart":
+        create_mnt = CreateVolfile (server_dict, None,
+                                    transport, transports,
+                                    options, server_array)
+        try:
+            create_mnt.remove_extend_volfile ()
+        except IOError, (errno, strerror):
+            print "Got %s creating client volfiles for transport '%s'" % (strerror, transport)
+
+#    create_booster = CreateBooster (options, transports)
+#    try:
+#        create_booster.configure_booster ()
+#    except IOError, (errno, strerror):
+#        print "Got %s creating booster configuration" % (strerror)
+
+def main ():
+
+    try:
+        generate_volume_files()
+    except ValueError:
+        sys.exit(1)
+
+
+main()

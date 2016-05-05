@@ -1,0 +1,102 @@
+fuse_rename()
+{
+        /* do something */
+}
+
+ec_rename()
+{
+        /* do something */
+}
+
+client_rename()
+{
+        args.oldloc = oldloc;
+        args.newloc = newloc;
+        args.xdata = xdata;
+        
+        WIND client3_3_rename();
+}
+
+client3_3_rename()
+{
+        req.oldgfid = args.oldloc.pargfid;
+        req.newgfid = args.newloc.pargfid;
+        req.oldbname = args.oldloc.bname;
+        req.newbname = args.newloc.bname;
+        req.xdata = args.xdata;
+
+        WIND server3_3_rename();
+}
+
+server3_3_rename()
+{
+        args = (client's)req;
+        state->resolve.type = RESOLVE_MUST;
+        state->resolve.bname = args.oldbname;
+        state->resolve.pargfid = args.oldgfid;
+        state->resolve2.type = RESOLVE_MAY;
+        state->resolve2.bname = args.newbname;
+        state->resolve2.pargfid = args.newgfid;
+        state->xdata = args.xdata;
+
+        resolve_entry_simple(loc/loc2);
+                parent = inode_find(state->table, resolve.pargfid); 
+                loc[2].pargfid = resolve.pargfid;
+                loc[2].parent = inode_ref(parent);
+                loc[2].name = resolve.bname;
+                inode = inode_grep(state->table, parent, resolve->bname);
+                loc[2].inode = inode_ref(inode);
+
+        WIND posix_rename();
+}
+
+posix_rename()
+{
+        MAKE_ENTRY_HANDLE(real_oldpath/real_newpath); 
+        stat(par_oldpath/par_newpath);
+        stat(real_newpath);
+        rename(real_oldpath, real_newpath);
+        unlink(real_oldpath's ./glusterfs/gfidfile);
+        stat(real_newpath);
+        stat(par_oldpath/par_newpath);
+        stat(real_newpath);
+
+        UNWIND server_rename_cbk();
+}
+
+server_rename_cbk()
+{
+        rsp.xdata = xdata;
+        tmp_inode = inode_grep(table, state->loc2.parent, state->loc2.name);
+        if(tmp_inode){
+                inode_unlink(tmp_inode, loc2.parent, loc2.name);
+                forget_inode_if_no_dentry(tmp_inode);
+                inode_unref(tmp_inode);
+        }
+        inode_rename(table, loc.parent, loc.name, loc2.parent, loc2.name);
+        rsp.stat = stbuf;
+        rsp.preoldparent = preoldparent;
+        rsp.postoldparent = postoldparent;
+        rsp.prenewparent = prenewparent;
+        rsp.postnewparent = postnewparent;
+        rsp.op_ret = op_ret;
+        rsp.op_errno = op_errno;
+
+        UNWIND client3_3_rename_cbk();
+}
+
+client3_3_rename_cbk()
+{
+        /* prepare args */
+        UNWIND ec_rename_cbk();
+}
+
+ec_rename_cbk()
+{
+        UNWIND fuse_rename_cbk(); 
+}
+
+fuse_rename_cbk()
+{
+        inode_rename(table, loc.parent, loc.name, loc2.parent, loc2.name, loc.inode, stbuf);
+}

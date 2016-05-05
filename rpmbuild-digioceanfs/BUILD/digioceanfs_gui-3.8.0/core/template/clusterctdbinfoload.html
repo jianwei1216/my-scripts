@@ -1,0 +1,35 @@
+$def with (content)
+
+<table style="padding-top:1px;">
+    <thead>
+        <tr>
+            <th>$_('nodename')</th>
+            <th>$_('clusterctdbnodes')</th>
+            <th>$_('clusterctdbpubaddr')</th>
+        </tr>
+    </thead>
+    <tbody>
+        $for ctdbinfo in content.ctdblist:
+            <tr>
+                <td>
+                    $if 'nodename' in ctdbinfo:
+                        <span>$ctdbinfo['nodename']</span>
+                </td>
+                <td>
+                    $if 'nodes' in ctdbinfo:
+                        $for node in ctdbinfo['nodes']:
+                            <span>$node</span><br />
+                    $else:
+                        <span>-</span>
+                </td>
+                <td>
+                    $if 'public_addresses' in ctdbinfo:
+                        $for pubaddr in ctdbinfo['public_addresses']:
+                            <span>$pubaddr</span><br />
+                    $else:
+                        <span>-</span>
+                </td>
+            </tr>
+    </tbody>
+</table><br />
+

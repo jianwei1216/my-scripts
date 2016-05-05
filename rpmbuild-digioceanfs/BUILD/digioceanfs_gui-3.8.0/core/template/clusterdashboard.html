@@ -1,0 +1,971 @@
+$def with (content)
+<style>
+</style>
+<!--div id="dashboard">
+	<table>
+		<tr>
+			<td width="50%">
+				<div id="cpu_chart" style="height:300px"></div>
+			</td>
+			<td>
+				<div id="mem_chart" style="height:300px"></div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<div id="net_chart" style="height:300px"></div>
+			</td>
+			<td>
+				<div id="disk_chart" style="height:300px"></div>
+			</td>
+		</tr>
+	
+	
+	
+
+	</table>
+</div-->
+
+<div id="node_detail">
+	<div id='error'></div>
+	<div id="panel_control">
+		<ul id="disk_control">
+			<li><div>$_("Disk Show Control"): </div></li>
+			<li id="unit_show" class="disk-control"><label for>$_("Unit"): <select id="unit"><option>KB</option><option>MB</option><option>TB</option></select></li>
+			<li class="disk-control"><input id="DISKREAD" value="DISKREAD" type="radio" name="diskcontrol" checked /><label for="read_show">$_("Show Read")</label></li>
+			<li class="disk-control"><input id="DISKWRITE" value="DISKWRITE" type="radio" name="diskcontrol" /><label for="write_show">$_("Show Write")</label></li>
+			<li class="disk-control"><input id="DISKXFER" value="DISKXFER" type="radio" name="diskcontrol" /><label for="iops_show">$_("Show IOPS")</label></li>
+			<li class="disk-control"><input id="show_device" value="show_device" type="radio" name="diskcontrol" /><label for="dev_show">$_("Show Device")</label></li>
+			<li class="disk-control"><input id="USAGE" value="USAGE" type="radio" name="diskcontrol" /><label for="usage_show">$_("Show Usage")</label></li>
+			<li class="disk-control"><input id="TOTAL" value="TOTAL" type="radio" name="diskcontrol"/><label for="total_show">$_("Show Total")</label></li>
+		</ul>
+	</div>
+	
+	<div id="test"></div>
+	<div id="services" class="big-panel ui-corner-all">
+		<label class="panel-title">Services</label>
+		<div id="services_panel"></div>
+	</div>
+	<div class="big-panel ui-corner-all" id="io_panel">
+		<label class="panel-title">IO</label>
+		$for node in content.clusternodes:
+			<div id="$node['nodename']_io" class="disk-panel"></div>
+	</div>
+	
+	<div class="big-panel ui-corner-all" id="net_panel">
+		<label class="panel-title">NET</label>
+		$for node in content.clusternodes:
+			<div id="$node['nodename']_net" class="net-panel"></div>
+	</div>
+	
+	<div class="big-panel ui-corner-all" id="cpu-panel">
+		<label class="panel-title">CPUs</label>
+		$for node in content.clusternodes:
+			<div id="$node['nodename']_cpu" class="cpu-panel"><div class="progress-label"></div></div>
+	</div>
+	<div class="big-panel ui-corner-all" id="alert_panel">
+		<label class="panel-title">NOTIFY</label>
+		
+	</div>
+	
+</div>
+
+<script type="text/javascript">
+buildinterval = null;        
+//var flag = 1;
+var allDetail = new Object()
+var net_init=new Object();//用于标识第一次加载网速折线图
+var rx_pre=new Object();//用于网速计算，存储上一个已接收数值
+var tx_pre=new Object();//用于网速计算，存储上一个已接收数值
+var disk_iops = [];
+var disk_read = [];
+var disk_write = [];
+var disk_key = '';
+var net_read = [];
+var net_write = [];
+var now = new Date();
+var start_time = Date.now()
+
+$(ELT)('#unit').change(function(){
+	var value = $(ELT)(this).val();
+	$(ELT)("#test").html(value);
+});
+
+function buildpage() {
+	/*if(!flag){
+		return false;
+	}*/
+	checkSession();
+	var data = 'type=dynamic';
+	$(ELT).ajax({
+		url: '/clusterdashboarddynamicinfoxml?' + new Date().getTime(),
+		dataType: 'JSON',
+		data: data,
+		type: 'POST',
+		beforeSend: function(){
+			//flag = 0;
+			clearInterval(buildinterval);
+		},
+		error: function(){
+			clearInterval(buildinterval);
+			buildinterval = setInterval('buildpage()',3000);
+		},
+		success: function(xml_d) {
+			//flag = 1; 
+			try{
+				//alert(text);
+				//var xml_d = $(ELT).parseJSON(text);
+			}catch(e){
+				alert(e);
+			}
+			$(ELT)('#loaddialog').dialog('close');
+			buildinterval = setInterval('buildpage()',3000);
+			var cpu_data = [];
+			
+			//update_cpu_charts('cpu_chart',xml_d);
+			//update_mem_charts('mem_chart',xml_d);
+			//update_disk_charts('disk_chart', xml_d);
+			//update_net_charts('net_chart',xml_d);
+			
+			//for node detail
+			//获取显示的状态值key
+			disk_key = $(ELT)('input[name=diskcontrol]:checked').attr('id');
+			update_detail(xml_d);
+		}
+	});
+}
+	$(ELT)(function(){
+		buildpage();
+		get_services();
+		$(ELT)('input').iCheck({
+		    checkboxClass: 'icheckbox_flat-blue',
+		    radioClass: 'iradio_flat-blue',
+		    increaseArea: '10%' // optional
+		  });
+		//设置hightchart不用格林威治时间，用当地时间
+		/*Highcharts.setOptions({
+			global: {
+				useUTC: false
+			}
+		});*/
+	});
+		//CPU highcharts
+		function update_cpu_charts_new(id, xml){
+			var cpu_charts = $(ELT)("#"+fixID(id));
+			var progressLabel = $(ELT)('#'+fixID(id)+' .progress-label')[0];
+			var idle = 100;
+			try{
+				$(ELT)("CPU", xml).each(function getDetail(){
+					var cpu_name = this.tagName;
+					$(ELT)('#test').append(cpu_name);
+					cpus.push(cpu_name);
+					idle = $(ELT)(this).attr("Idle");
+				});
+			}catch(e){
+				$(ELT)("#test").html(e+'---------');
+			}
+			cpu_charts.progressbar({
+				value: 100-idle+10,
+				change: function(){
+					$(ELT)(progressLabel).text( cpu_charts.progressbar('value') + '%')
+				}
+			});
+			
+		}
+		function update_cpu_charts(id, xml, node){
+			
+			var cpu_charts = $(ELT)("#"+fixID(id)).highcharts();
+			if(cpu_charts==undefined){
+				try{
+					$(ELT)("#"+fixID(id)).highcharts({
+				        chart: {
+				            type: 'solidgauge',
+				            width: 200,
+				            height: 200,
+				            //margin: [3,3,3,3],
+				        },
+				        title: {
+				            text: null,
+				        },
+				        pane: {
+				        	center: ['50%', '85%'],
+				        	size: '60%',
+				        	startAngle: -90,
+				        	endAngle: 90,
+				        	background: {
+				        		bcakgroundColor: (Highcharts.theme && Highcharts.theme.background2) || '#eee',
+				        		innerRadius: '60%',
+				        		outerRadius: '100%',
+				        		shape: 'arc'
+				        	},
+				        },	
+				        yAxis: {
+				        	stops: [
+				        		[0.1, '#55bf3b'],	//green
+				        		[0.5, '#dddf0d'],	//yeloow
+				        		[0.9, '#df5353']	//red
+				        	],
+				        	lineWidth: 0,
+				        	minorTickInterval: null,
+				        	tickPixelInterval: 400,
+				        	tickWidth: 0,
+				        	min: 0,
+				        	max: 100,
+				            title: {
+				                text: node,
+				                y: -30
+				            },
+				            labels: {
+				            	y: 0
+				            }
+				        },
+				        tooltip: {
+				            pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.percentage:.0f}%)<br>',
+				            shared: true
+				        },
+				        credits: {
+				        	enabled: false
+				        },
+				        navigation: {
+				        	buttonOptions: {
+				        		enabled: false
+				        	}
+				        },
+				        plotOptions: {
+				        	solidgauge: {
+				        		dataLabels: {
+				        			y: 25,
+				        			borderWidth: 0,
+				        			userHTML: true
+				        		}
+				        	}
+				        },
+				        series: [{
+				            name: 'Speed',
+				            data: [0],
+				            dataLabels: {
+				                format: '<div style="text-align:center"><span style="font-size:14px;color:' +	\
+				                    ((Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black') + '">{y}</span><br/>' +	\
+				                       '<span style="font-size:12px;color:silver">%</span></div>'
+				            },
+				            tooltip: {
+				                valueSuffix: ' %'
+				            }
+				        }]
+				    });
+				}catch(e){
+					alert(e);
+				}
+			}else{
+				//update_xAxis
+				//cpu_charts.xAxis[0].update({categories: nodes});
+				var nodes = [];
+				var cpus = [];
+				var idle = 0;
+				try{
+					$(ELT)("CPU", xml).each(function getDetail(){
+						var cpu_name = this.tagName;
+						$(ELT)('#test').append(cpu_name);
+						cpus.push(cpu_name);
+						idle = $(ELT)(this).attr("Idle");
+					});
+				}catch(e){
+					$(ELT)("#test").html(e+'---------');
+				}
+				//cpu_charts.xAxis[0].update({categories: cpus});
+				//alert(cpu_charts.series);
+				point = cpu_charts.series[0].points[0];
+				point.update((100-idle).fixed(2));
+			}
+		}
+		//MEM highcharts
+		function update_mem_charts_new(id, xml){
+			var mem_charts = $(ELT)("#"+fixID(id));
+			if(mem_charts==undefined){
+				$(ELT)('#'+fixID(id)).progressbar({value: false});
+			}else{
+				mem_charts.progressbar("option", {
+					value: Math.floor((Math.random() * 100))
+				});
+			}
+		}
+		function update_mem_charts(id, xml){
+			var cpu_charts = $(ELT)("#"+id).highcharts();
+			if(cpu_charts==undefined){
+				$(ELT)("#"+id).highcharts({
+			        chart: {
+			            type: 'column'
+			        },
+			        title: {
+			            text: '$_("Cluster Memery Usage")'
+			        },
+			        xAxis: {
+			            categories: []
+			        },
+			        yAxis: {
+			            min: 0,
+			            title: {
+			                text: '$_("MEM usage percent")'
+			            }
+			        },
+			        tooltip: {
+			            pointFormat: '<span style="color:{series.color}">{series.name}</span>: <b>{point.y}</b> ({point.percentage:.0f}%)<br>',
+			            shared: true
+			        },
+			        plotOptions: {
+			            column: {
+			                stacking: 'percent'
+			            }
+			        },
+			            series: [{
+			            name: 'cached',
+			            data: []
+			        }, {
+			            name: 'others',
+			            data: []
+			        }, {
+			        	name: 'free',
+			            data: []
+			        }]
+			    });
+			}else{
+				//update_xAxis
+				//cpu_charts.xAxis[0].update({categories: nodes});
+				var nodes = [];
+				var a_cached = [];
+				var a_free = [];
+				var a_others = [];
+				for(var x in xml){
+					nodes = nodes.concat([x]);
+					cpu_charts.xAxis[0].update({categories: nodes});
+					try{
+						$(ELT)("MEM", xml[x]).each(function getDetail(){
+							var free = parseFloat($(ELT)(this).attr("memfree"));
+							var cached = parseFloat($(ELT)(this).attr("cached"));
+							var total = parseFloat($(ELT)(this).attr("memtotal"));
+							a_cached = a_cached.concat([cached]);
+							a_free = a_free.concat([free]);
+							a_others = a_others.concat([parseFloat(total - free - cached)]);
+						});
+					}catch(e){
+						alert(e);
+					}
+					for(var i=0;i<cpu_charts.series.length;i++){
+						var ser = cpu_charts.series[i];
+						switch (ser.name)
+						{
+							case 'cached':
+								ser.update({data: a_cached});
+								break;
+							case 'free':
+								ser.update({data: a_free});
+								break;
+							case 'others':
+								ser.update({data: a_others});
+								break;
+							default:
+								alert(ser.name);
+						}
+					}
+				}
+			}
+		}
+		//DISK 
+		function update_disk_charts(id, xml){
+			var disk_charts = $(ELT)("#"+id).highcharts();
+			if(disk_charts==undefined){
+				$(ELT)('#'+id).highcharts({
+			        chart: {
+			            zoomType: 'x',
+			            spacingRight: 20
+			        },
+			        title: {
+			            text: 'Disk IOPS & READ & WRITE'
+			        },
+			        subtitle: {
+			            text: document.ontouchstart === undefined ?
+			                'Click and drag in the plot area to zoom in' :
+			                'Pinch the chart to zoom in'
+			        },
+			        xAxis: {
+			            type: 'datetime',
+			            maxZoom: 600 * 1000, // fourteen days
+			            title: {
+			                text: null
+			            }
+			        },
+			        yAxis: [{
+			            title: {
+			                text: id
+			            },
+			            labels: {
+		                    formatter: function(){
+		                        return (Math.abs(this.value) / 1000) + 'MB/s';
+		                    }
+		                },
+		                min: 0
+			        },{
+			        	title: {
+			                text: 'IOPS'
+			            },
+			            labels: {
+		                    formatter: function(){
+		                        return (Math.abs(this.value)) + '/s';
+		                    }
+		                },
+		                min: 0,
+		                opposite: true
+			        }],
+			        tooltip: {
+			            shared: true
+			        },
+			        legend: {
+			            enabled: false
+			        },
+			        plotOptions: {
+			            area: {
+			                fillColor: {
+			                    linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1},
+			                    stops: [
+			                        [0, Highcharts.getOptions().colors[0]],
+			                        [1, Highcharts.Color(Highcharts.getOptions().colors[0]).setOpacity(0).get('rgba')]
+			                    ]
+			                },
+			                lineWidth: 1,
+			                marker: {
+			                    enabled: false
+			                },
+			                shadow: false,
+			                states: {
+			                    hover: {
+			                        lineWidth: 1
+			                    }
+			                },
+			                threshold: null,
+			                pointInterval: 3 * 1000,
+			            	pointStart: start_time
+			            }
+			        },
+			
+			        series: [{
+			            type: 'area',
+			            name: 'IOPS',
+			            yAxis: 1,
+			            data: [0]
+			        },
+			        {
+			            type: 'area',
+			            name: 'READ',
+			            data: [0]
+			        },
+			        {
+			            type: 'area',
+			            name: 'WRITE',
+			            data: [0]
+			        }
+			        ]
+			    });
+			}else{
+				var iops = 0;
+				var read = 0;
+				var write = 0;
+				for(var x in xml){
+					try{
+						$(ELT)("DISK", xml[x]).each(function getDetail(){
+							$(ELT)(this).children().each(function getChild(){
+								iops += parseFloat($(ELT)(this).attr("DISKXFER"));
+								read += parseFloat($(ELT)(this).attr("DISKREAD"));
+								write += parseFloat($(ELT)(this).attr("DISKWRITE"));
+								//$(ELT)('#test').html(disk_iops+'<br/>'+disk_read+'<br/>'+disk_write+'<br/>');
+							});
+						});
+					}catch(e){
+						alert(e);
+					}
+				}
+				disk_iops = disk_iops.concat([iops]);
+				disk_read = disk_read.concat([read]);
+				disk_write = disk_write.concat([write]);
+				for(var i=0;i<disk_charts.series.length;i++){
+						var ser = disk_charts.series[i];
+						switch (ser.name)
+						{
+							case 'IOPS':
+								ser.update({data: disk_iops});
+								break;
+							case 'READ':
+								ser.update({data: disk_read});
+								break;
+							case 'WRITE':
+								ser.update({data: disk_write});
+								break;
+							default:
+								alert(ser.name);
+						}
+					}
+			}
+		}
+		//NET 
+		function update_net_charts(id, dataList, nic_info){
+			var net_charts = $(ELT)("#"+fixID(id)).highcharts();
+			if(net_charts==undefined){
+				$(ELT)('#'+fixID(id)).highcharts({
+			        chart: {
+			        	type: 'line',
+			            zoomType: 'x',
+			            spacingRight: 20,
+			            margin: [0,0,0,0],
+			            width: 965,
+			            height: 120,
+			            plotBackgroundColor: '#000000',
+			            //borderRadius: 5,
+			            //borderWidth: 3,
+			            borderColor: '#0c0'
+			        },
+			        title: {
+			            text: null,//nic_info[0]+':'+nic_info[3],
+			            style: {
+			            	color: '#000000',
+			            	fontSize: '6px',
+			            	fontWeight: 'bold'
+			            },
+			            algin: 'center',
+			            x: 0,
+			            y: 5,
+			        },
+			        xAxis: {
+			            type: 'datetime',
+			            //maxZoom: 30 * 1000, // fourteen days
+			            //tickInterval: 3,
+			            tickPixelInterval: 10,
+			            title: {
+			                text: null
+			            },
+			            lineColor: '#ff0',
+			            gridLineWidth: 1,
+			        	gridLineColor: '#008040',
+			        	labels: {
+			        		step: 5
+			        	}
+			        },
+			        yAxis: {
+			        	tickPixelInterval: 40,
+			        	lineColor: '#ff0',
+			        	gridLineWidth: 1,
+			        	gridLineColor: '#008040',
+			            title: {
+			                text: null
+			            },
+			            labels: {
+			            	align: 'left',
+		                    formatter: function(){
+		                        return (Math.abs(this.value) /1000) + ' MB/s';
+		                    },
+		                    x: 3,
+		                    y: -3
+		                },
+		                maxPadding: 0.05,
+		                max: nic_info[1] * 1000 / 8,
+		                min: 0//-nic_info[1] * 1000 / 8
+			        },
+			        credits: {
+			        	enabled: false
+			        },
+			        navigation: {
+			        	buttonOptions: {
+			        		enabled: false
+			        	}
+			        },
+			        tooltip: {
+			            //shared: true,
+			            crosshairs: {
+			            	width: 1,
+			            	color: 'gray',
+			            	dashStyle: 'shortdot'
+			            },
+			            positioner: function(){
+			            	return {x: 0, y: -15};
+			            },
+			            backgroundColor: null,
+			            borderWidth: 0,
+			            useHTML: true,
+	                    valueSuffix: $(ELT)('#unit').val()+'/s',
+	                    shadow: false,
+	                    headerFormat: '',
+	                    pointFormat: '<span style="color: {series.color}"\u25CF</span> {series.name}: {point.y}<br/>',
+	                    style: {
+	                    	fontSize: '3px',
+	                    }
+			        },
+			        legend: {
+			            enabled: false
+			        },
+			        series: [{
+			            type: 'line',
+			            name: 'R',
+			            lineWidth: 1,
+			            color: '#00ff00',
+			            data: (function(){
+			            	var data = [],
+			            	time = (new Date()).getTime(),i;
+			            	
+			            	for(i=-400;i<=0;i++){
+			            		data.push({
+			            			x: time + i * 3000,
+			            			y: 0
+			            		});
+			            	}
+			            	//$(ELT)('#test').html(data.length+'----------'+data.join(','));
+			            	return data;
+			            })()
+			        },
+			        {
+			            type: 'line',
+			            name: 'W',
+			            lineWidth: 1,
+			            color: '#ffffff',
+			            data: (function(){
+			            	var data = [],
+			            	time = (new Date()).getTime(),i;
+			            	var dlength = dataList[id+':write'].length ;
+			            	for(i=-400;i<=0;i++){
+			            		data.push({
+			            			x: time + i * 3000,
+			            			y: 0
+			            		});
+			            	}
+			            	return data;
+			            })()
+			        }]
+			    });
+			}else{
+				var read = 0;
+				var write = 0;
+				for(var i=0;i<net_charts.series.length;i++){
+						var ser = net_charts.series[i];
+						switch (ser.name)
+						{
+							case 'R':
+								ser.update({data: (function(){
+														
+														var dlen = dataList[id+':read'].length;
+														var d = dataList[id+':read'].slice(dlen-401,dlen-1);
+														var dd = [];
+														if(d.length<=400){
+															for(var i = 0;i<400-d.length;i++){
+																dd[i] = 0;
+															}
+														}
+														dd = dd.concat(d);
+														return dd;
+													})()
+											});
+								break;
+							case 'W':
+								ser.update({data: (function(){
+														
+														var dlen = dataList[id+':write'].length;
+														var d = dataList[id+':write'].slice(dlen-401,dlen-1);
+														var dd = [];
+														if(d.length<=400){
+															for(var i = 0;i<400-d.length;i++){
+																dd[i] = 0;
+															}
+														}
+														dd = dd.concat(d);
+														return dd;
+													})()
+											});
+								break;
+							default:
+								alert(ser.name);
+						}
+					}
+			}
+		}
+		//Services Info
+		function get_services(){
+			if(!UNIT){
+				if(getCookie('unit')){
+					var UNIT=getCookie('unit');
+				}else{
+					var UNIT="GB"
+				}
+			}
+	        var url = "/clusterdashboradservices?" + new Date().getTime();
+	        $(ELT).ajax({
+	            url: url,
+	            type: 'POST',
+	            data: 'unit='+UNIT,
+	            dataType: 'text',
+	            beforeSend: function(){
+	                custLoading("$_('Loading Data ...')");
+	            },
+	            success: function(text){
+	                $(ELT)('#loaddialog').dialog('close');
+	                var services = $(ELT).parseJSON(text);
+	                for(var i=0;i<services.length;i++){
+	                	var service = services[i];
+	                	//$(ELT)('#test').html(text);
+		                var service_panel =  '<div id="'+service['servicename']+'_div" class="service-panel ui-corner-all"><table><tr><td>Name:</td><td id="'+service['servicename']+'">'+service['servicename']+'</td></tr><tr><td>Status:</td><td id="'+service['status']+'">'+service['status']+'</td></tr><tr><td>Raid Level:</td><td>'+service['raidlv']+'</td></tr><tr><td>Capacity:</td><td>'+service['totalsize']+'</td></tr><tr><td>Usage:</td><td>'+service['usage']+'&nbsp%</td></tr><tr><td>Read/s:</td><td><span id="'+service['servicename']+'_read">NaN</span><span class="unit"></span></td></tr><tr><td>Write/s:</td><td><span id="'+service['servicename']+'_write">NaN</span><span class="unit"></span></td></tr><tr><td>IOPS:</td><td><span id="'+service['servicename']+'_iops">NaN</span><span class="unit"></span></td></tr><tr><td>Show Disk:</td><td><input type="checkbox" /></td></tr></table><input class="service-disks" type="hidden" value="" /></div>';
+		                $(ELT)('#services_panel').append(service_panel);
+		                var disk_value = '';
+		                var disks = service['disks'];
+		                for(var j=0;j<disks.length;j++){
+		                	var disk = disks[j];
+		                	var node_name = disk['mount_point'].split(':')[0];
+		                	var dev_name = disk['interface'].split('/')[2];
+		                	disk_value += node_name+':'+dev_name + ',';
+		                }
+		                $(ELT)('#'+service['servicename']+'_div input.service-disks').val(disk_value);
+		                //show disks
+		                $(ELT)('#'+service['servicename']+'_div table input').bind('click',{'disk_value': disk_value},function(event){
+		                	var disk_list = event.data.disk_value.split(',');
+		                	for(var k=0;k<disk_list.length;k++){
+		                		var disk = disk_list[k];
+		                		if(disk!=''){
+			                		var node_id = disk.split(':')[0];
+			                		var dev_name = disk.split(':')[1].toUpperCase();
+			                		$(ELT)('#'+fixID(node_id)+ '_io [title='+dev_name+']').toggleClass('service-selected');
+			                	}
+		                	}
+		                });
+		                //show throughput
+		                
+		                (function(servicename){
+		                	setInterval(function(){ getThroughtput(servicename);}, 3000);
+		                })(service['servicename']);
+		                //show service status
+		                switch(service['status']){
+		                	case 'Started':
+		                		$(ELT)('#'+service['servicename']+'_div').addClass('service-started-healthy');
+		                		break;
+		                	case 'Stopped':
+		                		$(ELT)('#'+service['servicename']+'_div').addClass('service-started-healthy');
+		                		break;
+		                	default:
+		                		$(ELT)('#'+service['servicename']+'_div').addClass('service-stop-healthy');
+		                }
+	                }
+	            }
+	        });
+		}
+		function getThroughtput(servicename){
+        	var disk_list = $(ELT)('#'+servicename+'_div input.service-disks').val().split(',');
+        	//$(ELT)('#test').append(servicename);
+        	var total_r = total_w = total_i = 0;
+        	for(var i=0;i<disk_list.length;i++){
+        		var disk = disk_list[i];
+        		if(disk!=''){
+        			try{
+                		var node_id = disk.split(':')[0];
+                		var dev_name = disk.split(':')[1].toUpperCase();
+                		var key_r = node_id+':'+dev_name+':read';
+                		var key_w = node_id+':'+dev_name+':write';
+                		var key_i = node_id+':'+dev_name+':iops';
+                		var alength = allDetail[node_id][key_w].length;
+                		var w_speed = allDetail[node_id][key_w][alength-1];
+                		var r_speed = allDetail[node_id][key_r][alength-1];
+                		var i_speed = allDetail[node_id][key_i][alength-1]
+                		//$(ELT)("#test").html(allDetail[node_id][key_w][alength-1]);
+                	}catch(e){
+                		continue;
+                	}
+                total_r += r_speed;
+                total_w += w_speed;
+                total_i += i_speed;
+            	}
+        	}
+        	if(!isNaN(total_r) && !isNaN(total_w) && !isNaN(total_i)){
+            	$(ELT)('#'+servicename+'_read').html(total_r);
+            	$(ELT)('#'+servicename+'_write').html(total_w);
+            	$(ELT)('#'+servicename+'_iops').html(total_i);
+            	//$(ELT)("#test").html(total_r+':'+total_w+':'+total_i);
+        	}/*else{
+        		//$(ELT)("#test").html(total_r+':'+total_w+':'+total_i);
+        	}*/
+        }
+
+		//DETAIL
+		function update_detail(xml_d){
+			for(var x in xml_d){
+				var node = x;
+				if(allDetail[node]==undefined){
+					allDetail[node] = new Object();
+				}
+				var xml = xml_d[x];
+				try{
+					//DISK INFO
+					var disk_total_read = disk_total_write = disk_total_iops = 0;
+					var disk_r = disk_w = disk_i = 0;
+					var busy = 0;
+					var disk_value = 0;
+					var dev_name = '';
+					var position_str = ''
+					var disk_list = ['<p class="io-header"></p>'];
+					var disk = '<span class="disk-nodev" title="nodisk"></span>';
+					var disk_table = [];
+					var jobd = -1;
+					$(ELT)("DISK", xml).each(function getDetail(){
+						$(ELT)(this).children().each(function getChild(){
+							var disks = '';
+							var x = y = 0;
+							dev_name = this.tagName;
+							disk_r = parseFloat($(ELT)(this).attr('DISKREAD'));
+							disk_w = parseFloat($(ELT)(this).attr('DISKWRITE'));
+							disk_i = parseFloat($(ELT)(this).attr('DISKXFER'));
+							var key_r = node+':'+dev_name+':read'
+							var key_w = node+':'+dev_name+':write'
+							var key_i = node+':'+dev_name+':iops'
+							//alert(allDetail[node])
+							if(allDetail[node][key_r] == undefined){
+								allDetail[node][key_r] = [disk_r];
+							}else{
+								allDetail[node][key_r] = allDetail[node][key_r].concat([disk_r]);
+							}
+							if(allDetail[node][key_w] == undefined){
+								allDetail[node][key_w] = [key_w];
+							}else{
+								allDetail[node][key_w]= allDetail[node][key_w].concat([disk_w]);
+							}
+							if(allDetail[node][key_i] == undefined){
+								allDetail[node][key_i] = [key_i];
+							}else{
+								allDetail[node][key_i] = allDetail[node][key_i].concat([disk_i]);
+							}
+							position_str = $(ELT)(this).attr("POSITION");
+							if(position_str!=undefined){
+								position = parseInt(position_str.split('/')[0]);
+								jobd = parseInt(position_str.split('/')[1]);
+								if(disk_list.length==1){
+									for(var i=1;i<=jobd;i++){
+										disk_list[i] = disk;
+									}
+								}
+								if(disk_table.length==0){
+									for(var i=0;i<jobd/4;i++){
+										disk_table[i] = ['<tr>',disk,disk,disk,disk,'</tr>'];
+									}
+								}
+								service_name = $(ELT)(this).attr("SERVICE");
+								if(disk_key=='show_device'){
+									disk_value = dev_name;
+								}else{
+									disk_value = parseFloat($(ELT)(this).attr(disk_key));
+								}
+								busy = parseFloat($(ELT)(this).attr("DISKBUSY"));
+								/*
+								if($(ELT)('#'+fixID(node)+' .disk-detail [title='+dev_name+']').length > 0){
+									if(disk_key=='show_device'){
+										$(ELT)($(ELT)('#'+fixID(node)+' .disk-detail [title='+dev_name+'] [class=disk-value]')[0]).html(disk_value);
+									}else{
+										$(ELT)($(ELT)('#'+fixID(node)+' .disk-detail [title='+dev_name+'] [class=disk-value]')[0]).html(disk_value.toFixed(1));
+									}
+									disk_total_read += disk_r;
+									disk_total_write += disk_w;
+									disk_total_iops += disk_i;
+								}else{
+									disk_total_read = disk_r;
+									disk_total_write = disk_w;
+									disk_total_iops = disk_i;
+									//disk_list += '<span class="disk-dev" title="'+dev_name+'"><span class="disk-value">'+disk_value.toFixed(1)+'</span>';
+									y = 4-(jobd-position)%4;//位于第几列
+									x = Math.floor((jobd-position)/4);//位于第几行
+									disk_table[x][y] = '<td><span class="disk-dev" title="'+dev_name+'"><span class="disk-value">'+disk_value.toFixed(1)+'</span></td>';
+									for(var i=0;i<disk_table.length;i++){
+										disks += disk_table[i].join('');
+									}
+									$(ELT)($(ELT)('#'+fixID(node)+' .disk-detail')[0]).html('<table>'+disks+'</table>');
+								}*/
+								if($(ELT)('#'+fixID(node)+'_io [title='+dev_name+']').length > 0){
+									if(disk_key=='show_device'){
+										$(ELT)($(ELT)('#'+fixID(node)+'_io [title='+dev_name+'] [class=disk-value]')[0]).html(disk_value);
+									}else{
+										$(ELT)($(ELT)('#'+fixID(node)+'_io [title='+dev_name+'] [class=disk-value]')[0]).html(disk_value.toFixed(1));
+									}
+									//$(ELT)($(ELT)('#'+fixID(node)+'_io [title='+dev_name+'] [class=disk-value]')[0]).html(disk_value.toFixed(1));
+									disk_total_read += disk_r;
+									disk_total_write += disk_w;
+									disk_total_iops += disk_i;
+								}else{
+									disk_total_read += disk_r;
+									disk_total_write += disk_w;
+									disk_total_iops += disk_i;
+									if(disk_key=='show_device'){
+										disk_list[position] = '<span class="disk-dev" title="'+dev_name+'"><span class="disk-value">'+disk_value+'</span></span>'
+									}else{
+										disk_list[position] = '<span class="disk-dev" title="'+dev_name+'"><span class="disk-value">'+disk_value.toFixed(1)+'</span></span>'
+									}
+									$(ELT)($(ELT)('#'+fixID(node)+'_io')[0]).html(disk_list.join(''));
+								}
+								if(busy<30){
+									$(ELT)($(ELT)('#'+fixID(node)+' .disk-detail [title='+dev_name+']')[0]).css('background-color','#0c0');//free
+								}else if(30<=busy&&busy<60){
+									$(ELT)($(ELT)('#'+fixID(node)+' .disk-detail [title='+dev_name+']')[0]).css('background-color','#ffc000');;//working
+								}else if(60<=busy&&busy<90){
+									$(ELT)($(ELT)('#'+fixID(node)+' .disk-detail [title='+dev_name+']')[0]).css('background-color','#ff9400');;//busy
+								}else{
+									$(ELT)($(ELT)('#'+fixID(node)+' .disk-detail [title='+dev_name+']')[0]).css('background-color','#ff5c00');;//wait
+								}
+							}
+						});
+					});
+					//NET INFO
+					var nic_name = '';
+					var nic_speed = 0;
+					var nic_mac = '';
+					var nic_ip = '';
+					var nic_read = 0;
+					var nic_write = 0;
+					var net_list = ['<p></p>'];
+					if($(ELT)('#'+fixID(node+'_net p')).length == 0){
+						$(ELT)('#'+fixID(node+'_net')).append('<p class="net-header"></p>');
+					}
+					$(ELT)("NET", xml).each(function getDetail(){
+						$(ELT)(this).children().each(function getChild(){
+							nic_name = this.tagName;
+							if(nic_name.indexOf('ETH') >= 0){
+								nic_speed = parseFloat($(ELT)(this).attr('SPEED'));
+								nic_mac = $(ELT)(this).attr('MAC');
+								nic_ip = $(ELT)(this).attr('IP');
+								nic_read = parseFloat($(ELT)(this).attr('read'));
+								nic_write = parseFloat($(ELT)(this).attr('write'));
+								var nic_info = [nic_name, nic_speed, nic_mac, nic_ip];
+								var key_r = node+':'+nic_name+':read';
+								var key_w = node+':'+nic_name+':write';
+								if(allDetail[node][key_r] == undefined){
+									allDetail[node][key_r] = [nic_read];
+								}else{
+									allDetail[node][key_r] = allDetail[node][key_r].concat([nic_read]);
+								}
+								if(allDetail[node][key_w] == undefined){
+									allDetail[node][key_w] = [nic_write];
+								}else{
+									allDetail[node][key_w]= allDetail[node][key_w].concat([nic_write]);
+								}
+								//alert(allDetail[node][key_w]);
+								var dev_id = node+':'+nic_name;
+								var dev_header = 'NODE: &nbsp'+node+'MAC: &nbsp' +nic_mac+ 'IP: &nbsp'+nic_ip
+								if($(ELT)('#'+fixID(node+':'+nic_name)).length == 0	){
+									$(ELT)('#'+fixID(node+'_net')).append('<div class="big-panel net-dev-panel ui-corner-all"><label class="panel-title">'+nic_name+'</label><div id="'+dev_id+'" class="net-dev ui-corner-all" title="'+nic_name+':'+nic_ip+'"></div></div>');
+									update_net_charts(dev_id, allDetail[node], nic_info);
+								}else{
+									update_net_charts(dev_id, allDetail[node], nic_info);
+								}
+							}
+						});
+					});
+					
+					//CPU INFO
+					//update_cpu_charts(node+'_cpu', xml, node);
+					update_cpu_charts_new(node+'_cpu',xml);
+				}catch(e){
+					$(ELT)('#error').append('<span>'+e.lineNumber + '-->' + e.message+'</span><br/>');
+				}
+				//node disk total info
+				//alert(allDetail['node-2.ballma']['node-2.ballma:sdb:read']);
+				$(ELT)($(ELT)('#'+fixID(node)+'_net p')[0]).html('NODE: &nbsp '+x) 
+				$(ELT)($(ELT)('#'+fixID(node)+'_io p')[0]).html('NODE: &nbsp '+x+' &nbspTOTAL READ:&nbsp<b class="disk-total-read">'+disk_total_read.toFixed(1)+'</b> &nbspTOTAL WRITE: &nbsp<b class="disk-total-write">'+disk_total_write.toFixed(1)+'</b>&nbspIOPS: &nbsp<b class="disk-total-iops">'+disk_total_iops.toFixed(1)+'</b>');
+			}
+		}
+</script>

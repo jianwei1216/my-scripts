@@ -1,0 +1,81 @@
+SYSMSG-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, Integer32, Gauge32
+        FROM SNMPv2-SMI
+    DisplayString, TruthValue
+        FROM SNMPv2-TC
+    hackingExperimental
+        FROM HACKING-SNMP-MIB;
+
+SysMsgMIB MODULE-IDENTITY
+        LAST-UPDATED    "201307180000Z"
+        ORGANIZATION    "Hacking Networked Solutions Ltd"
+        CONTACT-INFO    "Max Hacking"
+        DESCRIPTION             "This MIB module defines objects for HDD SMART data."
+        REVISION        "201307180000Z"
+        DESCRIPTION             "Derived from DISKIO-MIB ex UCD."
+    ::= { SysMsg 1 }
+
+SysMsg      OBJECT IDENTIFIER ::= { hackingExperimental 14 }
+
+SysMsgTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF SSysMsgEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "disk temp or add information."
+    ::= { SysMsg 2 }
+
+SysMsgEntry OBJECT-TYPE
+    SYNTAX      SSysMsg
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Disk temp or add"
+    INDEX       { SysMsgIndex }
+    ::= { SysMsgTable 1 }
+
+	SSysMsgEntry ::= SEQUENCE {
+        SysMsgIndex                 Integer32,
+	SysMsgCTime                 DisplayString,
+        SysMsgDevName                  DisplayString,
+        SysMsgDevMsg                  DisplayString,
+        SysMsgEvent               DisplayString
+}
+
+SysMsgIndex OBJECT-TYPE
+    SYNTAX      Integer32 (0..65535)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Reference index for each observed device."
+    ::= { SysMsgEntry 1 }
+
+SysMsgCTime OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "time-stamp"
+    ::= { SysMsgEntry 2 }
+
+SysMsgDevName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "disk name"
+    ::= { SysMsgEntry 3 }
+
+SysMsgDevMsg OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "disk id"
+    ::= { SysMsgEntry 4 }
+
+SysMsgEvent OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Temp or add"
+    ::= { SysMsgEntry 5 }
+
+END
+

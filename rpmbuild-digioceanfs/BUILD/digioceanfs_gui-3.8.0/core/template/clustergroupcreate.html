@@ -1,0 +1,76 @@
+$def with (content)
+
+<form id="formclustergroup" method="post">
+    <fieldset class="createdialog">
+        <label for="clustergroupname" style="width:60px;float:none;">$_("clustergroupname")</label>
+        <input type="text" id="clustergroupname" name="clustergroupname" class="ui-widget-content ui-corner-all" /><br /><br />
+        <div class="left">
+            <p>$_("clustergroupnodes")</p><br />
+            <select id="clusternodewithoutgroup" name="clusternodewithoutgroup" style="height:150px;" class="ui-widget-content ui-corner-all" multiple="true">
+                $for node in content.nodewithoutgroup['node']:
+                    <option value="$node[0]">$node[0]</option>
+            </select>
+        </div>
+        <div class="center">
+            <ul>
+                <li><button id="nodeadd">$_("add")</button></li>
+                <li><button id="noderemove">$_("remove")</button></li>
+                <li><button id="nodeaddall">$_("addall")</button></li>
+                <li><button id="noderemoveall">$_("removeall")</button></li>
+            </ul>
+        </div>
+        <div class="right">
+            <p>$_("clusternodeselected")</p><br />
+            <select name="clustergroupnodes" id="clustergroupnodes" style="height:150px;" class="ui-widget-content ui-corner-all" multiple="true">
+            </select><br /><br />
+        </div>
+        <label>&nbsp;</label>
+    </fieldset>
+</form>
+<script type="text/javascript">
+    $(ELT)(function(){
+        $(ELT)('#formclustergroup').validate({
+            errorClass: "invalid",
+            rules: {
+                clustergroupname: {
+                    required: true,
+                    inputName: true,
+                    byterangelength: [3, 20]
+                }
+            },
+            messages: {
+                clustergroupname: {
+                    required: "$_('groupnamemustnotnull')",
+                    inputName: "$_('input only include that')",
+                    byterangelength: "$_('please make sure that')"
+                }
+            }
+        });
+        $(ELT)("#clustergroupnodes").dblclick(function() {$(ELT).listtolist("clustergroupnodes","clusternodewithoutgroup","move",false);});
+        $(ELT)("#clusternodewithoutgroup").dblclick(function() {$(ELT).listtolist("clusternodewithoutgroup","clustergroupnodes","move",false);});
+        $(ELT)("#nodeadd").button({
+            text: false,
+            icons: {
+                primary: "ui-icon-triangle-1-e"
+            }
+        }).bind("click",function() {$(ELT).listtolist("clusternodewithoutgroup","clustergroupnodes","move",false);return false;});
+        $(ELT)("#noderemove").button({
+            text: false,
+            icons: {
+                primary: "ui-icon-triangle-1-w"
+            }
+        }).bind("click",function() {$(ELT).listtolist("clustergroupnodes","clusternodewithoutgroup","move",false);return false;});
+        $(ELT)("#nodeaddall").button({
+            text: false,
+            icons: {
+                primary: "ui-icon-seek-next"
+            }
+        }).bind("click",function() {$(ELT).listtolist("clusternodewithoutgroup","clustergroupnodes","move",true);return false;});
+        $(ELT)("#noderemoveall").button({
+            text: false,
+            icons: {
+                primary: "ui-icon-seek-prev"
+            }
+        }).bind("click",function() {$(ELT).listtolist("clustergroupnodes","clusternodewithoutgroup","move",true);return false;});
+    });
+</script>

@@ -1,0 +1,60 @@
+$def with (content)
+
+<form id="formclusterservice" method="post">
+    <fieldset class="createdialog">
+        <div>
+            <label for="clusterservicename">$_("clusterservicename")</label>
+            <select name="clusterservicename" id="clusterservicename" class="ui-widget-content ui-corner-all" onchange="getExportStatus();">
+                $for servicename in content.clusterservice:
+                    <option value="$servicename">$servicename</option>
+            </select><br /><br />
+        </div>
+        <div id="servicexport_content">
+            <ul id="export_ul">
+                $for k,v in content.clusterservicexport.iteritems():
+                    <li>
+                        $if v == 0 and k == 'start_num':
+                            <label>$_('status')</label>
+                            <label class="right">$_("notstart")</label>
+                        $elif v == 0 and k == 'stop_num':
+                            <label>$_('status')</label>
+                            <label class="right">$_("started")</label>
+                    </li><br />
+            </ul>
+        </div><br />
+        <label>&nbsp;</label>
+    </fieldset>
+</form>
+<script type="text/javascript">
+    function getExportStatus(){
+//        clusterservicename = $(ELT)('#clusterservicename option').val();
+        var data = $(ELT)('#formclusterservice').serialize();
+        var vbutton = $(ELT)($(ELT)('button')[4]).find('span');
+//        var data = 'clusterservicename=' + clusterservicename;
+		checkSession();
+        $(ELT).ajax({
+            url:'/clusterservicexportstatus',
+            type:'POST',
+            data:data,
+            dataType:'JSON',
+            beforeSend: function(){
+                $(ELT)('#servicexport_content ul').html('1234');
+            },
+            success: function(text){
+                var s = '';
+                $(ELT)('#servicexport_content ul').html('');
+                status_dict = text;
+                for(key in status_dict){
+                    if(status_dict[key] == 0 && key == 'start_num'){
+                        vbutton.html('$_("start")');
+                        $(ELT)('#export_ul').append('<li><label>$_("status")</label><label class="right">$_("notstart")</label></li><br />');
+                    }
+                    else if(status_dict[key] == 0 && key == 'stop_num'){
+                        vbutton.html('$_("stop")');
+                        $(ELT)('#export_ul').append('<li><label>$_("status")</label><label class="right">$_("started")</label></li><br />');
+                    }
+                }
+            }
+        });
+    }
+</script>

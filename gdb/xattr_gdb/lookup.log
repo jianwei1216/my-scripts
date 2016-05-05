@@ -1,0 +1,91 @@
+$4 = 0x7ff098014d70 "glusterfs.open-fd-count"
+1242	                pairs = next;
+1233	        while (pairs) {
+1234	                next = pairs->next;
+1235	                if (match (dict, pairs->key, pairs->value, match_data)) {
+$5 = 0x7ff098015ba0 "trusted.ec.size"
+1236	                        ret = action (dict, pairs->key, pairs->value,
+1238	                        if (ret < 0)
+1240	                        count++;
+1242	                pairs = next;
+1233	        while (pairs) {
+1234	                next = pairs->next;
+1235	                if (match (dict, pairs->key, pairs->value, match_data)) {
+$6 = 0x7ff098015eb0 "trusted.ec.version"
+1236	                        ret = action (dict, pairs->key, pairs->value,
+1238	                        if (ret < 0)
+1240	                        count++;
+1242	                pairs = next;
+1233	        while (pairs) {
+1245	        return count;
+1246	}
+are_dicts_equal (one=0x7ff09801851c, two=0x7ff0a804b2ac, match=0x7ff0ad170690 <ec_xattr_match>, value_ignore=0x7ff0ad1706e9 <ec_value_ignore>) at dict.c:201
+201	        if (num_matches1 == -1)
+$7 = 2
+204	        if ((num_matches1 == one->count) && (one->count == two->count))
+207	        num_matches2 = dict_foreach_match (two, match, NULL,
+214	        if (num_matches1 == num_matches2)
+215	                return _gf_true;
+$8 = 2
+$9 = 2
+217	}
+ec_dict_compare (dict1=0x7ff09801851c, dict2=0x7ff0a804b2ac) at ec-combine.c:281
+281	                return 1;
+#0  ec_dict_compare (dict1=0x7ff09801851c, dict2=0x7ff0a804b2ac) at ec-combine.c:281
+#1  0x00007ff0ad1722b3 in ec_combine_check (dst=0x7ff098027c6c, src=0x7ff0a805a33c, combine=0x7ff0ad150994 <ec_combine_lookup>) at ec-combine.c:861
+#2  0x00007ff0ad172402 in ec_combine (newcbk=0x7ff098027c6c, combine=0x7ff0ad150994 <ec_combine_lookup>) at ec-combine.c:894
+#3  0x00007ff0ad150f4e in ec_lookup_cbk (frame=0x7ff09c033a9c, cookie=0x2, this=0x7ff0a800ca50, op_ret=0, op_errno=22, inode=0x7ff09c003e5c, buf=0x7ff0a68c6860, xdata=0x7ff09801851c, postparent=0x7ff0a68c67f0) at ec-generic.c:752
+#4  0x00007ff0ad3f2a2f in client3_3_lookup_cbk (req=0x7ff09c034eac, iov=0x7ff09c034eec, count=1, myframe=0x7ff09c01c02c) at client-rpc-fops.c:2973
+#5  0x0000003d2081240a in rpc_clnt_handle_reply (clnt=0x7ff0a8032050, pollin=0x7ff098004840) at rpc-clnt.c:759
+#6  0x0000003d208128a8 in rpc_clnt_notify (trans=0x7ff0a80324e0, mydata=0x7ff0a8032080, event=RPC_TRANSPORT_MSG_RECEIVED, data=0x7ff098004840) at rpc-clnt.c:900
+#7  0x0000003d2080eb3a in rpc_transport_notify (this=0x7ff0a80324e0, event=RPC_TRANSPORT_MSG_RECEIVED, data=0x7ff098004840) at rpc-transport.c:541
+#8  0x00007ff0ae241dab in socket_event_poll_in (this=0x7ff0a80324e0) at socket.c:2232
+#9  0x00007ff0ae242301 in socket_event_handler (fd=11, idx=2, data=0x7ff0a80324e0, poll_in=1, poll_out=0, poll_err=0) at socket.c:2345
+#10 0x0000003d20089c80 in event_dispatch_epoll_handler (event_pool=0x1398da0, event=0x7ff0a68c6e70) at event-epoll.c:570
+#11 0x0000003d2008a06e in event_dispatch_epoll_worker (data=0x7ff0a802ff90) at event-epoll.c:673
+#12 0x0000003a7f007a51 in start_thread () from /lib64/libpthread.so.0
+#13 0x0000003a7ece893d in clone () from /lib64/libc.so.6
+283	}
+ec_combine_check (dst=0x7ff098027c6c, src=0x7ff0a805a33c, combine=0x7ff0ad150994 <ec_combine_lookup>) at ec-combine.c:871
+871	    if ((dst->op_ret >= 0) && (combine != NULL))
+Type struct _ec_cbk_data has no component named cbk.
+There is no member named cbk.
+$10 = (ec_cbk_data_t *) 0x7ff098027c6c
+$11 = (fd_t *) 0x0
+$12 = (inode_t *) 0x7ff09c003e5c
+$13 = {
+  table = 0x7ff0a80401e0, 
+  gfid = ",C\373=\206\247F\351\247\336\032c\355\271\336", <incomplete sequence \307>, 
+  lock = 1, 
+  nlookup = 29, 
+  fd_count = 0, 
+  ref = 11, 
+  ia_type = IA_IFREG, 
+  fd_list = {
+    next = 0x7ff09c003e94, 
+    prev = 0x7ff09c003e94
+  }, 
+  dentry_list = {
+    next = 0x7ff0a8041b8c, 
+    prev = 0x7ff0a8041b8c
+  }, 
+  hash = {
+    next = 0x7ff0a5ea4cc0, 
+    prev = 0x7ff0a5ea4cc0
+  }, 
+  list = {
+    next = 0x7ff09c00e1b4, 
+    prev = 0x7ff0a8040240
+  }, 
+  _ctx = 0x7ff09c0078b0
+}
+Continuing.
+
+Program received signal SIGINT, Interrupt.
+[Switching to Thread 0x7ff0b797a700 (LWP 10894)]
+0x0000003a7f0082ad in pthread_join () from /lib64/libpthread.so.0
+A debugging session is active.
+
+	Inferior 1 [process 10894] will be detached.
+
+Quit anyway? (y or n) Detaching from program: /usr/sbin/glusterfsd, process 10894

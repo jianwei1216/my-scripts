@@ -1,0 +1,51 @@
+$def with (content)
+
+<form id="clients" method="post">
+    <fieldset>
+        <div id="clientlist" style="margin:none;">
+            <table>							
+                <thead>
+                    <tr>
+                        <th>$_('cluster_client_node_ipaddr')</th>
+                        <th>$_('cluster_client_node_status')</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    $if len(content.clusterclientnodes)>0: 
+                        $for clusterclientnode in content.clusterclientnodes:	
+                            <tr>
+                                <td>
+                                    <span>$clusterclientnode['node_name']</span>
+                                    <dl class="opercommand">
+                                        <dd><a title="$_('delete')" href="javascript:void(0);" onclick="clusterserviceclientdelete('$clusterclientnode['service_name']','$clusterclientnode['node_name']')" class="ui-icon ui-icon-inline ui-icon-trash">&nbsp;</a></dd>
+                                    </dl>
+                                </td>
+                                <td>
+                                    <span>
+                                        $if _(clusterclientnode['status']) == '0':
+                                            $_('stop')
+                                        $elif _(clusterclientnode['status']) == '1':
+                                            $_('start')
+                                        $else:
+                                            $_('error')
+                                    </span>
+                                    <dl class="opercommand">
+                                        $if _(clusterclientnode['status']) == '1':
+                                            <dd><a title="$_('stop')" href="javascript:void(0);" onclick="clusterserviceclientstatus('stop','$clusterclientnode['service_name']','$clusterclientnode['node_name']')" class="ui-icon ui-icon-wrench ui-icon-pause">&nbsp;</a></dd>
+                                        $if _(clusterclientnode['status']) == '0':
+                                            <dd><a title="$_('start')" href="javascript:void(0);" onclick="clusterserviceclientstatus('start','$clusterclientnode['service_name']','$clusterclientnode['node_name']')" class="ui-icon ui-icon-wrench ui-icon-power">&nbsp;</a></dd>
+                                    </dl>
+                                </td>
+                            </tr>
+                        <tr>
+                            <td colspan='2'><a href="javascript:void(0)" onClick="clusterserviceclientcreate()" style="font-weight:bold;color:#2E6E9E;">$_("cluster_client_node_create")</a></td>
+                        </tr>
+                    $else:
+                        <tr>
+                            <td colspan='2'><a href="javascript:void(0)" onClick="clusterserviceclientcreate()" style="font-weight:bold;color:#2E6E9E;">$_("cluster_client_node_create")</a></td>
+                        </tr>
+                </tbody>
+            </table>
+        </div>
+    </fieldset>
+</form>

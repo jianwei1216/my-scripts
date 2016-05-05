@@ -1,0 +1,967 @@
+$def with (content)
+
+<input type="hidden" id="is_service" value="$content.is_service" />
+
+<div id="toolbar" class="ui-corner-all">
+    <ul>
+        <li><a class="toolbar-menu"><span class="toolbar-menu-span"><span class="ui-icon ui-icon-gear toolbar-menu-img-plus"></span>$_("clusterraidoperation")</span></a>
+            <ul>
+                <li><a href="javascript:void(0);" onclick="clusternoderaidcreate()"><span class="ui-icon ui-icon-plusthick ui-cust-link-img-plus"></span>$_("clusternoderaidcreate")</a></li>
+            </ul>
+        </li>
+        <li><a class="toolbar-menu"><span class="toolbar-menu-span"><span class="ui-icon ui-icon-gear toolbar-menu-img-plus"></span>$_("clusterdiskoperation")</span></a>
+            <ul>
+                <li><a href="javascript:void(0);" onclick="clusternoderaidset_hs()"><span class="ui-icon ui-icon-wrench ui-cust-link-img-plus"></span>$_("clusternoderaidset_hs")</a></li>
+                <li><a href="javascript:void(0);" onclick="clusternoderaiddel_hs()"><span class="ui-icon ui-icon-trash ui-cust-link-img-plus"></span>$_("clusternoderaiddel_hs")</a></li>
+                <li><a href="javascript:void(0);" onclick="clusternodereplace_nodisk()"><span class="ui-icon ui-icon-copy ui-cust-link-img-plus"></span>$_("clusternodereplace_nodisk")</a></li>
+                <li><a href="javascript:void(0);" onclick="muti_format()"><span class="ui-icon ui-icon-disk ui-cust-link-img-plus"></span>$_("format_raidinfo")</a></li>
+                <!--li><a href="javascript:void(0);" onclick="muti_reset()"><span class="ui-icon ui-icon-refresh ui-cust-link-img-plus"></span>$_("reset_raidinfo")</a></li-->
+            	<li><a href="javascript:void(0);" onclick="muti_active()"><span class="ui-icon ui-icon-lightbulb ui-cust-link-img-plus"></span>$_("clear_raidinfo")</a></li>
+            </ul>
+        </li>
+        <li><a class="toolbar-menu"><span class="toolbar-menu-span"><span class="ui-icon ui-icon-gear toolbar-menu-img-plus"></span>$_("clustercheckdisk")</span></a>
+            <ul>
+                <li><a href="javascript:void(0);" onclick="clusternodedisksmart()"><span class="ui-icon ui-icon-plusthick ui-cust-link-img-plus"></span>$_("S.M.A.R.T")</a></li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<div id="pcontent">
+
+</div>
+
+<div id="mutibar" class="ui-corner-all">
+<button id="btclusternodedisk_update">$_("clusternodedisk_update")</button>
+</div>
+<script type="text/javascript">
+    $(ELT)(function(){
+        $(ELT)("#toolbar ul li").bind("mouseover",function(){
+            $(ELT)(this).find('ul').show();
+        });
+        $(ELT)("#toolbar ul li").bind("mouseout",function(){
+            $(ELT)(this).find('ul').hide();
+        });
+        $(ELT)('#btclusternodediskmap').button({
+            icons: {
+                primary: 'ui-icon-calculator' } 
+        }); 
+        $(ELT)('#btclusternodedisk_update').button({
+            icons: {
+                primary: 'ui-icon-refresh' } 
+        }).bind('click',clusternodedisk_update); 
+        clusternoderaidload(); }); 
+	
+	//获取磁盘
+    function clusternoderaidload(){
+		custLoading("$_('Loading Data ...')");
+		if($(ELT)('#is_service').val()=='0'){
+			var url = "/clusternoderaidload?" + new Date().getTime();
+		}else{
+			var url = "/clusterserviceraidload?" + new Date().getTime();
+		}
+        $(ELT)("#pcontent").load(url,'',function(){
+			$(ELT)('#loaddialog').dialog('close');									 
+		});
+    }
+	
+	//创建RAID
+    function clusternoderaidcreate(){
+		//磁盘批量选择
+		var node='';
+		var disk_arr=new Array();
+		var node_disk_arr=new Array();
+		var datatable = $(ELT)("#disktable").DataTable();
+		var selectRows = datatable.rows('.selected').nodes();
+		try{
+			for(var i=0;i<selectRows.length;i++){
+				var rowObj = $(ELT)(selectRows[i]);
+				var selectObj = rowObj.find('.edit_arr');
+				var node_arr=selectObj.val().split(":");
+				console.log(node_arr);
+				//是否使用中
+				if($(ELT)("#"+fixID(node_arr[0]+"_"+node_arr[1]+"_status")).val()=='used'){
+					throw "$_('op_not_used')";
+				}
+				//是否是RAID
+				if(node_arr[1].charAt(0)=='m'){
+					throw "$_('op_not_raid')"
+				}
+                //是否是同一节点
+				if(node!=''&&node_arr[0]!=node){
+					throw "$_('op_not_diffnode')"
+				}
+				node=node_arr[0];
+				disk_arr.push("clusternewraiddev="+node_arr[1]);
+				node_disk_arr.push(selectObj.val());
+			}
+		}catch(e){
+			custAlert("$_('operfail')",e);
+			return false;
+		}
+		console.log(disk_arr);
+		var disk_str=disk_arr.join("&");
+		if(!disk_str){
+			custAlert("$_('operfail')","$_('nodiskselected')");
+			return false;
+		}
+		custLoading("$_('Loading Data ...')");
+		
+        var url = "/clusternoderaidcreate?node="+node+"&time=" + new Date().getTime();
+        checkSession();
+        var craiddialog = $(ELT)('<div id="craiddialog" title="$_('clusternoderaidcreate')">').appendTo('body');
+        craiddialog.load(
+            url, 
+            '',
+            function (responseText, textStatus, XMLHttpRequest) {
+                craiddialog.dialog({
+                    bgiframe: true,
+                    autoOpen: true,
+                    width: 510,
+                    modal: true,
+                    resizable: false,
+                    buttons: {
+                        "$_('cancel')": function() {
+                            $(ELT)(this).dialog('close');
+                        },
+                        "$_('create')": function() {
+                            /*var clusternewraiddev = []
+                            $(ELT)('#clusternewraiddev option').each(function(){clusternewraiddev.push($(ELT)(this).val());$(ELT)(this).attr('selected','selected');});
+                            var data = $(ELT)('#formclusterraid').serialize();
+                            if(clusternewraiddev == ''){
+                                custAlert("$_('operfail')","$_('raiddevmustnotnull')");
+                                $(ELT)(this).dialog('close');
+                            }
+                            else{*/
+								//clusternewraiddev=sda&clusternewraiddev=sdb&clusterraidlv=RAID0&clusterraidsz=256K
+								//clusternewraiddev=sda&clusternewraiddev=sdb&clusterraidlv=RAID0&clusterraidsz=256K
+								var data = "node="+node+"&"+disk_str+"&"+$(ELT)('#formclusterraid').serialize();
+								//alert(data);
+								//return false;
+                                $(ELT).ajax({
+                                    url: url,
+                                    type: 'POST',
+                                    data: data,
+                                    dataType: 'text',
+                                    beforeSend: function(){
+                                        custLoading("$_('creatingraidnow')");
+                                    },
+                                    error: function(){
+                                        $(ELT)('#loaddialog').dialog('close');
+                                        custAlert("$_('operfail')","Request Error!");
+                                    },
+                                    success: function(text){
+                                        if(isNaN(text)){
+                                            $(ELT)('#loaddialog').dialog('close');
+                                            custAlert("$_('operfail')",text);
+                                        }
+                                        else{
+                                            if(parseInt(text) == 0){
+                                                clusternoderaidload();
+                                                $(ELT)('#loaddialog').dialog('close');
+                                                custAlert("$_('opersucc')","$_('clusternoderaidcreatesucc')");
+                                            }else{
+                                                $(ELT)('#loaddialog').dialog('close');
+                                                custAlert("$_('operfail')","$_('operfailinfo')");
+                                            }
+                                        }
+                                    }
+                                });
+                                $(ELT)(this).dialog('close');
+                            //}
+                        }
+                    },
+                    close: function(){
+                        craiddialog.remove();
+                    }
+                });
+				$(ELT)('#loaddialog').dialog('close');	
+				$(ELT)("#clusternewraiddev").html(node_disk_arr.join("&nbsp;,&nbsp; "))
+            }
+        );
+    }
+	//删除RAID
+    function clusternoderaiddel(node,clusternoderaidname){
+        var url = '/clusternoderaiddel?' + new Date().getTime();
+        checkSession();
+        var buttons = {
+            "$_('cancel')": function() {
+                $(ELT)(this).dialog('close');
+            },
+            "$_('delete')": function() {
+                $(ELT)(this).dialog('close');
+                $(ELT).ajax({
+                    url: url,
+                    type: 'POST',
+                    data: 'node='+node+'&clusternoderaidname=' + clusternoderaidname,
+                    dataType: 'text',
+                    beforeSend: function(){
+                        custLoading("$_('deleteraidnow')");
+                    },
+                    error: function(){
+                        custAlert("$_('operfail')","Request Error!");
+                    },
+                    success: function(text){
+                        if(isNaN(text)){
+                            custAlert("$_('operfail')",text);
+                            $(ELT)('#loaddialog').dialog('close');
+                        }
+                        else{
+                            if(parseInt(text) == 0){
+                                clusternoderaidload();
+                                $(ELT)('#loaddialog').dialog('close');
+                                custAlert("$_('opersucc')","$_('clusternoderaiddeletesucc')");
+                            }else{
+                                custAlert("$_('operfail')","$_('operfailinfo')");
+                                $(ELT)('#loaddialog').dialog('close');
+                            }
+                        }
+                    }
+                });
+            }
+        };
+        custConfirm("$_('confirmoper')","$_('clusternoderaiddeleteconfirm')",buttons);
+    }
+	//设置热备盘
+    function clusternoderaidset_hs(){
+		//磁盘批量选择
+		var node='';
+		var disk_arr=new Array();
+		var node_disk_arr=new Array();
+		var datatable = $(ELT)("#disktable").DataTable();
+		var selectRows = datatable.rows('.selected').nodes();
+		try{
+			for(var i=0;i<selectRows.length;i++){
+				var rowObj = $(ELT)(selectRows[i]);
+				var selectObj = rowObj.find('.edit_arr');
+				var node_arr=selectObj.val().split(":");
+				//是否使用中
+				if($(ELT)("#"+fixID(node_arr[0]+"_"+node_arr[1]+"_status")).val()=='used'){
+					throw "$_('op_not_used')";
+				}
+				//是否是RAID
+				if(node_arr[1].charAt(0)=='m'){
+					throw "$_('op_not_raid')"
+				}
+                //是否是同一节点
+				if(node!=''&&node_arr[0]!=node){
+					throw "$_('op_not_diffnode')"
+				}
+				node=node_arr[0];
+				disk_arr.push("clusternewraiddev_hs="+selectObj.val());
+				node_disk_arr.push(selectObj.val());
+			}
+		}catch(e){
+			custAlert("$_('operfail')",e);
+			return false;
+		}
+		var disk_str=disk_arr.join("&");
+		if(!disk_str){
+			custAlert("$_('operfail')","$_('nodiskselected')");
+			return false;
+		}
+				
+        if($(ELT)('span.opertext').length == 0){
+            custAlert("$_('operfail')","$_('thereisnoraidnow')");
+            return false;
+        }
+        else{
+			custLoading("$_('Loading Data ...')");
+			
+            var url = "/clusternoderaidset_hs?" + new Date().getTime();
+            checkSession();
+            var set_hsdialog = $(ELT)('<div id="set_hsdialog" class="createdialog" title="$_('clusternoderaidset_hs')">').appendTo('body');
+            set_hsdialog.load(
+                url, 
+                'nodename='+node,
+                function (responseText, textStatus, XMLHttpRequest) {
+                    set_hsdialog.dialog({
+                        bgiframe: true,
+                        autoOpen: true,
+                        width: 510,
+                        modal: true,
+                        resizable: false,
+                        buttons: {
+                            "$_('cancel')": function() {
+                                $(ELT)(this).dialog('close');
+                            },
+                            "$_('create')": function() {
+                                if($(ELT)("#clusterraidname").val() == "$_('none')"){
+                                    custAlert("$_('operfail')","$_('thereisnoraidtosethsnow')");
+                                    return false;
+                                }
+                                //var clusternewraiddev_hs = []
+                                //$(ELT)('#clusternewraiddev_hs option').each(function(){clusternewraiddev_hs.push($(ELT)(this).val());$(ELT)(this).attr('selected','selected');});
+                                //var data = $(ELT)('#formclusterraidset_hs').serialize();
+								
+								//clusternewraiddev_hs=sda&clusterraidname=md10
+								var data='clusterraidname='+$(ELT)("#clusterraidname").val()+'&'+disk_str
+								//alert(data);
+								//return false;
+								
+                                /*if(clusternewraiddev_hs == ''){
+                                    custAlert("$_('operfail')","$_('raiddevforhotsparemustnotnull')");
+                                    $(ELT)(this).dialog('close');
+                                }
+                                else{*/
+                                    $(ELT).ajax({
+                                        url: url,
+                                        type: 'POST',
+                                        data: data,
+                                        dataType: 'text',
+                                        beforeSend: function(){
+                                            custLoading("$_('settinghotsparenow')");
+                                        },
+                                        error: function(){
+                                            custAlert("$_('operfail')","Request Error!");
+                                        },
+                                        success: function(text){
+                                            if(isNaN(text)){
+                                                custAlert("$_('operfail')",text);
+                                            }
+                                            else{
+                                                if(parseInt(text) == 0){
+                                                    clusternoderaidload();
+                                                    $(ELT)('#loaddialog').dialog('close');
+                                                    custAlert("$_('opersucc')","$_('settinghotsparesucc')");
+                                                }else{
+                                                    $(ELT)('#loaddialog').dialog('close');
+                                                    custAlert("$_('operfail')","$_('operfailinfo')");
+                                                }
+                                            }
+                                        }
+                                    });
+                                    $(ELT)(this).dialog('close');
+                                //}
+                            }
+                        },
+                        close: function(){
+                            set_hsdialog.remove();
+                        }
+                    });
+					$(ELT)('#loaddialog').dialog('close');	
+					$(ELT)("#clusternewraiddev").html(node_disk_arr.join("&nbsp;,&nbsp; "));
+                }
+            );
+        }
+    }
+	//删除热备盘
+    function clusternoderaiddel_hs(){
+        if($(ELT)('span.opertext').length == 0){
+            custAlert("$_('operfail')","$_('thereisnoraidnow')");
+        }
+        else{
+			custLoading("$_('Loading Data ...')");
+			
+            var url = "/clusternoderaiddel_hs?" + new Date().getTime();
+            checkSession();
+            var del_hsdialog = $(ELT)('<div id="del_hsdialog" class="createdialog" title="$_('clusternoderaiddel_hs')">').appendTo('body');
+            del_hsdialog.load(
+                url, 
+                'is_service=' + $(ELT)('#is_service').val(),
+                function (responseText, textStatus, XMLHttpRequest) {
+                    del_hsdialog.dialog({
+                        bgiframe: true,
+                        autoOpen: true,
+                        width: 510,
+                        modal: true,
+                        resizable: false,
+                        buttons: {
+                            "$_('cancel')": function() {
+                                $(ELT)(this).dialog('close');
+                            },
+                            "$_('delete')": function() {
+                                var clusterraiddev_hs = []
+                                $(ELT)('#clusterraiddev_hs option').each(function(){clusterraiddev_hs.push($(ELT)(this).val());$(ELT)(this).attr('selected','selected');});
+                                var data = $(ELT)('#formclusterraiddel_hs').serialize();
+                                if(clusterraiddev_hs == ''){
+                                    custAlert("$_('operfail')","$_('raiddevtodelhotsparemustnotnull')");
+                                    $(ELT)(this).dialog('close');
+                                }
+                                else{
+                                    $(ELT).ajax({
+                                        url: url,
+                                        type: 'POST',
+                                        data: data,
+                                        dataType: 'text',
+                                        beforeSend: function(){
+                                            custLoading("$_('deletinghotsparenow')");
+                                        },
+                                        error: function(){
+                                            custAlert("$_('operfail')","Request Error!");
+                                        },
+                                        success: function(text){
+                                            if(isNaN(text)){
+                                                custAlert("$_('operfail')",text);
+                                                $(ELT)('#loaddialog').dialog('close');
+                                            }
+                                            else{
+                                                if(parseInt(text) == 0){
+                                                    clusternoderaidload();
+                                                    $(ELT)('#loaddialog').dialog('close');
+                                                    custAlert("$_('opersucc')","$_('deletinghotsparesucc')");
+                                                }else{
+                                                    $(ELT)('#loaddialog').dialog('close');
+                                                    custAlert("$_('operfail')","$_('operfailinfo')");
+                                                }
+                                            }
+                                        }
+                                    });
+                                    $(ELT)(this).dialog('close');
+                                }
+                            }
+                        },
+                        close: function(){
+                            del_hsdialog.remove();
+                        }
+                    });
+					$(ELT)('#loaddialog').dialog('close');	
+                }
+            );
+        }
+    }
+	//激活RAID
+    /*function clusternoderaid_active(){
+        var url = '/clusternoderaid_active?' + new Date().getTime();
+        checkSession();
+        var raid_actdialog = $(ELT)('<div id="raid_actdialog" title="$_('clusternoderaid_active')">').appendTo('body');
+        raid_actdialog.load(
+            url, 
+            '',
+            function (responseText, textStatus, XMLHttpRequest) {
+                raid_actdialog.dialog({
+                    bgiframe: true,
+                    autoOpen: true,
+                    width: 550,
+                    modal: true,
+                    resizable: false,
+                    buttons: {
+                        "$_('cancel')": function() {
+                            $(ELT)(this).dialog('close');
+                        },
+                        "$_('activation')": function() {
+                            var clusternoderaidselected = [];
+                            var clusternoderaidname = [];
+                            $(ELT)('#raid_actdialog input').each(function(){
+                                if($(ELT)(this).attr('checked') == true){
+                                    clusternoderaidname.push($(ELT)(this).attr('class'));
+                                }
+                            });
+                            if(clusternoderaidname.length == 0){
+                                custAlert("$_('operfail')","$_('noraidtoactive')");
+                                return
+                            }
+                            var data = 'clusternoderaidname=' + clusternoderaidname;
+                            $(ELT).ajax({
+                                url:url,
+                                type:'POST',
+                                data: data,
+                                dataType: 'JSON',
+                                beforeSend: function(){
+                                    custLoading("$_('activeraidnow')");
+                                },
+                                error: function(){
+                                    custAlert("$_('operfail')","Request Error!")
+                                },
+                                success: function(text){
+                                    retcode_list = eval(text);
+                                    if(!isNaN(retcode_list)){
+                                        retcode = retcode_list;
+                                        if(isNaN(retcode)){
+                                            custAlert("$_('operfail')",retcode);
+                                            $(ELT)('#loaddialog').dialog('close');
+                                        }
+                                        else{
+                                            if(parseInt(retcode) == 0){
+                                                clusternoderaidload();
+                                                $(ELT)('#loaddialog').dialog('close');
+                                                custAlert("$_('opersucc')","$_('activeraidsucc')");
+                                            }
+                                            else{
+                                                $(ELT)('#loaddialog').dialog('close');
+                                                custAlert("$_('operfail')","$_('operfailinfo')");
+                                            }
+                                        }
+                                    }
+                                    else{
+                                        for(i=0;i<retcode_list.length;i++){
+                                            retcode = retcode_list[i];
+                                            if(isNaN(retcode)){
+                                                custAlert("$_('operfail')",retcode + 'activenotsucc');
+                                                $(ELT)('#loaddialog').dialog('close');
+                                            }
+                                            else{
+                                                if(parseInt(retcode) == 0){
+                                                    clusternoderaidload();
+                                                    $(ELT)('#loaddialog').dialog('close');
+                                                    custAlert("$_('opersucc')","$_('activeraidsucc')");
+                                                }
+                                                else{
+                                                    $(ELT)('#loaddialog').dialog('close');
+                                                    custAlert("$_('operfail')","$_('operfailinfo')");
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            });
+                            $(ELT)(this).dialog('close');
+                        }
+                    },
+                    close: function(){
+                        raid_actdialog.remove();
+                    }
+                });
+            }
+        );
+    }*/
+    /*function clusternodedisk_active(clusternodediskname){
+        var url = '/clusternodedisk_active?' + new Date().getTime();
+        checkSession();
+        $(ELT).ajax({
+            url:url,
+            type:'POST',
+            data:'clusternodediskname=' + clusternodediskname,
+            dataType: 'text',
+            beforeSend: function(){
+                custLoading("$_('activedisknow')");
+            },
+            error: function(){
+                custAlert("$_('operfail')","Request Error!")
+            },
+            success: function(text){
+                if(isNaN(text)){
+                    custAlert("$_('operfail')",text);
+                    $(ELT)('#loaddialog').dialog('close');
+                }
+                else{
+                    if(parseInt(text) == 0){
+                        clusternoderaidload();
+                        $(ELT)('#loaddialog').dialog('close');
+                        custAlert("$_('opersucc')","$_('activedisksucc')");
+                    }
+                    else{
+                        $(ELT)('#loaddialog').dialog('close');
+                        custAlert("$_('operfail')","$_('operfailinfo')");
+                    }
+                }
+            }
+        });
+    }
+    function clusternodediskmap(){
+	var url="/clusternodediskmap?" + new Date().getTime();
+        checkSession();
+        var diskmap = $(ELT)('<div id="diskmap" title="$_('clusternodediskmap')">').appendTo('body');
+        diskmap.load(
+            url,
+            '',
+            function (responseText, textStatus, XMLHttpRequest) {
+                diskmap.dialog({
+                    bgiframe: true,
+                    autoOpen: true,
+                    width: 550,
+                    modal: true,
+                    resizable: false,
+                    buttons: {
+                        "$_('cancel')": function() {
+                            $(ELT)(this).dialog('close');
+                        },
+		    close: function(){
+                        diskmap.remove();
+			}
+		    }
+	        });
+	    }
+	);
+    }*/
+	//更新磁盘信息
+    function clusternodedisk_update(){
+        var url = '/clusternodedisk_update?' + new Date().getTime();
+        checkSession();
+        $(ELT).ajax({
+            url:url,
+            type:'POST',
+            dataType: 'text',
+            beforeSend: function(){
+                custLoading("$_('updatingdiskinfonow')");
+            },
+            error: function(){
+                custAlert("$_('operfail')","Request Error!")
+            },
+            success: function(text){
+                if(isNaN(text)){
+                    custAlert("$_('operfail')",text);
+                    $(ELT)('#loaddialog').dialog('close');
+                }
+                else{
+                    if(parseInt(text) == 0){
+                        clusternoderaidload();
+                        $(ELT)('#loaddialog').dialog('close');
+                        custAlert("$_('opersucc')","$_('updatediskinfosucc')");
+                    }
+                    else{
+                        $(ELT)('#loaddialog').dialog('close');
+                        custAlert("$_('operfail')","$_('operfailinfo')");
+                    }
+                }
+            }
+        });
+    }
+	//磁盘替换
+    function clusternodereplace_nodisk(){
+		//磁盘批量选择
+		var disk_arr=new Array();
+		var node_disk_arr=new Array();
+		var datatable = $(ELT)("#disktable").DataTable();
+		var selectRows = datatable.rows('.selected').nodes();
+		try{
+			for(var i=0;i<selectRows.length;i++){
+				var rowObj = $(ELT)(selectRows[i]);
+				var selectObj = rowObj.find('.edit_arr');
+				var node_arr=selectObj.val().split(":");
+				//是否使用中
+				if($(ELT)("#"+fixID(node_arr[0]+"_"+node_arr[1]+"_status")).val()=='used'){
+					throw "$_('op_not_used')";
+				}
+				//是否是RAID
+				/*if(node_arr[1].charAt(0)=='m'){
+					throw "$_('op_not_raid')"
+				}*/
+				disk_arr.push("clusterreplacedisk="+node_arr[1]);
+				node_disk_arr.push(selectObj.val()+'+'+rowObj.find('.clustertotalsize').html());
+			}
+		}catch(e){
+			custAlert("$_('operfail')",e);
+			return false;
+		}
+		var disk_str=disk_arr.join("&");
+		if(!disk_str){
+			custAlert("$_('operfail')","$_('nodiskselected')");
+			return false;
+		}
+		if($(ELT)('#selected_disk').length == 0){
+		    $(ELT)('body').append('<input type="hidden" id="selected_disk" value="'+node_disk_arr.join(",")+'" />');//向弹出层传值
+		}else{
+			$(ELT)('#selected_disk').val(node_disk_arr.join(","));	
+		}
+		custLoading("$_('Loading Data ...')");
+		
+        var url = "/clusternodereplacenodisk?" + new Date().getTime();
+        checkSession();
+        var rpnodiskdialog = $(ELT)('<div id="rpnodiskdialog" title="$_('clusternodereplace_nodisk')">').appendTo('body');
+        rpnodiskdialog.load(
+            url, 
+            '',
+            function (responseText, textStatus, XMLHttpRequest) {
+                rpnodiskdialog.dialog({
+                    bgiframe: true,
+                    autoOpen: true,
+                    width: 510,
+                    modal: true,
+                    resizable: false,
+                    buttons: {
+                        "$_('cancel')": function() {
+                            $(ELT)(this).dialog('close');
+                        },
+                        "$_('replace')": function() {
+                            //var clusterreplacedisk = []
+                            //$(ELT)('#clusterreplacedisk option').each(function(){clusterreplacedisk.push($(ELT)(this).val());$(ELT)(this).attr('selected','selected');});
+                            //var data = $(ELT)('#formclusterreplacenodisk').serialize();
+							
+							//验证服务名
+                            if($(ELT)('#clusterservicename').val() == ''){
+                                custAlert("$_('operfail')","$_('noservicefound')");
+                                //$(ELT)(this).dialog('close');
+                                return false;
+                            }
+							
+                            /*if($(ELT)('#clusterservicename').val() && disk_str != ''){
+                                if(disk_arr.length != parseInt($(ELT)('#nodisknum').text())){
+                                    custAlert("$_('operfail')","$_('serviceneedreplacedisknum')" + $(ELT)('#nodisknum').text());
+                                    //$(ELT)(this).dialog('close');
+                                    return false;
+                                }
+                            }*/
+							
+							var validate_arr=[];
+							var replace_arr=[];
+							
+							//验证被替换是否选择，是否重复
+							try{
+								$(ELT)("#formclusterreplacenodisk .replace_disk").each(function(){
+									for(var i=0;i<validate_arr.length;i++){
+										if(validate_arr[i]==$(ELT)(this).val()&&validate_arr[i]!=''&&$(ELT)(this).val()!=''){
+											throw('$_("clusternodereplace_repeat")');
+										}
+									}
+									if($(ELT)(this).val()!=''){
+										validate_arr.push($(ELT)(this).val());
+									}
+								})
+								if(validate_arr==''){
+									throw('$_("clusternodereplace_none")');
+								}
+							}catch(e){
+								custAlert("$_('operfail')",e);
+								return false;
+							}
+							
+							//验证被替换磁盘和要替换的磁盘是否同一节点，被替换磁盘是否大于要替换的磁盘
+							try{
+								for(var i=0;i<node_disk_arr.length;i++){
+									var disk_size_arr=node_disk_arr[i].split('+');
+									
+									var id=disk_size_arr[0].replace(":","-");
+									
+									var disk_1=disk_size_arr[0];
+									var size_1=get_k_size(disk_size_arr[1]);
+									
+									var disk_2=$(ELT)('#'+fixID(id)).val();
+									var size_2=get_k_size(get_replace_disk_size(id,disk_2));
+									
+									if(disk_2){
+										if(!size_2){
+											throw('$_("clusternodereplace_insert_error")');
+										}
+										
+										node_1=disk_1.split(':');
+										node_2=disk_2.split(':');
+										if(node_1[0]!=node_2[0]){
+											if(!confirm('$_("clusternodereplace_diff_node_confirm")')){
+												return false;
+											}
+										}
+										
+										if(size_1<size_2){
+											if(!confirm('$_("clusternodereplace_size_confirm")')){
+												return false;
+											}
+										}
+										replace_arr.push(disk_2+','+disk_1);
+									}
+								}
+							}catch(e){
+								custAlert("$_('operfail')",e);
+								return false;
+							}
+							var replace_str=replace_arr.join(' ');
+							
+							//var data='clusterservicename='+$(ELT)('#clusterservicename').val()+'&'+disk_str;
+							
+							if($(ELT)('#disk_replace_format').attr('checked')){
+								var format='-f';
+							}else{
+								var format='';
+							}
+							var data='clusterservicename='+$(ELT)('#clusterservicename').val()+'&clusterreplacedisk='+replace_str+'&format='+format;
+							//alert(data);
+							//return false;
+                            /*if($(ELT)('#clusterservicename').val() && clusterreplacedisk == ''){
+                                custAlert("$_('operfail')","$_('replacediskmustnotnull')");
+                                $(ELT)(this).dialog('close');
+                            }else{*/
+                                $(ELT).ajax({
+                                    url: url,
+                                    type: 'POST',
+                                    data: data,
+                                    dataType: 'text',
+                                    beforeSend: function(){
+                                        custLoading("$_('replacenodisknow')");
+                                    },
+                                    error: function(){
+                                        $(ELT)('#loaddialog').dialog('close');
+                                        custAlert("$_('operfail')","Request Error!");
+                                    },
+                                    success: function(text){
+                                        if(isNaN(text)){
+                                            $(ELT)('#loaddialog').dialog('close');
+                                            custAlert("$_('operfail')",text);
+                                        }
+                                        else{
+                                            if(parseInt(text) == 0){
+                                                clusternoderaidload();
+                                                $(ELT)('#loaddialog').dialog('close');
+                                                custAlert("$_('opersucc')","$_('clusternodereplacenodisksucc')");
+                                            }else{
+                                                $(ELT)('#loaddialog').dialog('close');
+                                                custAlert("$_('operfail')","$_('operfailinfo')");
+                                            }
+                                        }
+                                    }
+                                });
+                                $(ELT)(this).dialog('close');
+                            //}
+                        }
+                    },
+					open:function(){
+						//custLoading("$_('Loading Data ...')");
+					},
+                    close: function(){
+                        rpnodiskdialog.remove();
+                    }
+                });
+				$(ELT)('#loaddialog').dialog('close');	
+				//$(ELT)("#clusternewraiddev").html(node_disk_arr.join("&nbsp;,&nbsp; "));
+            }
+        );
+		
+		function get_k_size(size){
+			if(!size){
+				return false;
+			}
+			var k_size;
+			var val=parseFloat(size);
+			var Unit=size.match(/[A-Z]{2}/);
+			if(Unit){
+				switch(Unit[0]){
+					case 'KB':
+						k_size=val;
+					break;
+					
+					case 'MB':
+						k_size=val*1024;
+					break;
+					
+					case 'GB':
+						k_size=val*1024*1024;
+					break;
+					
+					case 'TB':
+						k_size=val*1024*1024*1024;
+					break;
+					
+					default:
+						k_size=val;
+					break;
+				}
+			}else{
+				k_size=val;
+			}
+			return k_size;
+		}
+    }
+	
+	//批量操作
+	function muti_active(){
+		var buttons = {
+			"$_('cancel')": function() {
+				$(ELT)(this).dialog('close');
+			},
+			"$_('confirm')": function() {
+				$(ELT)(this).dialog('close');
+				muti_op('active');
+			}
+		}
+		custConfirm("$_('confirmoper')","$_('op_confirm')",buttons);
+	}
+	function muti_format(){
+		var buttons = {
+			"$_('cancel')": function() {
+				$(ELT)(this).dialog('close');
+			},
+			"$_('confirm')": function() {
+				$(ELT)(this).dialog('close');
+				muti_op('format');
+			}
+		}
+		custConfirm("$_('confirmoper')","$_('op_confirm')",buttons);
+	}
+	function muti_reset(){
+		var buttons = {
+			"$_('cancel')": function() {
+				$(ELT)(this).dialog('close');
+			},
+			"$_('confirm')": function() {
+				$(ELT)(this).dialog('close');
+					muti_op('reset');
+			}
+		}
+		custConfirm("$_('confirmoper')","$_('reset_disk_confirm')",buttons);
+	}
+	function muti_op(type){
+		var disk_arr=new Array();
+		var datatable = $(ELT)("#disktable").DataTable();
+		var selectRows = datatable.rows('.selected').nodes();
+		try{
+			for(var i=0;i<selectRows.length;i++){
+				var rowObj = $(ELT)(selectRows[i]);
+				var selectObj = rowObj.find('.edit_arr');
+				//激活时不能有RAID
+				var node_arr=selectObj.val().split(":");
+				if(type=='active'&&node_arr[1].charAt(0)=='m'){
+					throw "$_('op_not_raid')";
+				}
+				disk_arr.push(selectObj.val());
+			}
+		}catch(e){
+			custAlert("$_('operfail')",e);
+			return false;
+		}
+		
+		var disk_str=disk_arr.join(" ");
+		if(!disk_str){
+			custAlert("$_('operfail')","$_('nodiskselected')");
+			return false;
+		}
+		
+		$(ELT).ajax({
+			url:'/clusternodedisk_muti_op?'+new Date().getTime(),
+			type:'POST',
+			async:true,
+			data:'type='+type+'&disk_str='+disk_str,
+			dataType: 'text',
+			beforeSend: function(){
+				custLoading("$_('Update disk ...')");
+			},
+			error: function(){
+				$(ELT)('#loaddialog').dialog('close');
+				custAlert("$_('operfail')","Request Error!");
+			},
+			success: function(text){
+				if(isNaN(text)){
+					$(ELT)('#loaddialog').dialog('close');
+					custAlert("$_('operfail')",text);
+				}
+				else{
+					if(parseInt(text) == 0){
+						clusternoderaidload();
+						$(ELT)('#loaddialog').dialog('close');
+						custAlert("$_('opersucc')","$_('opersucc')");
+					}else{
+						$(ELT)('#loaddialog').dialog('close');
+						custAlert("$_('operfail')","$_('operfailinfo')");
+					}
+				}
+			}
+		});
+	}
+    function clusternodedisksmart(){
+        var url = "/clusternodedisksmart?" + new Date().getTime();
+        checkSession();
+        $(ELT)("body").append('<div id="pop_div_node_disk_smart" class="pop_div"></div>');
+        $(ELT)("#pop_div_node_disk_smart").dialog({
+            bgiframe: true,
+            autoOpen: true,
+            width: 900,
+            modal: true,
+            resizable: false,
+            title:"$_('clusternodedisksmart')",
+            open:function(){
+                custLoading("$_('Loading Data ...')");
+            },
+            close:function(){
+                $(ELT)(this).remove();
+            },
+            buttons:{
+                "$_('confirm')": function() {
+                    $(ELT)(this).dialog('close');
+                }
+            }
+        });
+        $(ELT)("#pop_div_node_disk_smart").load(url,'',function(){
+            $(ELT)('#loaddialog').dialog('close');											
+        });
+        $(ELT)("#pop_div_node_disk_smart").dialog("open");
+    }
+</script>
+

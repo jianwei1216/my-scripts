@@ -1,0 +1,56 @@
+$def with (content)
+
+<table id="clutergroups" cellpadding="0" class="datatable ui-widget ui-widget-content">
+    <thead>
+        <tr>
+            <th>$_('clustergroupname')</th>
+            <th>$_('clustergroupnodes')</th>
+        </tr>
+    </thead>
+    <tbody>
+        $if content.clustergroups:
+            $for cgkey,cgvalue in content.clustergroups.iteritems():
+                $if cgkey != content.nodewithoutgroupname:
+                    <tr>
+                        <td style="width:120px;">
+                            <span class="opertext">$cgkey</span>
+                            <dl class="opercommand">
+                                <dd><a title="$_('add')" href="javascript:void(0);" onclick="javascript:clustergroupadd('$cgkey');" class="ui-icon ui-icon-inline ui-icon-plusthick">&nbsp;</a></dd>
+                                <dd><a title="$_('edit')" href="javascript:void(0);" onclick="javascript:clustergroupedit('$cgkey');" class="ui-icon ui-icon-inline ui-icon-pencil">&nbsp;</a></dd>
+                                <dd><a title="$_('delete')" href="javascript:void(0);" onclick="javascript:clustergroupdelete('$cgkey');" class="ui-icon ui-icon-inline ui-icon-trash">&nbsp;</a></dd>
+                            </dl>
+                        </td>
+                        <td>
+                            $if cgvalue:
+                                <ul class="groupnode">
+                                    $for node in cgvalue:
+                                        <li><a class="ui-corner-all" href="/clusternodeview?node=$node[0]">$node[0]</a></li>
+                                </ul>                
+                            $else:
+                                &nbsp;
+                        </td>
+                    </tr>
+            <tr>
+                <td>$_("nodewithoutgroupname")</td>
+                <td>
+                    $if content.clustergroups[content.nodewithoutgroupname]:
+                        <ul class="groupnode">
+                            $for node in content.clustergroups[content.nodewithoutgroupname]:
+                                <li><a class="ui-corner-all" href="/clusternodeview?node=$node[0]">$node[0]</a></li>
+                        </ul>                
+                    $else:
+                        &nbsp;
+    </tbody>
+</table>
+<script type="text/javascript">
+    $(ELT)(function(){
+        $(ELT)('#clutergroups').dataTable({
+			"bStateSave": true,			 
+            "bJQueryUI": true,
+            "sPaginationType": "full_numbers",
+            "oLanguage": {
+                "sUrl": "/static/js/temp/datatable_ZH"
+            }
+		});
+    });
+</script>

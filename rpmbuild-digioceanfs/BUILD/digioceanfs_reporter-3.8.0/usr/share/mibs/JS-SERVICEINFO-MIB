@@ -1,0 +1,645 @@
+SERVICEINFO-MIB DEFINITIONS ::= BEGIN
+
+-- imports and exports
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, Integer32, Gauge32
+        FROM SNMPv2-SMI
+    DisplayString, TruthValue
+        FROM SNMPv2-TC
+    hackingExperimental
+        FROM HACKING-SNMP-MIB;
+
+ServiceInfoMIB MODULE-IDENTITY
+        LAST-UPDATED    "201508140000Z"
+        ORGANIZATION    "Hacking Service Solutions Ltd"
+        CONTACT-INFO    
+            "Max Hacking
+             DOFS Storage Management System
+             Perabytes Technology Co., Ltd. Copy Right
+             Website: http://www.perabytes.com
+             Hot Line: 400-656-1980
+            "
+        DESCRIPTION     
+            "This MIB module defines objects for service info."
+        REVISION        "201603030000Z"
+        DESCRIPTION     
+            "Modify field type."
+    ::= { ServiceInfo 1 }
+
+ServiceInfo      OBJECT IDENTIFIER ::= { hackingExperimental 21 }
+
+-- ServiceStateTable
+
+ServiceStateTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF SServiceStateEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Table of service information."
+    ::= { ServiceInfo 2 }
+
+ServiceStateEntry OBJECT-TYPE
+    SYNTAX      SServiceStateEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "An entry containing a service and its statistics."
+    INDEX       { ServiceStateIndex }
+    ::= { ServiceStateTable 1 }
+
+    SServiceStateEntry ::= SEQUENCE {
+        ServiceStateIndex          Integer32,
+        ServiceStateName           DisplayString,
+        ServiceStateRaidlv         DisplayString,
+        ServiceStateVid            DisplayString,
+        ServiceStateUp             INTEGER,
+        ServiceStateDiskNumber     Gauge32,
+        ServiceStateTransportType  DisplayString,
+        ServiceStateFreeSize       Gauge32,
+        ServiceStateTotalSize      Gauge32,
+        ServiceStateUsedSize       Gauge32,
+        ServiceStateUsage          Integer32,
+        ServiceStateBrickStatus    DisplayString,
+        ServiceStateClientNumber   Gauge32,
+}
+
+ServiceStateIndex OBJECT-TYPE
+    SYNTAX      Integer32 (0..65535)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Reference index for each observed device."
+    ::= { ServiceStateEntry 1 }
+
+ServiceStateName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Service name"
+    ::= { ServiceStateEntry 2 }
+
+ServiceStateRaidlv OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Service Level"
+    ::= { ServiceStateEntry 3 }
+
+ServiceStateVid OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Volume ID"
+    ::= { ServiceStateEntry 4 }
+
+ServiceStateUp OBJECT-TYPE
+    SYNTAX      INTEGER{create(0),start(1),stop(-1)}
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Service Status"
+    ::= { ServiceStateEntry 5 }
+
+ServiceStateDiskNumber OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The Number of Service Disk"
+    ::= { ServiceStateEntry 6 }
+
+ServiceStateTransportType OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Service Transport Type"
+    ::= { ServiceStateEntry 7 }
+
+ServiceStateFreeSize OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Service Free Size"
+    ::= { ServiceStateEntry 8 }
+
+ServiceStateTotalSize OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Service Total Size"
+    ::= { ServiceStateEntry 9 }
+
+ServiceStateUsedSize OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Service Used Size"
+    ::= { ServiceStateEntry 10 }
+
+ServiceStateUsage OBJECT-TYPE
+    SYNTAX      Integer32(0..100)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Service Size Usage"
+    ::= { ServiceStateEntry 11 }
+
+ServiceStateBrickStatus OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Service Brick Status"
+    ::= { ServiceStateEntry 12 }
+
+ServiceStateClientNumber OBJECT-TYPE
+    SYNTAX      Gauge32
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Service Client Number"
+    ::= { ServiceStateEntry 13 }
+
+-- ServiceDiskTable
+
+ServiceDiskTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF SServiceDiskEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Table of service disk information."
+    ::= { ServiceInfo 3 }
+
+ServiceDiskEntry OBJECT-TYPE
+    SYNTAX      SServiceDiskEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "An entry containing a service and its statistics."
+    INDEX       { ServiceDiskIndex }
+    ::= { ServiceDiskTable 1 }
+
+    SServiceDiskEntry ::= SEQUENCE {
+        ServiceDiskIndex  Integer32,
+        ServiceDiskServiceName   DisplayString,
+        ServiceDiskInterface     DisplayString,
+        ServiceDiskMark          DisplayString,
+        ServiceDiskMountPoint    DisplayString,
+        ServiceDiskFS            DisplayString,
+        ServiceDiskStatus        INTEGER,
+        ServiceDiskTotal         DisplayString,
+        ServiceDiskFree          DisplayString,
+        ServiceDiskUsage         Integer32,
+}
+
+ServiceDiskIndex OBJECT-TYPE
+    SYNTAX      Integer32 (0..65535)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Reference index for each observed device."
+    ::= { ServiceDiskEntry 1 }
+
+ServiceDiskServiceName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Service name"
+    ::= { ServiceDiskEntry 2 }
+
+ServiceDiskInterface OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Disk Name"
+    ::= { ServiceDiskEntry 3 }
+
+ServiceDiskMark OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Disk Mark"
+    ::= { ServiceDiskEntry 4 }
+
+ServiceDiskMountPoint OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The Mount Point of Disk"
+    ::= { ServiceDiskEntry 5 }
+
+ServiceDiskFS OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "The File System of Disk"
+    ::= { ServiceDiskEntry 6 }
+
+ServiceDiskStatus OBJECT-TYPE
+    SYNTAX      INTEGER{online(1),offline(0)}
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Disk Status"
+    ::= { ServiceDiskEntry 7 }
+
+ServiceDiskTotal OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Total Size of Disk"
+    ::= { ServiceDiskEntry 8 }
+
+ServiceDiskFree OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Free Size of Disk"
+    ::= { ServiceDiskEntry 9 }
+
+ServiceDiskUsage OBJECT-TYPE
+    SYNTAX      Integer32(0..100)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Usage of Disk"
+    ::= { ServiceDiskEntry 10 }
+
+-- ServiceClientTable
+
+ServiceClientTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF SServiceClientEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Table of service client information."
+    ::= { ServiceInfo 4 }
+
+ServiceClientEntry OBJECT-TYPE
+    SYNTAX      SServiceClientEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "An entry containing a service and its statistics."
+    INDEX       { ServiceClientIndex }
+    ::= { ServiceClientTable 1 }
+
+    SServiceClientEntry ::= SEQUENCE {
+        ServiceClientIndex        Integer32,
+        ServiceClientServiceName  DisplayString,
+        ServiceClientNodeName     DisplayString,
+        ServiceClientStatus       INTEGER,
+}
+
+ServiceClientIndex OBJECT-TYPE
+    SYNTAX      Integer32 (0..65535)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Reference index for each observed device."
+    ::= { ServiceClientEntry 1 }
+
+ServiceClientServiceName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Service name"
+    ::= { ServiceClientEntry 2 }
+
+ServiceClientNodeName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Client IP"
+    ::= { ServiceClientEntry 3 }
+
+ServiceClientStatus OBJECT-TYPE
+    SYNTAX      INTEGER{start(1),stop(0)}
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Client Status"
+    ::= { ServiceClientEntry 4 }
+
+-- ServiceQuotaTable
+
+ServiceQuotaTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF SServiceQuotaEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Table of service quota information."
+    ::= { ServiceInfo 5 }
+
+ServiceQuotaEntry OBJECT-TYPE
+    SYNTAX      SServiceQuotaEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "An entry containing a service quota path and its statistics."
+    INDEX       { ServiceQuotaIndex }
+    ::= { ServiceQuotaTable 1 }
+
+    SServiceQuotaEntry ::= SEQUENCE {
+        ServiceQuotaIndex        Integer32,
+        ServiceQuotaServiceName  DisplayString,
+        ServiceQuotaName         DisplayString,
+        ServiceQuotaPath         DisplayString,
+        ServiceQuotaTotalSize    DisplayString,
+        ServiceQuotaUsedSize     DisplayString,
+        ServiceQuotaFreeSize     DisplayString,
+}
+
+ServiceQuotaIndex OBJECT-TYPE
+    SYNTAX      Integer32 (0..65535)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Reference index for each observed device."
+    ::= { ServiceQuotaEntry 1 }
+
+ServiceQuotaServiceName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Service name"
+    ::= { ServiceQuotaEntry 2 }
+
+ServiceQuotaName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Quota Directory Name"
+    ::= { ServiceQuotaEntry 3 }
+
+ServiceQuotaPath OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Quota Directory Path"
+    ::= { ServiceQuotaEntry 4 }
+
+ServiceQuotaTotalSize OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Total Size of Quota"
+    ::= { ServiceQuotaEntry 5 }
+
+ServiceQuotaUsedSize OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Used Size of Quota"
+    ::= { ServiceQuotaEntry 6 }
+
+ServiceQuotaFreeSize OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Free Size of Quota"
+    ::= { ServiceQuotaEntry 7 }
+
+-- ServiceCIFSTable
+
+ServiceCIFSTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF SServiceCIFSEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Table of service CIFS information."
+    ::= { ServiceInfo 6 }
+
+ServiceCIFSEntry OBJECT-TYPE
+    SYNTAX      SServiceCIFSEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "An entry containing a service and its statistics."
+    INDEX       { ServiceCIFSIndex }
+    ::= { ServiceCIFSTable 1 }
+
+    SServiceCIFSEntry ::= SEQUENCE {
+        ServiceCIFSIndex        Integer32,
+        ServiceCIFSServiceName  DisplayString,
+        ServiceCIFSNodeName     DisplayString,
+        ServiceCIFSStatus       INTEGER,
+}
+
+ServiceCIFSIndex OBJECT-TYPE
+    SYNTAX      Integer32 (0..65535)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Reference index for each observed device."
+    ::= { ServiceCIFSEntry 1 }
+
+ServiceCIFSServiceName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Service name"
+    ::= { ServiceCIFSEntry 2 }
+
+ServiceCIFSNodeName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Node Name"
+    ::= { ServiceCIFSEntry 3 }
+
+ServiceCIFSStatus OBJECT-TYPE
+    SYNTAX      INTEGER{start(1),stop(0)}
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "CIFS Status"
+    ::= { ServiceCIFSEntry 4 }
+
+-- ServiceCIFSUserTable
+
+ServiceCIFSUserTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF SServiceCIFSUserEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Table of service CIFS User information."
+    ::= { ServiceInfo 7 }
+
+ServiceCIFSUserEntry OBJECT-TYPE
+    SYNTAX      SServiceCIFSUserEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "An entry containing a service and its statistics."
+    INDEX       { ServiceCIFSUserIndex }
+    ::= { ServiceCIFSUserTable 1 }
+
+    SServiceCIFSUserEntry ::= SEQUENCE {
+        ServiceCIFSUserIndex        Integer32,
+        ServiceCIFSUserServiceName  DisplayString,
+        ServiceCIFSUserName         DisplayString,
+}
+
+ServiceCIFSUserIndex OBJECT-TYPE
+    SYNTAX      Integer32 (0..65535)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Reference index for each observed device."
+    ::= { ServiceCIFSUserEntry 1 }
+
+ServiceCIFSUserServiceName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Service name"
+    ::= { ServiceCIFSUserEntry 2 }
+
+ServiceCIFSUserName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "CIFS User Name"
+    ::= { ServiceCIFSUserEntry 3 }
+
+-- ServiceCIFSLinkTable
+
+ServiceCIFSLinkTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF SServiceCIFSLinkEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Table of service CIFS Link information."
+    ::= { ServiceInfo 8 }
+
+ServiceCIFSLinkEntry OBJECT-TYPE
+    SYNTAX      SServiceCIFSLinkEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "An entry containing a service and its statistics."
+    INDEX       { ServiceCIFSLinkIndex }
+    ::= { ServiceCIFSLinkTable 1 }
+
+    SServiceCIFSLinkEntry ::= SEQUENCE {
+        ServiceCIFSLinkIndex        Integer32,
+        ServiceCIFSLinkServiceName  DisplayString,
+        ServiceCIFSLinkNodeName     DisplayString,
+        ServiceCIFSLinkStatus       DisplayString,
+        ServiceCIFSLinkUserName     DisplayString,
+        ServiceCIFSLinkPid          Integer32,
+        ServiceCIFSLinkTime         DisplayString,
+}
+
+ServiceCIFSLinkIndex OBJECT-TYPE
+    SYNTAX      Integer32 (0..65535)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Reference index for each observed device."
+    ::= { ServiceCIFSLinkEntry 1 }
+
+ServiceCIFSLinkServiceName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Service name"
+    ::= { ServiceCIFSLinkEntry 2 }
+
+ServiceCIFSLinkNodeName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Node Name"
+    ::= { ServiceCIFSLinkEntry 3 }
+
+ServiceCIFSLinkStatus OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "CIFS Link Status"
+    ::= { ServiceCIFSLinkEntry 4 }
+
+ServiceCIFSLinkUserName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "CIFS Linking User Name"
+    ::= { ServiceCIFSLinkEntry 5 }
+
+ServiceCIFSLinkPid OBJECT-TYPE
+    SYNTAX      Integer32(0..32768)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "CIFS Linking PID"
+    ::= { ServiceCIFSLinkEntry 6 }
+
+ServiceCIFSLinkTime OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "CIFS Linking Time"
+    ::= { ServiceCIFSLinkEntry 7 }
+
+-- ServiceNFSTable
+
+ServiceNFSTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF SServiceNFSEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Table of service NFS information."
+    ::= { ServiceInfo 9 }
+
+ServiceNFSEntry OBJECT-TYPE
+    SYNTAX      SServiceNFSEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "An entry containing a service and its statistics."
+    INDEX       { ServiceNFSIndex }
+    ::= { ServiceNFSTable 1 }
+
+    SServiceNFSEntry ::= SEQUENCE {
+        ServiceNFSIndex        Integer32,
+        ServiceNFSServiceName  DisplayString,
+        ServiceNFSStatus       INTEGER,
+}
+
+ServiceNFSIndex OBJECT-TYPE
+    SYNTAX      Integer32 (0..65535)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Reference index for each observed device."
+    ::= { ServiceNFSEntry 1 }
+
+ServiceNFSServiceName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Service name"
+    ::= { ServiceNFSEntry 2 }
+
+ServiceNFSStatus OBJECT-TYPE
+    SYNTAX      INTEGER{start(1),stop(0)}
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "NFS Status"
+    ::= { ServiceNFSEntry 3 }
+
+-- ServiceNFSUserTable
+
+ServiceNFSUserTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF SServiceNFSUserEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Table of service NFS User information."
+    ::= { ServiceInfo 10 }
+
+ServiceNFSUserEntry OBJECT-TYPE
+    SYNTAX      SServiceNFSUserEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "An entry containing a service and its statistics."
+    INDEX       { ServiceNFSUserIndex }
+    ::= { ServiceNFSUserTable 1 }
+
+    SServiceNFSUserEntry ::= SEQUENCE {
+        ServiceNFSUserIndex        Integer32,
+        ServiceNFSUserServiceName  DisplayString,
+        ServiceNFSUserName         DisplayString,
+}
+
+ServiceNFSUserIndex OBJECT-TYPE
+    SYNTAX      Integer32 (0..65535)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Reference index for each observed device."
+    ::= { ServiceNFSUserEntry 1 }
+
+ServiceNFSUserServiceName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Service name"
+    ::= { ServiceNFSUserEntry 2 }
+
+ServiceNFSUserName OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "NFS User Name"
+    ::= { ServiceNFSUserEntry 3 }
+
+END
+-- vim: set filetype=mib tabstop=4 expandtab nospell :miv --

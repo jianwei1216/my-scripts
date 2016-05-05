@@ -1,0 +1,66 @@
+$def with (content)
+
+
+<div id="toolbar" class="ui-corner-top" style="margin:0;">
+	<p style="width: 100px; display: block; float: left; font-size: 16px; color: rgb(46, 110, 158); margin-left: 5px;">$_("filestatuslist")</p>
+	<div id="freshtime" style="float:right">
+		<label for="freshtimeset">$(_("freshtime"))($_("seconds"))</label>
+    	<select id="freshtimeset" style="width:60px;">
+    		<option value="">N/A</option>
+    		<option value="5">5</option>
+    		<option value="15">15</option>
+    		<option value="30">30</option>
+    		<option value="60">60</option>
+    	</select>
+	</div>
+</div>
+<div id="pcontent" style="clear:both;">
+</div>
+<script type="text/javascript">
+	var freshtime = parseInt($(ELT)('#freshtimeset').find("option:selected").text());
+	var intervalId = 0;
+    $(ELT)(function(){
+        clusterserviceviewload();
+    });
+    function clusterserviceviewload(){
+    	checkSession();
+        var url = "/clusterserviceviewload?" + new Date().getTime();
+        $(ELT).ajax({
+            url: url,
+            data: '',
+            dataType: 'html',
+            beforeSend: function(){
+                custLoading("$_('Loading Data ...')");
+            },
+            success: function(text){
+                $(ELT)('#loaddialog').dialog('close');
+                $(ELT)('#pcontent').html(text);
+            }
+            });
+    }
+    function clusterservice_synfreshtime(){
+    	checkSession();
+        url = "/clusterservice_afr_syn";
+        $(ELT).ajax({
+            url: url,
+            type: 'POST',
+            data: 'servicename=' + $(ELT)('#servicename').html(),
+            dataType: 'text',
+            beforeSend: function(){
+                custLoading("$_('synservicenow')");
+            },
+            success: function(text){
+                if(isNaN(text)){
+                    $(ELT)('#loaddialog').dialog('close');
+                }
+                else{
+                    if(parseInt(text) == 0){
+                        $(ELT)('#loaddialog').dialog('close');
+                    }else{
+                        $(ELT)('#loaddialog').dialog('close');
+                    }
+                }
+            }
+        });
+    }
+</script>

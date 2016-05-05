@@ -1,0 +1,75 @@
+#!/bin/sh
+# chkconfig: 2345 99 81
+### BEGIN INIT INFO
+# Provides:       digioceanfs-client 
+# Required-Start: $remote_fs nfs-common $portmap $digioceand 
+# Required-Stop:  $remote_fs nfs-common $portmap $digioceand
+# Default-Start:  2 3 4 5
+# Default-Stop:   0 1 6 
+# Description:    Prepare for digioceanfs-client
+### END INIT INFO
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+WORKDIR=/usr/local/digioceanfs_client
+SYSTEMCTL=`which systemctl`
+#. /lib/lsb/init-functions
+#. /etc/init.d/functions
+
+if [ -f /etc/init.d/functions ] ; then
+  . /etc/init.d/functions
+elif [ -f /etc/rc.d/init.d/functions ] ; then
+  . /etc/rc.d/init.d/functions
+else
+  exit 1
+fi
+
+case "$1" in
+  start)
+  	if ps axu |grep node_manager.pyc |grep -v 'grep' >/dev/null
+        then
+            echo "node manager is running, stop it now ..."
+            /usr/bin/node-manager stop
+    fi
+    if pidof digioceand>/dev/null
+	    then
+	        echo "digioceand running"
+	    else
+	        echo "digioceand not running, start now ..."
+	    	$SYSTEMCTL start digioceand
+	fi
+  	cd $WORKDIR
+  	if ps axu |grep client.py |grep -v 'grep' >/dev/null
+    then
+        echo "Digiclient is running"
+        exit 0
+    else
+        echo "Digiclient is not running, starting now ..."
+        python ./client.pyc &
+    fi
+  	echo "Starting digioceanfs-client daemon: Success"
+	;;
+  stop)
+  	$SYSTEMCTL stop digioceand
+  	proc_pid=`ps axu |grep client.py |grep -v 'grep'|awk '{print $2}'`
+  	kill $proc_pid
+  	echo "Shutting down digioceanfs-client daemon: Success"
+    ;;
+  status)
+	if ps axu |grep client.py |grep -v 'grep' >/dev/null
+    then
+        echo "Digiclient is running"
+        exit 0
+    else
+        echo "Digiclient is not running"
+        exit 3
+    fi
+    ;;
+  restart)
+	;;
+  *)
+	echo "Usage: $0 {start|stop|restart|status}" >&2
+        exit 1
+        ;;
+esac
+ 
+exit 0
+	

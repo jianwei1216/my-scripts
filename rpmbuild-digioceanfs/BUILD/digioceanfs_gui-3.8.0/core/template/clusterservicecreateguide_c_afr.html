@@ -1,0 +1,16 @@
+$def with (content)
+
+<form id="formclusterservice" method="post">
+    <fieldset class="createdialog">
+        <select id="clusterservicediskunused_select_1" class="multiselect" multiple="multiple">
+            $for disk in content.clusterservicediskinfo:
+                <option>$disk['nodename']:$disk['devname']</option>
+        </select>
+        <label>&nbsp;</label>
+    </fieldset>
+</form>
+<script type="text/javascript">
+$(ELT)(function() {
+    $(ELT)(".multiselect").multiselect({isDouble: true});
+});
+</script>

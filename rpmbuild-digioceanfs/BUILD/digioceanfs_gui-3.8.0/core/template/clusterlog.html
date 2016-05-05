@@ -1,0 +1,30 @@
+$def with (content)
+
+<div id="toolbar" class="ui-corner-all">
+</div>
+
+<div id="pcontent">
+
+</div>
+
+<script type="text/javascript">
+	$(ELT)(function(){
+        clusterlogload();
+    });
+	function clusterlogload(){
+        var url = "/clusterlogload?" + new Date().getTime();
+        checkSession();
+        $(ELT).ajax({
+            url: url,
+            data: '',
+            dataType: 'html',
+            beforeSend: function(){
+                custLoading("$_('Loading Data ...')");
+            },
+            success: function(text){
+                $(ELT)('#loaddialog').dialog('close');
+                $(ELT)('#pcontent').html(text);
+            }
+        });
+    }
+</script>

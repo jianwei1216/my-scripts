@@ -1,0 +1,47 @@
+$def with (content)
+<table id="log_filter">
+	<tr>
+		<td>Time line:</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>Level:</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>Process:</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>Host:</td>
+		<td></td>
+	</tr>
+	<tr>
+		<td>Key word:</td>
+		<td></td>
+	<tr>
+</table>
+
+<table id="cluterlogs" cellpadding="0" class="datatable ui-widget ui-widget-content">
+    <thead>
+        <tr>
+            <th>$_('clusterloglevel')</th>
+            <th>$_('clusterlogreporter')</th>
+            <th>$_('clusterlogmsg')</th>
+        </tr>
+    </thead>
+    <tbody>
+    
+    </tbody>
+</table>
+<script type="text/javascript">
+    $(ELT)(function(){
+        $(ELT)('#cluterlogs').dataTable({
+            "bJQueryUI": true,
+            "sPaginationType": "full_numbers",
+            "oLanguage": {
+                "sUrl": "/static/js/temp/datatable_ZH"
+            }
+		});
+    });
+</script>

@@ -1,0 +1,130 @@
+$def with (content)
+
+<div id="ctdb_pcontent">
+</div>
+
+<a title="$_('ctdbreset')" id="ctdbreset_a" style="color:#0066AA;text-decoration:none;padding-left:10px;" href="javascript:void(0);" onClick="ctdbreset();">$_("ctdbreset")</a>
+<a title="$_('save')" id="ctdbsave_a" style="color:#0066AA;text-decoration:none;padding-left:10px;" href="javascript:void(0);" onClick="savectdbset();">$_("save")</a>
+<br /><br />
+
+<div id="clusterctdbsetup">
+    <form id="clusterctdbset" method="post">
+        <fieldset class="createdialog">
+            <label for="clusterctdbnodes">$_("nodename")</label><br /><br />
+            <ul>
+                <li style="margin-left:120px;">
+                    $for node in content.nodeinfo:
+                        <input name="clusterctdbnodes" type="checkbox" style="" value="$node['nodename']"/>$node['nodename'] ($node['ipaddr'])<br /><br />
+                </li>
+             </ul>
+            <label for="clusterctdbpubaddr">$_("clusterctdbpubaddr")</label>
+            <a title="$_('add')" style="color:#0066AA;text-decoration:none" href="javascript:void(0);" onClick="addctdbpubaddrinput();">$_("add")</a><br /><br />
+            <ul id="clusterctdbpubaddrinput">
+            </ul>
+        </fieldset>
+    </form>
+</div>
+
+<script type="text/javascript">
+    $(ELT)(function(){
+        $(ELT)("#clusterctdbsetup").hide();
+        $(ELT)('#ctdbsave_a').hide();
+        clusterctdbinfoload();
+    });
+
+    function addctdbpubaddrinput(){
+        $(ELT)('#clusterctdbpubaddrinput').append('<li><input name="clusterctdbpubaddr" style="margin-left:120px;width:180px;" type="text" class="ui-widget-content ui-corner-all" placeholder="' + "$_('ctdbpubaddrformattip')" + '"/><a title="$_('cancel')" style="color:#0066AA;text-decoration:none;margin-left:10px;" href="javascript:void(0);" onClick="cancelctdbpubaddrinput($(ELT)(this));">$_("cancel")</a><br /><br /></li>');
+    }
+    function cancelctdbpubaddrinput(ele){
+        ele.parent().remove();
+    }
+    function ctdbreset(){
+        $(ELT)("#clusterctdbsetup").show();
+        $(ELT)('#ctdbsave_a').show();
+    }
+
+    function refreshctdbinfo(){
+        $(ELT)('#clusterctdbsetup').hide();
+        $(ELT)('#ctdbsave_a').hide();
+        clusterctdbinfoload();
+    }
+
+    function clusterctdbinfoload(){
+        var url = "/clusterctdbinfoload?" + new Date().getTime();
+        checkSession();
+        $(ELT).ajax({
+            url: url,
+            data: '',
+            dataType: 'html',
+            beforeSend: function(){
+                custLoading("$_('Loading Data ...')");
+            },
+            success: function(text){
+                $(ELT)('#loaddialog').dialog('close');
+                $(ELT)('#ctdb_pcontent').html(text);
+            }
+        });
+    }
+
+    function savectdbset(){
+        var url = '/clusternodectdbsave?' + new Date().getTime();
+        var data = $(ELT)('#clusterctdbset').serialize();
+        if($(ELT)('input[type=checkbox][name=clusterctdbnodes]:checked').length==0){
+            custAlert("$_('operfail')", "$_('nodesnotnull')");
+            return false;
+        }
+        if(data.search('clusterctdbpubaddr') >= 0){
+            flag = 0;
+            $(ELT)('input[type=text][name=clusterctdbpubaddr]').each(function(){
+                if(this.value == ''){
+                    flag = 1;
+                    return false;                //break each
+                }else{
+                    var re=/\d+.\d+.\d+.\d+\/\d+ \w+$(ELT)/;
+                    if(!re.test(this.value)){
+                        flag = 2;
+                        return false;
+                    }
+                }
+            });
+            if(flag == 1){
+                custAlert("$_('operfail')", "$_('pubaddrnotnull')");
+                return false;
+            }else if(flag == 2){
+                custAlert("$_('operfail')", "$_('filluprightpubaddr')");
+                return false;
+            }
+        }else{
+            custAlert("$_('operfail')", "$_('pubaddrnotnull')");
+            return false;
+        }
+        $(ELT).ajax({
+            url: url,
+            type: 'POST',
+            data: data,
+            dataType: 'text',
+            beforeSend: function(){
+                custLoading("$_('ctdbsettingnow')");
+            },
+            error: function(){
+                custAlert("$_('operfail')","Request Error!");
+            },
+            success: function(text) {
+                if (isNaN(text)) {
+                    $(ELT)('#loaddialog').dialog('close');
+                    custAlert("$_('operfail')", text);
+                }else {
+                    if (parseInt(text) == 0) {
+                        $(ELT)('#loaddialog').dialog('close');
+                        custAlert("$_('opersucc')", "$_('clusternodectdbsetsucc')");
+                        refreshctdbinfo();
+                    } else {
+                        $(ELT)('#loaddialog').dialog('close');
+                        custAlert("$_('operfail')", "$_('operfailinfo')");
+                    }
+                }
+            }
+        });
+    }
+
+</script>

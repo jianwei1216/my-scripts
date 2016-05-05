@@ -1,0 +1,188 @@
+$def with (content)
+
+<div>
+    <label for="clusterservicelocalpro">$_("clusterservicelocalpro")</label>
+    $if 'cluster.nufa' in content.servicedetail and content.servicedetail['cluster.nufa'] == 'on':
+        <span>$_("yes")</span><br /><br />
+    $else:
+        <span>$_("no")</span><br /><br />
+    <label for="clusterservicebricksnum">$_("clusterservicebricksnum")</label>
+    <span>$content.servicedetail['Number of Bricks']</span><br /><br />
+</div>
+<input type="hidden" id="detail_service_name" value="$content.service_name" />
+<input type="hidden" id="detail_afr" value="$content.afr" />
+<table>
+  <tr>
+    <th width="10%">$_('clusternodediskstatus')</th>
+    <th width="32%">$_('mountpoint')</th>
+    <th width="10%">$_('FileSystemEvent')</th>
+    <th width="20%">$_('interface')</th>
+    <th width="20%">$_('usage')</th>
+    <th width="8%">$_('totals')</th>
+  </tr>
+  $if len(content.bricks)>0: 
+      $for brick in content.bricks:	
+          <tr>
+            <td align="center">
+              $if _(brick['status'])=='Y':
+                  <img src="../static/theme/redmond/images/diskinuse.png" style="width:15px;height:15px;" title="$_('OK')" />
+              $else:
+                  <img src="../static/theme/redmond/images/diskdead.png" style="width:15px;height:15px;" title="$_('error/drops')" />
+            </td>
+            
+            <td>
+                $if len(brick['mount_point']) >= 40:
+              	    <span title="$brick['mount_point']">$brick['mount_point'][:20]...$brick['mount_point'][-16:]</span>
+                $else:
+                    $brick['mount_point']
+            </td>
+            
+            <td>
+              $brick['fs']
+            </td>
+            
+            <td>
+              	$if brick['interface'].find('md') >= 0:
+            		RAID ($brick['interface'])
+            	$else:
+              		DISK $(brick['dposition'])($brick['interface'])
+              <dl id="" class="opercommand">
+                <dd><a title="$_('clusternodereplace_nodisk')" href="javascript:;" onClick="disk_replace('$content.service_name','$brick['mount_point']:$brick['interface']')" class="ui-icon ui-icon-copy">&nbsp;</a></dd>
+              </dl>
+            </td>
+            
+            <td>
+              <div class="demo">
+              <div id="$brick['mark']" style="float:left"></div>
+              <div id="$brick['mark']_rate" style="height: 1em; line-height: 1em;"></div>
+              </div>
+            </td>
+            
+            <td>
+              
+              $brick['total']
+            </td>
+          </tr>
+          $if int(content.afr)!=0 and ((int(content.bricks.index(brick))+1)%int(content.afr))==0 and (int(content.bricks.index(brick))+1)!=len(content.bricks):
+              <tr>
+                <td colspan="7">&nbsp;</td>
+              </tr>
+  $else:
+      <tr>
+        <td colspan="7">&nbsp;</td>
+      </tr>
+
+</table>
+
+<script type="text/javascript">
+function disk_replace(service_name,disk){
+	var disk=disk.split(":");
+	var disk=disk[0]+":"+disk[2].replace('/dev/','');
+	
+	var time=new Date().getTime();
+	var url="/clusterservicediskreplace?"+time+"&service_name="+service_name+"&disk="+disk;
+	
+	$(ELT)("body").append('<div id="pop_div_service_disk_replace" class="pop_div"></div>');
+	$(ELT)("#pop_div_service_disk_replace").dialog({
+		bgiframe: true,								   
+		modal: true,				 
+		autoOpen:false,
+		resizable:false,
+		width:710,
+		height:240,
+		title:"$_('clusternodereplace_nodisk')"+" - "+service_name,
+		open:function(){
+			custLoading("$_('Loading Data ...')");
+		},
+		close:function(){
+			$(ELT)(this).remove();
+		},
+		buttons:{
+			"$_('cancel')": function() {
+				$(ELT)(this).dialog('close');
+			},
+			"$_('replace')": function() {
+				if(!$(ELT)('#replace_disk').val()){
+					custAlert("$_('operfail')",'$_("clusternodereplace_none")');
+					return false;
+				}
+				
+				var validate=0;
+				var backup_arr=$(ELT)('#unuse_disk_str').val().split(',');
+				for(var i=0;i<backup_arr.length;i++){
+					if($(ELT)('#replace_disk').val()==backup_arr[i]){
+						validate++;
+						break;
+					}
+				}
+				if(validate==0){
+					custAlert("$_('operfail')",'$_("clusternodereplace_insert_error")');
+					return false;
+				}
+				
+				var replace_str=disk+","+$(ELT)('#replace_disk').val();
+				var replace_url = "/clusternodereplacenodisk?" + new Date().getTime();
+				
+				if($(ELT)('#disk_replace_format').attr('checked')){
+					var format='-f';
+				}else{
+					var format='';
+				}
+				var data='clusterservicename='+service_name+'&clusterreplacedisk='+replace_str+'&format='+format;
+				$(ELT).ajax({
+					url: replace_url,
+					type: 'POST',
+					data: data,
+					dataType: 'text',
+					beforeSend: function(){
+						custLoading("$_('replacenodisknow')");
+					},
+					error: function(){
+						$(ELT)('#loaddialog').dialog('close');
+						custAlert("$_('operfail')","Request Error!");
+					},
+					success: function(text){
+						if(isNaN(text)){
+							$(ELT)('#loaddialog').dialog('close');
+							custAlert("$_('operfail')",text);
+						}
+						else{
+							if(parseInt(text) == 0){
+								var afr=$(ELT)('#detail_afr').val();
+								$(ELT)("#pop_div_service_raidlv_detail").dialog("close");
+								clusterserviceraidlvdetail(service_name,afr);
+								$(ELT)('#loaddialog').dialog('close');
+								custAlert("$_('opersucc')","$_('clusternodereplacenodisksucc')");
+							}else{
+								$(ELT)('#loaddialog').dialog('close');
+								custAlert("$_('operfail')","$_('operfailinfo')");
+							}
+						}
+					}
+				});
+				$(ELT)(this).dialog('close');
+			}
+		}
+	});
+	$(ELT)("#pop_div_service_disk_replace").load(url,'',function(){
+		$(ELT)('#loaddialog').dialog('close');													  
+	});
+	$(ELT)("#pop_div_service_disk_replace").dialog("open");
+}
+
+
+//使用率
+$if len(content.bricks)>0: 
+	$for brick in content.bricks:	
+		if($brick['usage']=='NaN'){
+			var rate=0;
+		}else{
+	    	var rate=$brick['usage']*100;
+		}
+		$(ELT)(function() {
+			$(ELT)("#$brick['mark']").progressbar({
+				value: rate
+			});
+		});
+		$(ELT)("#$brick['mark']_rate").html('&nbsp;' + parseFloat(rate).toFixed(2) + '%');
+</script>

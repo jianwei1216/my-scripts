@@ -1,0 +1,48 @@
+
+__ec_expand_data()
+{
+        cluster_create(digi_file);
+        while(1) {
+                cluster_inodelk(source_file's inode);
+                cluster_getxattr(source_file's expand.destory);
+                if (expand.destory == 1) {
+                        need_destory = 1;
+                        goto out;
+                }
+                cluster_readv(source_file);
+                if (read-end-of-file) {
+                        cluster_setxattr(source_file's expand.hold) 
+                        cluster_uninodelk(source_file's inode);
+                        break;
+                }
+                ec_expand_readv_rebuild(old_ec's data);
+                ec_method_encode(new_ec's data);
+                cluster_writev(digi_file);
+                cluster_setxattr(source_file's expand.offset);
+                cluster_uninodelk(source_file's inode);
+        }
+        cluster_flush(digi_file);
+        ec_expand_copy_metadata(digi_file);
+        cluster_inodelk(source_file's parent inode);
+        cluster_inodelk(source_file's inode);
+
+        cluster_rename(digi_file, source_file, server_hold==1);
+
+        cluster_uninodelk(source_file's inode);
+        cluster_uninodelk(source_file' parent inode);
+
+out:
+        if (need_destory==1) {
+                cluster_unlink(digi_file); 
+                cluster_removexattr(source_file's expand.hold/offset/)
+        }
+}
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,2 @@
+SUBSYSTEM=="tty",KERNEL=="ttyUSB*",NAME+="ttyGSM"
+SUBSYSTEM=="tty",KERNEL=="ttyS*",NAME+="ttyGSM"

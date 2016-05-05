@@ -1,0 +1,561 @@
+$def with (content)
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <title>$content.page_setup.title</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <link href="/static/theme/redmond/jquery-ui-1.8.4.css" rel="stylesheet" type="text/css">
+    <link href="/static/theme/redmond/style.css" rel="stylesheet" type="text/css">
+    <link href="/static/theme/redmond/dataTable.css" rel="stylesheet" type="text/css">
+    <link href="/static/theme/redmond/jquery.treeTable.css" rel="stylesheet" type="text/css">
+    <link href="/static/theme/redmond/jquery.dataTables.css" rel="stylesheet" type="text/css">
+    <link href="/static/theme/redmond/jquery.jgrowl.css" rel="stylesheet" type="text/css">
+    <link href="/static/theme/redmond/nyroModal.full.css" rel="stylesheet" type="text/css">
+    <link href="/static/theme/redmond/pythonsysinfo.css" rel="stylesheet" type="text/css">
+    <!--[if lte IE 6]>
+    <link rel="stylesheet" type="text/css" href="/static/theme/redmond/ie6style.css" />
+    <![endif]-->
+    <!--[if IE 7]>
+    <link rel="stylesheet" type="text/css" href="/static/theme/redmond/ie7style.css" />
+    <![endif]-->
+    <script src="/static/js/lib/jquery-1.7.2.min.js" type="text/javascript"></script>
+    <script src="/static/js/lib/jquery.jqDock.min.js" type="text/javascript"></script>
+    <script src="/static/js/lib/jquery-ui-1.8.4.min.js" type="text/javascript"></script>
+    <script src="/static/js/lib/jquery.listtolist.js" type="text/javascript"></script>
+    <script src="/static/js/lib/jquery.bgiframe.js" type="text/javascript"></script>
+    <script src="/static/js/lib/jquery.caret.js" type="text/javascript"></script>
+    <script src="/static/js/lib/jquery.jgrowl.js" type="text/javascript"></script>
+    <script src="/static/js/lib/jquery.validate.min.js" type="text/javascript"></script>
+    <script src="/static/js/lib/jquery.nyroModal.js" type="text/javascript"></script>
+    <script src="/static/js/lib/jquery.timers.js" type="text/javascript"></script>
+    <script src="/static/js/lib/jquery.treeTable.js" type="text/javascript"></script>
+    <script src="/static/js/lib/jquery.dataTables.js" type="text/javascript"></script>
+    <!--script src="/static/js/lib/pythonsysinfo.js" type="text/javascript"></script-->
+    <!--script src="/static/js/lib/utils.js" type="text/javascript"></script-->
+    $for jsfile in content.page_setup.javascript:
+        <script src="/static/js/page/$jsfile" type="text/javascript"></script>
+    $for jsfile in content.page_setup.javascript_files:
+        <script src="/static/js/temp/$jsfile?$(time.time())" type="text/javascript"></script>
+    <script type="text/javascript">
+        setCookie('comet_flag_1', '0', 1);
+        setCookie('comet_flag_2', '0', 1);
+        var change_times = 1;
+        var static_size = [];
+        function changelanguage(){
+            var url = '/changelanguage?' + new Date().getTime();
+            var data = $(ELT)("#formlanguage").serialize();
+            $(ELT).ajax({
+                url: url,
+                type: 'POST',
+                data: data,
+                dataType: 'text',
+                success: function(text){
+                    if(!isNaN(text)){
+                        if(parseInt(text) == 0){
+                            location.reload();
+                        }
+                    }
+                }
+            });
+        }
+	var warn_time;		
+    var oflag = 1;
+    function getreport_block(){
+    	var url = "/clusternotifyinit?" + new Date().getTime();
+    	if(oflag){
+    		oflag = 0;
+    		$(ELT).ajax({
+    			url: url,
+                type: 'POST',
+                data: 'nowait=false',
+                dataType: 'JSON',
+                beforeSend: function(xhr){
+                    $(ELT)(window).bind('beforeunload', function() {
+                        xhr.abort();
+                    });
+                },
+                success: function(text){
+                	try{
+                    	var reports_num = parseInt(text);
+                    }catch(e){
+                    	reports_num = 0;
+                    }
+                    if(reports_num){
+                        	custPopup('请检查存储通知','存储通知中有 '+reports_num+' 条未处理的报警信息，请及时处理！<a style="color: red;" href="/clusternotify">详细信息</a>');
+                        }
+                    $(ELT)("span#notify_clusternotify").html(reports_num);
+                },
+                complete: function(){
+                	oflag = 1
+                	getreport_nowait();
+                	getreport_block();
+                }
+    		});
+    	}
+    }
+    function getreport_nowait(){
+        oflag = 1;
+        //url = "/clusternotifyinit?" + new Date().getTime();
+		var url = "/clusternotifymsg?" + new Date().getTime();
+		if(oflag){
+	        $(ELT).ajax({
+	                url: url,
+	                type: 'POST',
+	                //data: 'nowait=' + nowait,
+					data: '',
+	                dataType: 'text',
+	                beforeSend: function(xhr){
+	                        $(ELT)(window).bind('beforeunload', function() {
+	                                xhr.abort();
+	                        });
+	                },
+	                success: function(text){
+	                        //var reports = text;
+							var reports=0;
+							var warn_num=0;
+							var report_num=0;
+							var msgs = $(ELT).parseJSON(text);
+							if(!('nofile' in msgs[0])){
+								for(i=0; i < msgs.length; i++){
+									
+									var lineinfo = msgs[i].filecontent;
+									var msg_line = $(ELT).parseJSON(lineinfo);
+									/*try{
+										var msg_line = $(ELT).parseJSON(lineinfo);
+									}catch(err){
+									}*/
+									var msg_op = msg_line.OP;
+									switch(msg_op){
+										case '$_("RaidEvent")':
+										{
+											msg_event = msg_line.RaidEvent;
+										}
+										break;
+										case '$_("DiskEvent")':
+										{
+											msg_event = msg_line.DiskEvent;
+										}
+										break;
+										case '$_("FileSystemEvent")':
+										{
+											msg_event = msg_line.FileEvent;
+										}
+										break;
+										case '$_("Ping")':
+										{
+											msg_event = msg_line.Event;
+										}
+										break;
+										case '$_("NetLink")':
+										{
+											msg_event = msg_line.Event;
+											if(msg_event == '$_("no")'){
+												msg_event = '$_("No-link")';
+											}else{
+												msg_event = '$_("Linking")';
+											}
+										}
+										break;
+										default:
+										{
+											msg_event = 'Unknow';
+											msg_detail = 'Unknow';
+										}
+									}
+									//console.log(msg_event);
+									
+									var isread = msgs[i].isread;
+									if(isread == 'N'){
+										reports++;
+										if(msg_event=='$_("SpeedDown")'||msg_event=='$_("No-link")'||msg_event=='$_("Off-line")'||msg_event=='$_("Fail")'||msg_event=='$_("DeviceDisappeared")'||msg_event=='$_("error/drops")'||msg_event=='$_("remove")'||msg_event=='$_("failure")'){
+											warn_num++;
+										}else{
+											report_num++;
+										}
+									}
+								}
+								
+							}
+							//console.log(warn_num);
+							//console.log(report_num);
+	                        /*var report_ul = "<ul id='report_ul'></ul>"
+	                        $(ELT)(".raidstatus").html('');
+				if(text == '0'){
+	                        	var raidinfo = "<div id='scroll'><span class='ui-icon ui-icon-mail-open' style='float:left;margin-top:6px;'></span><a href='#' onclick='getreportmsg();'><span id='msg_num'> " + text  + " </span><span id='msg_text'> New message ... </span></a></div>";
+				}else{
+	                        	var raidinfo = "<div id='scroll'><span class='ui-icon ui-icon-mail-closed' style='float:left;margin-top:6px;'></span><a href='#' onclick='getreportmsg();'><span id='msg_num'> " + text  + " </span><span id='msg_text'> New message ... </span></a></div>";
+	                        }
+				$(ELT)(".raidstatus").html(raidinfo);*/
+							if(reports == 0){
+								clearTimeout(warn_time);
+								$(ELT)("span#notify_clusternotify").css({"display":"none"});
+							}else{
+								$(ELT)("span#notify_clusternotify").html(reports);
+								$(ELT)("span#notify_clusternotify").css({"display":"block"});
+								if(warn_num==0){
+									clearTimeout(warn_time);
+									$(ELT)('.notify_new').css('color','#000');
+									$(ELT)('.notify_new').css('background-image','url("../static/theme/redmond/images/running.png")');
+								}else{
+									warn_time=setTimeout(check_warn,60000);
+								}
+							}
+	                }
+	        });
+	        }
+	        else{
+	                return;
+	    }
+    }
+	function check_warn(){
+		clearTimeout(warn_time);
+		if($(ELT)(".myPopup").length == 0){
+                //custAlert('请检查存储通知','存储通知中有未处理的报警信息，请及时处理！');
+                custPopup('请检查存储通知','存储通知中有未处理的报警信息，请及时处理！');
+            }
+		warn_time=setTimeout(check_warn,60000);
+	}
+    //setInterval(getreport, 1000);
+    
+	
+	//修改密码
+	function password_modify(first){
+		var time=new Date().getTime();
+		var url="/password_modify?"+time;
+		
+		if(first){
+			var buttons={
+				"$_('confirm')": function() {
+					if(!$(ELT)("#old_password").val()){
+						custAlert("$_('operfail')","$_('old_password_please')");
+						return false;
+					}
+					if(!$(ELT)("#new_password").val()){
+						custAlert("$_('operfail')","$_('new_password_please')");
+						return false;
+					}
+					if($(ELT)("#new_password").val().length<6){
+						custAlert("$_('operfail')","$_('password_length')");
+						return false;
+					}
+					if(!$(ELT)("#confirm_new_password").val()){
+						custAlert("$_('operfail')","$_('confirm_new_password_please')");
+						return false;
+					}
+					if($(ELT)("#new_password").val()!=$(ELT)("#confirm_new_password").val()){
+						custAlert("$_('operfail')","$_('confirm_new_password_error')");
+						return false;
+					}
+					var rv=$(ELT).ajax({
+						url:url,
+						type:"POST",
+						data:"&old_password="+$(ELT)("#old_password").val()+"&new_password="+$(ELT)("#new_password").val(),
+						async:false
+					})
+					if(Number(rv.responseText)!=0){
+						custAlert("$_('operfail')","$_('old_password_error')");
+						return false;
+					}
+					//custAlert("$_('operfail')","$_('password_modify_success')");
+					//$(ELT)(this).dialog('close');
+					window.location="/logout";
+				}
+			}
+		}else{
+			var buttons={
+				"$_('cancel')": function() {
+					$(ELT)(this).dialog('close');
+				},
+				"$_('confirm')": function() {
+					if(!$(ELT)("#old_password").val()){
+						custAlert("$_('operfail')","$_('old_password_please')");
+						return false;
+					}
+					if(!$(ELT)("#new_password").val()){
+						custAlert("$_('operfail')","$_('new_password_please')");
+						return false;
+					}
+					if($(ELT)("#new_password").val().length<6){
+						custAlert("$_('operfail')","$_('password_length')");
+						return false;
+					}
+					if(!$(ELT)("#confirm_new_password").val()){
+						custAlert("$_('operfail')","$_('confirm_new_password_please')");
+						return false;
+					}
+					if($(ELT)("#new_password").val()!=$(ELT)("#confirm_new_password").val()){
+						custAlert("$_('operfail')","$_('confirm_new_password_error')");
+						return false;
+					}
+					var rv=$(ELT).ajax({
+						url:url,
+						type:"POST",
+						data:"&old_password="+$(ELT)("#old_password").val()+"&new_password="+$(ELT)("#new_password").val(),
+						async:false
+					})
+					if(Number(rv.responseText)!=0){
+						custAlert("$_('operfail')","$_('old_password_error')");
+						return false;
+					}
+					//custAlert("$_('operfail')","$_('password_modify_success')");
+					//$(ELT)(this).dialog('close');
+					window.location="/logout";
+				}
+			}
+		}
+		
+		$(ELT)("body").append('<div id="pop_div_password_modify" class="pop_div"></div>');
+		$(ELT)("#pop_div_password_modify").dialog({
+			bgiframe: true,								   
+			modal: true,				 
+			autoOpen:false,
+			resizable:false,
+			width:350,
+			height:220,
+			title:"$_('password_modify')",
+			open:function(){
+				custLoading("$_('Loading Data ...')");
+			},
+			close:function(){
+				$(ELT)(this).remove();
+			},
+			buttons:buttons
+		});
+		$(ELT)("#pop_div_password_modify").load(url,function(){
+			$(ELT)('#loaddialog').dialog('close');	
+			if(first){
+				$(ELT)('.ui-icon-closethick').parent().remove();												 
+				$(ELT)('#first_login').html('$_("clusterfirstlogin")');
+			}
+		});
+		$(ELT)("#pop_div_password_modify").dialog("open");
+	}
+	//检查密码
+	function password_check(){
+		var time=new Date().getTime();
+		var url="/password_check?"+time;
+		var rv=$(ELT).ajax({
+			url:url,
+			type:"POST",
+			data:"",
+			async:false
+		})
+		if(Number(rv.responseText)==0){
+			password_modify('first')
+		}
+	}
+	
+	function show_version(){
+		custAlert("$_('Software Version')",'2.0.0.2691');
+	}
+	
+	function show_info(){
+		var content_str = '\
+		<div id="company_info">\
+			<div id="proinfo">\
+    			<h1>$content.oem_params['software_name'] $_("Storage Management System")</h1>\
+    			<p id="promind">$content.oem_params['inspirit']</p>\
+    			<p id="pversion">$_("Software Version"): $content.oem_params['version']\
+			</div>\
+			<div id="cominfo">\
+    			<p>$content.oem_params['company_name']  $_("Copy Right")</p>\
+    			<p>$_("Website")：$content.oem_params['website']</p>\
+    			<p>$_("Hot Line")：$content.oem_params['tel']</p>\
+			</div>\
+		</div>\
+		';
+		custInfo("$_('Product Info')",content_str);
+	}
+	
+    $(ELT)(function(){
+        $(ELT).validator.setDefaults({
+            ignore: []
+        });
+    	//init_navleft();
+    	getreport_block();
+		password_check();
+		$(ELT)(".help")
+		.mouseover(function(){
+			$(ELT)(".sub_menu_0").show();
+		})
+		.mouseout(function(){
+			$(ELT)(".sub_menu_0").hide();
+		});
+		$(ELT)(".admin")
+		.mouseover(function(){
+			$(ELT)(".sub_menu_1").show();
+		})
+		.mouseout(function(){
+			$(ELT)(".sub_menu_1").hide();
+		});
+    });
+    </script>
+</head>
+<body>
+    <div id="neversike">
+        <dl class="head-info">
+            <!--dd>
+                <span>$_(content.session.user.name)</span> | <a href="javascript:void(0)" id="" onClick="password_modify()" style="color:#2E6E9E">$_('password_modify')</a> | <a href="/logout" style="color:#2E6E9E">$_("logout")</a> | <a href="/" style="color:#2E6E9E">$_("Home")</a>
+            </dd-->
+            <ul id="top_menu">
+            	<li class="top-menu"><a href="/">$_("Home") </a></li>
+            	<li class="top-menu admin"><span>$_(content.session.user.name)</span>
+					<ul class="sub_menu_1">
+            			<li><a href="javascript:void(0)" id="" onClick="password_modify()">$_('password_modify')</a></li>
+            			<li><a href="/logout">$_("logout")</a></li>
+            		</ul>
+            	</li>
+            	<li class="top-menu help" style="display: $content.oem_params['product_enable']"><a href="">$_("Help")</a>
+            		<ul class="sub_menu_0">
+            			<li class=""><a href="javascript:show_info();">$_("Product Info")</a></li>
+            		</ul>
+            	</li>
+            </ul>
+            <dt>
+            <form action="#" id="formlanguage">
+                <label for="pagelang">$_('language'):</label>
+                <select onchange="javascript:changelanguage();" name="pagelang" id="pagelang" style="margin-top:5px">
+                    $if content.session.user.lang == 'zh_CN':
+                        <option selected="selected" value="zh_CN">简体中文</option>
+                        <option value="en_US">English</option>
+                    $else:
+                        <option value="zh_CN">简体中文</option>
+                        <option value="en_US" selected="selected">English</option>
+                </select>
+            </form>
+            </dt>
+        </dl>
+    </div>
+<div class="wrapper-out">
+<div class="wrapper-in">
+	    <div id="header" class="ui-corner-bottom">
+	    	<div id="logo" class="ui-corner-bottom" style="display: $content.oem_params['logo_enable']"background:url($content.oem_params['logo_bg']) repeat-x 0 50%;">
+	            <div id="logoleft" class="ui-corner-bottom" style="background:url($content.oem_params['logo_left']) no-repeat 0 50%;">&nbsp;</div>
+	            <div id="logoright" class="ui-corner-bottom" style="background:url($content.oem_params['logo_right']) no-repeat 0 50%;">&nbsp;</div>
+	        </div>
+	    </div>
+	    <div id="navigator" class="ui-corner-all">
+	        $if content.page_setup.breadcrumbs:
+	            <div id="nav">
+	                <ul>
+	                	<!--li class="first"><a href="javascript:void(0)">&nbsp;</a></li-->
+						$for navigators in content.navigators:
+							$if content.page_setup['breadcrumbs'][0] == navigators[0]:
+								$if navigators[2].split('/')[1] == 'clusternotify':
+									$if content.session.global_v.new_msg_num != 0:
+										<li><a class="current" href="$navigators[2]">$navigators[1]<span id="notify_$navigators[2].split('/')[1]" class="notify_new">$content.session.global_v.new_msg_num</span></a></li>
+									$else:
+										<li><a class="current" href="$navigators[2]">$navigators[1]<span id="notify_$navigators[2].split('/')[1]" class="notify_new" style="display:none;"></span></a></li>
+								$else:
+									<li><a class="current" href="$navigators[2]">$navigators[1]</a></li>
+							$else:
+								$if navigators[2].split('/')[1] == 'clusternotify':
+									$if content.session.global_v.new_msg_num != 0:
+										<li><a href="$navigators[2]">$navigators[1]<span id="notify_$navigators[2].split('/')[1]" class="notify_new">$content.session.global_v.new_msg_num</span></a></li>
+									$else:
+										<li><a href="$navigators[2]">$navigators[1]<span id="notify_$navigators[2].split('/')[1]" class="notify_new" style="display:none;"></span></a></li>
+								$else:
+									<li><a href="$navigators[2]">$navigators[1]</a></li>
+			                    	
+	                    <li class="last"><a href="javascript:void(0)">&nbsp;</a></li>
+	                </ul>
+	            </div>
+	            <div id="shortcuts">
+	                <span style="padding-left:15px;">$_("currlocate"):</span>
+	                <a href="$content.shortcuts[content.page_setup.breadcrumbs[0]][1]">$content.shortcuts[content.page_setup.breadcrumbs[0]][0]</a>
+	                    $for key in content.page_setup.breadcrumbs[1:]:
+	                    	$if key:
+	                        	&nbsp;&nbsp;&gt;&nbsp;&nbsp;<a href="$content.shortcuts[key][1]">$content.shortcuts[key][0]</a>
+	            </div>
+	    </div>
+    <div id="box" class="ui-corner-all">
+        <div id="left">
+            <div id="menu">
+                <ul>
+                $for menuitem in content.menu_items:
+                    $if menuitem[0] == content.page_setup.currmenu:
+                        <li><a class="currmenu ui-corner-all" href="$menuitem[2]">$menuitem[1]</a></li>
+                    $elif menuitem[0] == 'fg':
+                        <li class="split">&nbsp;</li>
+                    $else:
+                        <li><a class="ui-corner-all" href="$menuitem[2]">$menuitem[1]</a></li>
+                </ul>
+            </div>
+            <div id="other">&nbsp;</div>
+        </div>
+        <div id="right">
+            <div id="rightcontent">
+                $:content.page_content
+	    </div>
+        </div>
+    </div>
+    <!--<div id="footer" class="ui-corner-top">
+        $:content.page_setup.footer
+    </div>-->
+</div>
+</div>
+</body>
+</html>
+
+<script type="text/javascript">
+node_select();
+function node_select(){
+	var k=0;
+	var a='';
+	$(ELT)('#shortcuts a').each(function(){
+		k++;
+		if(k==2){
+			$(ELT)('<select id="clusternodeold" style="width:auto" onchange="node_change(this.value)"></select>').replaceAll(this);
+			a=$(ELT)(this).html();
+		}
+	});
+	getNode(a);
+}
+function getNode(a){
+    var url = '/clusterservicextendnode?' + new Date().getTime();
+    $(ELT).ajax({
+        url: url,
+        type: 'POST',
+        beforeSend: function(){
+            $(ELT)('#clusternodeold').html('');
+            $(ELT)('#clusternodeold').append('<option class="ajaximg">数据加载中...</option>');
+        },
+        dataType: 'JSON',
+        success: function(text){
+            $(ELT)('#clusternodeold').html('');
+            var nodes = text;
+            for(var i = 0; i < nodes.length; i++){
+				if(nodes[i]==a){
+					$(ELT)('#clusternodeold').append('<option value="' + nodes[i] + '" selected>'+ nodes[i] +'</option>' );
+				}else{
+					$(ELT)('#clusternodeold').append('<option value="' + nodes[i] + '">'+ nodes[i] +'</option>' );
+				}
+            }
+        },
+        error: function(){
+            alert('error');
+        }
+    });
+}
+function node_change(node){
+	custLoading("$_('Loading Data ...')");
+	var href_arr=window.location.href.split("/");
+	var val=href_arr[3].split("?");
+	if(val[0]=='clusternodeview'){
+		window.location=window.location.href.replace(val[1],'node='+node);
+	}else{
+		//window.location=window.location.href.replace(val[0],'clusternodeview')+'?node='+node;
+		$(ELT).ajax({
+			url: 'clusternodesession',
+			type: 'POST',
+			data:'node='+node,
+			success: function(){
+				window.location.reload();
+			}
+		});
+	}
+}
+</script>

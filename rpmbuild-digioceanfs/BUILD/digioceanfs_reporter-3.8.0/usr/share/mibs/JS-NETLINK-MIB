@@ -1,0 +1,73 @@
+NETLINK-MIB DEFINITIONS ::= BEGIN
+
+IMPORTS
+    MODULE-IDENTITY, OBJECT-TYPE, Integer32, Gauge32
+        FROM SNMPv2-SMI
+    DisplayString, TruthValue
+        FROM SNMPv2-TC
+    hackingExperimental
+        FROM HACKING-SNMP-MIB;
+
+NetLinkMIB MODULE-IDENTITY
+        LAST-UPDATED    "201307180000Z"
+        ORGANIZATION    "Hacking Networked Solutions Ltd"
+        CONTACT-INFO    "Max Hacking"
+        DESCRIPTION             "This MIB module defines objects for Fail Raid"
+        REVISION        "201307180000Z"
+        DESCRIPTION             "Derived from DISKIO-MIB ex UCD."
+    ::= { NetLink 1 }
+
+NetLink      OBJECT IDENTIFIER ::= { hackingExperimental 11 }
+
+NetLinkTable OBJECT-TYPE
+    SYNTAX      SEQUENCE OF SNetLinkEntry
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "disk drop or add information."
+    ::= { NetLink 2 }
+
+NetLinkEntry OBJECT-TYPE
+    SYNTAX      SNetLink
+    MAX-ACCESS  not-accessible
+    STATUS      current
+    DESCRIPTION "Disk drop or add"
+    INDEX       { NetLinkIndex }
+    ::= { NetLinkTable 1 }
+
+	SNetLinkEntry ::= SEQUENCE {
+        NetLinkIndex                 Integer32,
+		NetLinkCTime                  DisplayString,
+        NetLinkEth                  DisplayString,
+        NetLinkEvent               DisplayString
+}
+
+NetLinkIndex OBJECT-TYPE
+    SYNTAX      Integer32 (0..65535)
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "Reference index for each observed device."
+    ::= { NetLinkEntry 1 }
+
+NetLinkCTime OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "time-stamp"
+    ::= { NetLinkEntry 2 }
+
+NetLinkEth OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "ip addr"
+    ::= { NetLinkEntry 3 }
+
+NetLinkEvent OBJECT-TYPE
+    SYNTAX      DisplayString
+    MAX-ACCESS  read-only
+    STATUS      current
+    DESCRIPTION "event"
+    ::= { NetLinkEntry 4 }
+
+END
+

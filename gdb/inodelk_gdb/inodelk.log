@@ -1,0 +1,71 @@
+ec_inodelk()
+{
+        /* do something */
+}
+
+client_inodelk()
+{
+        args.loc = loc;
+        args.cmd = cmd;
+        args.flock = lock;
+        args.volume = volume;
+        args.xdata = xdata;
+
+        WIND client3_3_inodelk();
+}
+
+client3_3_inodelk()
+{
+        req.gfid = args.loc.gfid;
+        req.volume = args.volume;
+        req.cmd = args.cmd;
+        req.type = args.type;
+        req.flock = args.flock;
+        req.xdata = args.xdata;
+
+        WIND server3_3_inodelk();
+}
+
+server3_3_inodelk()
+{
+        args = (client's)req;
+        state->type = args.type;
+        state->volume = args.volume;
+        state->flock = args.flock;
+        state->xdata = args.xdata;
+        state->resolve.gfid = args.gfid;
+        server_resolve_inode(state->resolve.gfid);
+
+        WIND pl_inodelk();
+}
+
+pl_inodelk()
+{
+        _pl_convert_volume_for_special_range(state->flock, state->volume); 
+        ctx = pl_ctx_get(client, this);
+        pinode = pl_inode_get(this, inode);
+        dom = get_domain(pinode, volume);
+        reqlock = new_inode_lock(client, dom);
+        pl_inode_setlk(ctx, pinode, dom, inode, reqlock);
+                pl_inode->inode = inode_ref(inode);
+                __lock_inodelk(pl_inode, lock, dom, this);
+        ...
+
+        UNWIND server_inodelk_cbk();
+}
+
+server_inodelk_cbk()
+{
+        rsp.xdata = xdata;
+        rsp.op_ret = op_ret;
+        rsp.op_errno = op_errno;
+
+        UNWIND ec_inodelk_cbk();
+}
+
+ec_inodelk_cbk()
+{
+        /* do something */ 
+}
+
+

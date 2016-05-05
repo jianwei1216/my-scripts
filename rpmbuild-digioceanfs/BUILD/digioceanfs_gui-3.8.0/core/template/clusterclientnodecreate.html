@@ -1,0 +1,20 @@
+$def with (content)
+
+<style type="text/css">
+.ip_container{
+    margin-left:0;
+}
+</style>
+
+<!--客户端节点-->
+<div>
+    <label>$_('cluster_client_node_ipaddr')</label>
+    <input type="text" id="clusternodeipaddr" name="clusternodeipaddr" />
+    <br /><br />
+</div>
+
+<script type="text/javascript">
+$(ELT)(function(){
+    $(ELT)('#clusternodeipaddr').ipaddress();
+});
+</script>

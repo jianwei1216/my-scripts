@@ -1,0 +1,55 @@
+Breakpoint 1 at 0x7f4319b7e42b: file ec-expand.c, line 1337.
+Breakpoint 2 at 0x7f4319b7de2d: file ec-expand.c, line 1256.
+Breakpoint 3 at 0x7f4319b7cbab: file ec-expand.c, line 1042.
+Breakpoint 4 at 0x7f4319b795aa: file ec-expand.c, line 370.
+Breakpoint 5 at 0x7f4319b7f186: file ec-expand.c, line 1563.
+Continuing.
+[New Thread 0x7f43121fc700 (LWP 13450)]
+[Switching to Thread 0x7f43121fc700 (LWP 13450)]
+
+Breakpoint 5, ec_expand_full_sweep (frame=0x7f42fc00189c, this=0x7f430c01b270, loc=0x7f43121fbe40, data=0x0, ec=0x7f430c039070, fn=0x7f4319b7e403 <ec_expand_do>) at ec-expand.c:1563
+1563	        return ec_expand_cluster_ftw (frame, this, loc, data, ec, fn);
+#0  ec_expand_full_sweep (frame=0x7f42fc00189c, this=0x7f430c01b270, loc=0x7f43121fbe40, data=0x0, ec=0x7f430c039070, fn=0x7f4319b7e403 <ec_expand_do>) at ec-expand.c:1563
+#1  0x00007f4319afdfdd in expand_thread (args=0x7f430c01b270) at ec.c:622
+#2  0x0000003f42c079d1 in start_thread () from /lib64/libpthread.so.0
+#3  0x0000003f428e8b6d in clone () from /lib64/libc.so.6
+
+Breakpoint 1, ec_expand_do (this=0x7f430c01b270, entry=0x7f42fc001c70, parent=0x7f43121fbe40, data=0x0) at ec-expand.c:1337
+1337	        call_frame_t  *frame         = NULL;
+#0  ec_expand_do (this=0x7f430c01b270, entry=0x7f42fc001c70, parent=0x7f43121fbe40, data=0x0) at ec-expand.c:1337
+#1  0x00007f4319b7ef64 in ec_expand_cluster_ftw (frame=0x7f42fc00189c, this=0x7f430c01b270, loc=0x7f43121fbe40, data=0x0, ec=0x7f430c039070, fn=0x7f4319b7e403 <ec_expand_do>) at ec-expand.c:1531
+#2  0x00007f4319b7f1af in ec_expand_full_sweep (frame=0x7f42fc00189c, this=0x7f430c01b270, loc=0x7f43121fbe40, data=0x0, ec=0x7f430c039070, fn=0x7f4319b7e403 <ec_expand_do>) at ec-expand.c:1563
+#3  0x00007f4319afdfdd in expand_thread (args=0x7f430c01b270) at ec.c:622
+#4  0x0000003f42c079d1 in start_thread () from /lib64/libpthread.so.0
+#5  0x0000003f428e8b6d in clone () from /lib64/libc.so.6
+
+Breakpoint 2, ec_expand_data (frame=0x7f42fc0025ac, ec=0x7f430c039070, block=_gf_false, inode=0x7f43140398ec, sources=0x7f43121f9750 "", healed_sinks=0x7f43121f9730 "", myloc=0x7f43121f97f0) at ec-expand.c:1256
+1256	        gf_log ("TEST", GF_LOG_ERROR, "%s ", __FUNCTION__);
+#0  ec_expand_data (frame=0x7f42fc0025ac, ec=0x7f430c039070, block=_gf_false, inode=0x7f43140398ec, sources=0x7f43121f9750 "", healed_sinks=0x7f43121f9730 "", myloc=0x7f43121f97f0) at ec-expand.c:1256
+#1  0x00007f4319b7e933 in ec_expand_do (this=0x7f430c01b270, entry=0x7f42fc001c70, parent=0x7f43121fbe40, data=0x0) at ec-expand.c:1405
+#2  0x00007f4319b7ef64 in ec_expand_cluster_ftw (frame=0x7f42fc00189c, this=0x7f430c01b270, loc=0x7f43121fbe40, data=0x0, ec=0x7f430c039070, fn=0x7f4319b7e403 <ec_expand_do>) at ec-expand.c:1531
+#3  0x00007f4319b7f1af in ec_expand_full_sweep (frame=0x7f42fc00189c, this=0x7f430c01b270, loc=0x7f43121fbe40, data=0x0, ec=0x7f430c039070, fn=0x7f4319b7e403 <ec_expand_do>) at ec-expand.c:1563
+#4  0x00007f4319afdfdd in expand_thread (args=0x7f430c01b270) at ec.c:622
+#5  0x0000003f42c079d1 in start_thread () from /lib64/libpthread.so.0
+#6  0x0000003f428e8b6d in clone () from /lib64/libc.so.6
+
+Breakpoint 3, __ec_expand_data (frame=0x7f42fc0025ac, ec=0x7f430c039070, fd=0x7f42fc00331c, heal_on=0x7f43121f6f30 "", sources=0x7f43121f9750 "", healed_sinks=0x7f43121f9730 "", loc=0x7f43121f97f0) at ec-expand.c:1042
+1042	        unsigned char      *locked_on    = NULL;
+#0  __ec_expand_data (frame=0x7f42fc0025ac, ec=0x7f430c039070, fd=0x7f42fc00331c, heal_on=0x7f43121f6f30 "", sources=0x7f43121f9750 "", healed_sinks=0x7f43121f9730 "", loc=0x7f43121f97f0) at ec-expand.c:1042
+#1  0x00007f4319b7e3ba in ec_expand_data (frame=0x7f42fc0025ac, ec=0x7f430c039070, block=_gf_false, inode=0x7f43140398ec, sources=0x7f43121f9750 "", healed_sinks=0x7f43121f9730 "", myloc=0x7f43121f97f0) at ec-expand.c:1321
+#2  0x00007f4319b7e933 in ec_expand_do (this=0x7f430c01b270, entry=0x7f42fc001c70, parent=0x7f43121fbe40, data=0x0) at ec-expand.c:1405
+#3  0x00007f4319b7ef64 in ec_expand_cluster_ftw (frame=0x7f42fc00189c, this=0x7f430c01b270, loc=0x7f43121fbe40, data=0x0, ec=0x7f430c039070, fn=0x7f4319b7e403 <ec_expand_do>) at ec-expand.c:1531
+#4  0x00007f4319b7f1af in ec_expand_full_sweep (frame=0x7f42fc00189c, this=0x7f430c01b270, loc=0x7f43121fbe40, data=0x0, ec=0x7f430c039070, fn=0x7f4319b7e403 <ec_expand_do>) at ec-expand.c:1563
+#5  0x00007f4319afdfdd in expand_thread (args=0x7f430c01b270) at ec.c:622
+#6  0x0000003f42c079d1 in start_thread () from /lib64/libpthread.so.0
+#7  0x0000003f428e8b6d in clone () from /lib64/libc.so.6
+[Thread 0x7f43121fc700 (LWP 13450) exited]
+
+Program received signal SIGINT, Interrupt.
+[Switching to Thread 0x7f4324342700 (LWP 13219)]
+0x0000003f42c0822d in pthread_join () from /lib64/libpthread.so.0
+A debugging session is active.
+
+	Inferior 1 [process 13219] will be detached.
+
+Quit anyway? (y or n) Detaching from program: /usr/sbin/glusterfsd, process 13219

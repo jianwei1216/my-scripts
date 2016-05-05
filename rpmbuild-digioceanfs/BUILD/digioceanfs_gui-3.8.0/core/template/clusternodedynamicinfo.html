@@ -1,0 +1,160 @@
+$def with (content)
+
+<!--div id="loader">
+    <h1>Loading... please wait!</h1>
+        <div id="container2">
+        <noscript>
+        <p>Your navigator does not support JavaScript (or JavaScript is not activated).</p>
+        <p>In approximatively 2 seconds you will be redirected to the static version of phpSysInfo.</p>
+        <p>&nbsp;</p>
+        </noscript>
+    </div>
+    </div>
+    <div id="errors" style="display: none; width: 940px">
+        <div id="errorlist">
+        <h2>Oh, I'm sorry. Something seems to be wrong.</h2>
+        </div>
+    </div-->
+<div id="tabs-2">
+    <div id="vitals">
+        <h2><span id="lang_002">$_("system vitals")</span></h2>
+        <table class="stripeMe" id="vitalsTable" cellspacing="0">
+            <tr>
+                <td style="width:160px;"><span id="lang_003">$_('hostname')</span></td>
+                <td><span id="s_hostname"></span></td>
+            </tr>
+            <tr>
+                <td style="width:160px;"><span id="lang_004">$_('listening ip')</span></td>
+                <td><span id="s_ip"></span></td>
+            </tr>
+            <tr>
+                <td style="width:160px;"><span id="lang_005">$_('kernel version')</span></td>
+                <td><span id="s_kernel"></span></td>
+            </tr>
+            <tr>
+                <td style="width:160px;"><span id="lang_006">$_('distro name')</span></td>
+                <td><span id="s_distro"></span></td>
+            </tr>
+            <tr>
+                <td style="width:160px;"><span id="lang_007">$_('uptime')</span></td>
+                <td><span id="s_uptime"></span></td>
+            </tr>
+            <tr>
+                <td style="width:160px;"><span id="lang_008">$_('current users')</span></td>
+                <td><span id="s_users"></span></td>
+            </tr>
+            <tr>
+                <td style="width:160px;"><span id="lang_009">$_('load averages')</span></td>
+                <td id="s_loadavg"></td>
+            </tr>
+        </table>
+    </div>
+    <div id="memory">
+    </div>
+    <div id="network">
+    <h2><span id="lang_021">$_('network usage')</span></h2>
+        <table class="stripeMe" id="networkTable" cellspacing="0">
+            <thead>
+                <tr>
+                    <th><span id="lang_022">$_('interface')</span></th>
+                    <th class="right" style="width:60px;"><span id="lang_023">$_('recieved')</span></th>
+                    <th class="right" style="width:60px;"><span id="lang_024">$_('transfered')</span></th>
+                    <th class="right" style="width:60px;"><span id="lang_025">$_('error/drops')</span></th>
+                </tr>
+            </thead>
+            <tbody id="tbody_network">
+            </tbody>
+        </table>
+    </div>
+    <div id="voltage" style="display: none;">
+        <h2><span id="lang_052">$_("voltage")</span></h2>
+        <table class="stripeMe" id="voltageTable" cellspacing="0">
+            <thead>
+                <tr>
+                    <th><span id="lang_059">$_('label')</span></th>
+                    <th class="right"><span id="lang_052">$_('voltage')</span></th>
+                    <th class="right" style="width: 80px;"><span id="lang_055">$_('min')</span></th>
+                    <th class="right" style="width: 80px;"><span id="lang_056">$_('max')</span></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div id="temp" style="display: none;">
+        <h2><span id="lang_051">$_('temperature')</span></h2>
+        <table class="stripeMe" id="tempTable" cellspacing="0">
+            <thead>
+                <tr>
+                    <th><span id="lang_059">$_('Label')</span></th>
+                    <th class="right" style="width: 80px;"><span id="lang_054">$_('Value')</span></th>
+                <th class="right" style="width: 80px;"><span id="lang_058">$_('Limit')</span></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div id="fan" style="display: none;">
+        <h2><span id="lang_053">$_('Fan')</span></h2>
+        <table class="stripeMe" id="fanTable" cellspacing="0">
+            <thead>
+                <tr>
+                    <th><span id="lang_059">$_('Label')</span></th>
+                    <th class="right" style="width: 80px;"><span id="lang_054">$_('Value')</span></th>
+                    <th class="right" style="width: 80px;"><span id="lang_055">$_('Min')</span></th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+    <div id="ups" style="display: none;">
+    </div>
+    <div style="clear:both;"></div>
+</div>
+
+<script type="text/javascript">
+    buildinterval = null;        
+    var flag = 1;
+    function buildpage() {
+        if(!flag){
+            return false;
+        }
+        checkSession();
+        $(ELT).ajax({
+            url: '/clusternodeviewdynamicinfoxml?' + new Date().getTime(),
+            dataType: 'xml',
+            data: 'type=dynamic',
+            beforeSend: function(){
+                flag = 0;
+                clearInterval(buildinterval);
+            },
+            /*error: function error() {
+                $(ELT).jGrowl("Error loading XML document!", {
+                    sticky: true
+                });
+            },*/
+            success: function buildblocks(xml) {
+                flag = 1; 
+                $(ELT)('#loaddialog').dialog('close');
+                buildinterval = setInterval('buildpage()',3000);
+                populateErrors(xml);
+				refreshVitals(xml);
+                refreshNetwork(xml);
+                refreshMemory(xml);
+                refreshTemp(xml);
+                refreshVoltage(xml);
+                refreshFan(xml);
+                refreshUps(xml);
+                
+                $(ELT)('.stripeMe tr:nth-child(even)').addClass('even');
+                langcounter = 1;
+            }
+        });
+    }
+    $(ELT)(function(){
+        buildpage();
+    });
+</script>
+

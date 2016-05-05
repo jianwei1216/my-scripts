@@ -1,0 +1,278 @@
+$def with (content)
+
+<div id="toolbar" class="ui-corner-all">
+	<button id="btnclusternotifyfocusall">$_("clusternotifyfocusall")</button>
+	<button id="btnclusternotifydelall">$_("clusternotifydelall")</button>
+</div>
+
+<div id="pcontent">
+
+</div>
+<script type="text/javascript">
+	$(ELT)(function(){
+		$(ELT)('#btnclusternotifyfocusall').button({
+            icons: {
+                primary: 'ui-icon-plusthick'
+            }
+        }).bind('click',clusternotifyfocusall);
+		$(ELT)('#btnclusternotifydelall').button({
+            icons: {
+                primary: 'ui-icon-trash'
+            }
+        }).bind('click',clusternotifydelall);
+		clusternotifyload();
+		//getreport();
+	});
+	function clusternotifyload(){
+        var url = "/clusternotifyload?" + new Date().getTime();
+        $(ELT).ajax({
+            url: url,
+            data: '',
+            dataType: 'html',
+            beforeSend: function(){
+                custLoading("$_('Loading Data ...')");
+            },
+            success: function(text){
+                $(ELT)('#loaddialog').dialog('close');
+                $(ELT)('#pcontent').html(text);
+                clusternotifymsg();
+                //getreport();
+            }
+        });
+    }
+    function clusternotifymsg(){
+        var url = "/clusternotifymsg?" + new Date().getTime();
+        $(ELT).ajax({
+            url: url,
+            type: 'POST',
+            data: '',
+            dataType: 'text',
+            beforeSend: function(xhr){
+                $(ELT)(window).bind('beforeunload', function() {
+                    xhr.abort();
+                });
+            },
+            success: function(text){
+               //var msgspanel = "<div id='msgspanel'><table>"
+               var msgs = $(ELT).parseJSON(text);
+                if('nofile' in msgs[0]){
+                    var msg_pnode = '';
+                    var msg_ip = '';
+                    var msg_op = '$_("noreport")';
+                    var msg_event = '';
+                    var msg_detail = '';
+                    var msg_detail = '';
+                    var msg_format_time = '';
+                    linehtml = "<tr id="+  msg_id + " class='err_msg_line' onclick='getfocus(this);'><td>" + msg_op + "</td><td>"+msg_format_time+"</td><td>"+msg_ip+"</td><td>"+msg_pnode+"</td><td>"+msg_event+"</td><td><span id='igo'>"+ msg_detail+"</span></td></tr>";
+                    tablehtml+=linehtml;
+                }else{
+                    var tablehtml = '';
+                    for(i=0; i < msgs.length; i++){
+	                    var lineinfo = msgs[i].filecontent;
+                        var msg_id = msgs[i].filectime * 1000;
+                        var isread = msgs[i].isread;
+                        try{
+                            var msg_line = $(ELT).parseJSON(lineinfo);
+                            var msg_node = msg_line.SourceNode;
+                            var msg_pnode = msg_line.ErrNode;
+                            var msg_ip = msg_line.SourceIp;
+                            var msg_op = msg_line.OP;
+                            var msg_time = parseFloat(msg_id);
+                            var msg_date = new Date(msg_time).Format("yyyy-MM-dd hh:mm:ss.S");
+                            var msg_format_time = msg_date.toLocaleString();
+                            switch(msg_op){
+                                case '$_("RaidEvent")':
+                                {
+                                    msg_event = msg_line.RaidEvent;
+                                    if(msg_line.RaidDisk){
+                                        msg_detail = '<span class="msg_disk">$_("Disk"): ' + msg_line.RaidDisk +'</span>;<span class="msg_raid"> RAID '+ msg_line.RaidName+'</span>';
+                                    }else{
+                                        msg_detail = '<span class="msg_raid">RAID: ' + msg_line.RaidName ;
+                                    }
+                                    $(ELT)(msg_id).addClass("msg_err_r");
+                                }
+                                break;
+                                case '$_("DiskEvent")':
+                                {
+                                    msg_event = msg_line.DiskEvent;
+                                    msg_detail = '<span class="msg_disk">$_("Disk"): ' + msg_line.DiskName + ' </span>;'
+                                    if(msg_line.DiskID){
+                                        msg_detail += '<span class="msg_position">$_("Position"): ' + msg_line.DiskID+'</span>';
+                                    }
+                                }
+                                break;
+                                case '$_("FileSystemEvent")':
+                                {	
+                                    msg_event = msg_line.FileEvent;
+                                    if(msg_event == "$_('failure')"){
+                                   		msg_detail = '<span class="msg_disk">$_("Disk"): '+msg_line.ErrDiskName+ ' </span>;<span class="msg_position">$_("Position"): ' + msg_line.ErrDiskID+'</span>';
+                                    }else if(msg_event == '$_("HealStart")' || msg_event == '$_("HealComplete")' || msg_event == '$_("HealAppend")'){
+                                    	msg_detail = '<span class="msg_disk">$_("Service"): '+ msg_line.ServiceName + '</span>';
+                                    }else if(msg_event == '$_("ReplaceBrick")'){
+                                        if(msg_line.Status == 'Successed'){
+                                            msg_detail = '<span class="msg_disk">$_("Service"): '+ msg_line.ServiceName + ' ; ' + '$_("status"): $_("success")' + '</span>';
+                                        }else{
+                                            msg_detail = '<span class="msg_disk">$_("Service"): '+ msg_line.ServiceName + ' ; ' + '$_("status"): $_("fail")' + '</span>';
+                                        }
+                                    }
+                                }
+                                break;
+                                case '$_("Systemdisk")':
+                                {
+                                    msg_event = msg_line.Event;
+                                    msg_dirname = msg_line.DirName;
+                                    msg_flag = msg_line.Flag;
+                                    msg_used = msg_line.Used;
+                                    msg_detail = '<span class="msg_disk">$_("Systemdisk"): ' +' on '+msg_node + ' $_("used") ' + msg_used + '</span>';
+                                }
+                                break;
+                                case '$_("Ping")':
+                                {
+                                    msg_event = msg_line.Event;
+                                    msg_detail = '<span class="msg_node">$_("Node"): '+ msg_line.ErrNode+ ' </span><span class="msg_re">$_("TargetIP"): ' + msg_line.PingIP+' '+ msg_event +'</span>';
+                                }
+                                break;
+                                case '$_("NetLink")':
+                                {
+                                    msg_event = msg_line.Event;
+                                    if(msg_event == '$_("no")'){
+                                        msg_event = '$_("No-link")';
+                                    }else{
+                                        if(msg_event!='$_("SpeedDown")'&&msg_event!='$_("SpeedResume")'){
+                                            msg_event = '$_("Linking")';
+                                        }
+                                    }
+                                    msg_detail = '<span class="msg_eth">$_("Ethdevice"): '+msg_line.Eth+ ' </span><span class="msg_re">$_("Linked"): ' + msg_event+'</span>';
+                                }
+                                break;
+                                case '$_("SysMsg")':
+                                {
+                                    msg_event = msg_line.MsgName;
+                                    msg_flag = msg_line.Falg;
+                                    msg_usage = msg_line.Value;
+                                    msg_detail = '<span class="msg_sys">$_("status"): ' + msg_flag + ' ; $_("usage"): ' + msg_usage + '</span>';
+                                }
+                                break;
+                                default:
+                                {
+                                    msg_event = 'Unknow';
+                                    msg_detail = 'Unknow';
+                                }
+                            }
+                            if(msg_event=='$_("degraded")'||msg_event=='$_("FAILED")'||msg_event=='$_("SpeedDown")'||msg_event=='$_("No-link")'||msg_event=='$_("Off-line")'||msg_event=='$_("Fail")'||msg_event=='$_("DeviceDisappeared")'||msg_event=='$_("error/drops")'||msg_event=='$_("remove")'||msg_event=='$_("failure")'||msg_event=='$_("usedcpu")'||msg_event=='$_("cputemp")'||msg_event=='$_("usedmem")'||msg_event=='$_("cpufan")'||msg_event=='$_("ReplaceBrick")'){
+                                var bg='color:#F00;font-weight:bold';
+                                var title='$_("Warnning")';
+                            }else{
+                                var bg='';
+                                var title='$_("clusternotify")';
+                            }
+                        }
+                        catch(err){
+                            var msg_pnode = 'Unknow';
+                            var msg_ip = 'Unknow';
+                            var msg_op = 'Unknow';
+                            var msg_event = 'Unknow';
+                            var msg_detail = 'Unknow';
+                            var msg_detail = 'Parse json err';
+                        }
+                        if(isread == 'N'){
+                            //linehtml = "<tr id="+  msg_id + " class='err_msg_line' onclick='getfocus(this);'><td><span class='ui-icon ui-icon-mail-closed' style='float:left;margin:5px 5px 0 5px;'></span>" + lineinfo + "</td><td><a href='#'><span id='igo'>Ignore</span></a></td></tr>";
+                            linehtml = "<tr id="+  msg_id + " class='err_msg_line' onclick='getfocus(this);' style='"+bg+"' title='"+title+"'><td><span class='ui-icon ui-icon-mail-closed' style='float:left;margin:5px 5px 0 5px;'></span>" + msg_op + "</td><td>"+msg_format_time+"</td><td>"+msg_ip+"</td><td>"+msg_pnode+"</td><td>"+msg_event+"</td><td><span id='igo'>"+ msg_detail+"</span></td></tr>";
+                        }else{
+                            //linehtml = "<tr id="+  msg_id + " class='err_msg_line' onclick='getfocus(this);'><td><span class='ui-icon ui-icon-mail-open' style='float:left;margin:5px 5px 0 5px;'></span>" + lineinfo + "</td><td><a href='#'><span id='igo'>Ignore</span></a></td></tr>";
+                            linehtml = "<tr id="+  msg_id + " class='err_msg_line' onclick='getfocus(this);' style='"+bg+"' title='"+title+"'><td><span class='ui-icon ui-icon-mail-open' style='float:left;margin:5px 5px 0 5px;'></span>" + msg_op + "</td><td>"+msg_format_time+"</td><td>"+msg_ip+"</td><td>"+msg_pnode+"</td><td>"+msg_event+"</td><td><span id='igo'>"+ msg_detail+"</span></td></tr>";
+                        }
+                        tablehtml+=linehtml;
+                    }
+                }
+                $(ELT)("#clusternotify tbody").append(tablehtml);
+                var datatable = $(ELT)('#clusternotify').DataTable({
+		    	    "bJQueryUI": true,
+		    	    "columnDefs": [
+		    	    	{"width": "10%", "targets": 0},
+		    	    	{"width": "18%", "targets": 1},
+		    	    	{"width": "10%", "targets": 2},
+		    	    	{"width": "13%", "targets": 3},
+		    	    	{"width": "10%", "targets": 4},
+		    	    	{"width": "39%", "targets": 5}
+		    	    ],
+                    "sPaginationType": "full_numbers",
+                    "bStateSave": true,
+                    "oLanguage": {
+                        "sUrl": "/static/js/temp/datatable_ZH"
+		    		}
+                });
+                datatable.order([[1,'dasc']]);
+            }
+        });
+    }
+    function getfocus(obj){
+		if(obj.id=='undefined'){
+			return false;
+		}
+		if($(ELT)(obj).find('span.ui-icon-mail-open').length > 0){
+			return;
+		}
+		$(ELT).ajax({
+			url:"/clusternotifyfocus?" + new Date().getTime(),	
+			type: 'POST',
+			data: 'msg_id=' + $(ELT)(obj).attr('id') / 1000,
+			dataType: 'JSON',
+			beforeSend: function(){
+                custLoading("$_('Loading Data ...')");
+            },
+			success: function(text){
+					$(ELT)('#loaddialog').dialog('close');
+				if(text == '0'){
+					var objlist = $(ELT)('.err_msg_line');
+					for(i=0;i< objlist.length; i++){
+						$(ELT)(objlist[i]).removeClass('err_msg_highlight');
+					}
+	        			//$(ELT)(obj).addClass('err_msg_highlight');
+					$(ELT)(obj).find('span.ui-icon-mail-closed').addClass('ui-icon-mail-open');
+					$(ELT)(obj).find('ui-icon-mail-open').removeClass('ui-icon-mail-closed');
+					//$(ELT)(obj).addClass('no-highlight');
+					getreport_nowait();
+					//target tr read
+				}
+			}
+		});
+    }
+    function clusternotifyfocusall(){
+    	$(ELT).ajax({
+			url:"/clusternotifyfocusall?" + new Date().getTime(),	
+			type: 'POST',
+			data: '',
+			dataType: 'JSON',
+			beforeSend: function(){
+                custLoading("$_('Loading Data ...')");
+            },
+			success: function(text){
+				if(text == '0'){
+					$(ELT)('#loaddialog').dialog('close');
+					getreport_nowait();
+					clusternotifyload();
+					//target tr read
+				}
+			}
+		});
+    }
+       function clusternotifydelall(){
+    	$(ELT).ajax({
+			url:"/clusternotifydelall?" + new Date().getTime(),	
+			type: 'POST',
+			data: '',
+			dataType: 'JSON',
+			beforeSend: function(){
+                custLoading("$_('Loading Data ...')");
+            },
+			success: function(text){
+				if(text == '0'){
+					$(ELT)('#loaddialog').dialog('close');
+					clusternotifyload();
+					//target tr read
+				}
+			}
+		});
+    }
+</script>

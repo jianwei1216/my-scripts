@@ -1,0 +1,44 @@
+$def with (content)
+
+<form id="formclusternode" method="post">
+    <fieldset>
+        <label for="clusternodeold" id="clusternodeold_label">$_("clusternodeold")</label>
+        <select id="clusternodeold" name="clusternodeold">
+<br />        </select><br /><br />
+        <label for="clusternodenew" id="clusternodenew_label" >$_("clusternodenew")</label>
+        <input type="text" id="clusternodenew" name="clusternodenew" class="ip ui-widget-content ui-corner-all" width="20" /><br /><br />
+    </fieldset>
+</form>
+<script type="text/javascript">
+function getNode(){
+    var url = '/clusterservicextendnode?' + new Date().getTime();
+    $(ELT).ajax({
+        url: url,
+        type: 'POST',
+        beforeSend: function(){
+            $(ELT)('#clusternodeold').html('');
+            $(ELT)('#clusternodeold').append('<option class="ajaximg">数据加载中...</option>');
+        },
+        dataType: 'JSON',
+        success: function(text){
+            $(ELT)('#clusternodeold').html('');
+            var nodes = text;
+            for(var i = 0; i < nodes.length; i++){
+                $(ELT)('#clusternodeold').append('<option value="' + nodes[i] + '">'+ nodes[i] +'</option>' );
+            }
+        },
+        error: function(){
+            alert('error');
+        }
+    });
+}
+    $(ELT)(function(){
+    	getNode();
+        $(ELT)('.ip').ipaddress();
+    });
+</script>
+<style type="text/css">
+    .ip_container{
+        margin-left:0;
+    }
+</style>

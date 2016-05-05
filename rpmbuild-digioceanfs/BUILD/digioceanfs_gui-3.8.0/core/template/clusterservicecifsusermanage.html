@@ -1,0 +1,310 @@
+$def with (content)
+
+<form id="cuser" method="post">
+    <fieldset>
+        <div id="userlist" style="margin:none;">
+            <table>
+                <thead>
+                    <tr>
+                        <th>
+                            <p style="width:100px;float:left;">$_('username')</p>
+                            <!--a href="javascript:;" title="刷新" onClick="$(ELT)('.username').remove();clusterservicecifslistuser()" style="float:right;margin-top:4px;text-decoration:none;">[刷新]</a>
+                            <span id="cifsusersave" title="$_('save')" class="usersave" style="float:right;display:none;margin-top:4px;">[$_('save')]</span>
+                            <span id="cifsuseradd" title="$_('add')" class="useradd" style="float:right;margin-top:4px;">[$_('add')]</span-->
+                            <dl class="opercommand">
+                        		<dd><a title="$_('refresh')" style="float:right;margin-top:4px;" href="javascript:void(0);" onclick="$(ELT)('.username').remove();clusterservicecifslistuser()" class="ui-icon ui-icon-refresh ui-icon-inline" id="">&nbsp;</a></dd>
+                        	</dl>
+                            <dl class="opercommand">
+                        		<dd><a title="$_('save')" style="float:right;margin-top:4px;" href="javascript:void(0);" class="ui-icon ui-icon-disk ui-icon-inline" id="cifsusersave">&nbsp;</a></dd>
+                        	</dl>
+                        	<dl class="opercommand">
+                        		<dd><a title="$_('add')" style="float:right;margin-top:4px;" href="javascript:void(0);" class="ui-icon ui-icon-plus ui-icon-inline" id="cifsuseradd">&nbsp;</a></dd>
+                        	</dl>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="userlist">
+                    <tr class="beforesend" style="display:none;">
+                        <td>$_("load data")</td>
+                    </tr>
+                    <tr id="newcifsuser" style="display:none;">
+                        <td  style="width: 9999px;">
+                            <div class="ui-widget-content ui-corner-all" style="border:none;">
+                                <p class="subtitile ui-corner-top"><span>$_("userinfo")</span></p>
+                                <div id="optype" style="display:none;">
+                                    <label for="optype">$_("type")</label>
+                                    <input type="radio" value="create" name="optype" class="ui-widget-content ui-corner-all"/>Create     
+                                    <input type="radio" value="edit" name="optype" class="ui-widget-content ui-corner-all"/>Edit<br /><br />
+                                </div>
+                                <label for="user">$_("username")</label>
+                                <input id="user_name" name="user" class="ui-widget-content ui-corner-all cifsuser" /> <span class="ui-state-require">*</span>
+                                <p class="tip_error">$_("username_error")</p>
+                                <br />
+                                <div id="passarea">
+                                    <label for="password">$_("password")</label>
+                                    <input type="password" name="password" id="password" class="ui-widget-content ui-corner-all cifsuser" /> <span class="ui-state-require">*</span>
+                                    <p class="tip_error">$_("password_error")</p>
+                                    <br />
+                                    <label for="authpassword">$_("repassword")</label>
+                                    <input type="password" name="authpassword" id="authpassword" class="ui-widget-content ui-corner-all cifsuser" /> <span class="ui-state-require">*</span>
+                                    <p class="tip_error">$_("repassword_error")</p>
+                                    <br /><br />
+                                </div> 
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+    	</div>
+    </fieldset>
+</form>
+<script type="text/javascript">
+    jQuery.validator.messages.required = "<img src='/static/theme/redmond/images/iperror.png'>";
+    $(ELT)("#cuser").validate({
+        errorClass: "invalid",
+        rules: {
+            user: {
+                required: true,
+                inputName: true,
+                byterangelength: [3, 10]
+            },
+            password: {
+                required: true,
+                password: true,
+                byterangelength: [6, 20]
+            },
+            authpassword: {
+                required: true,
+                equalTo: "#password" 
+            }
+        },
+        message: {
+            user: {
+                required: "<img src='/static/theme/redmond/images/iperror.png'>",
+                inputName: "<img src='/static/theme/redmond/images/iperror.png'>",
+                byteranglength: "<img src='/static/theme/redmond/images/iperror.png'>"
+            },
+            password: {
+                required: "<img src='/static/theme/redmond/images/iperror.png'>",
+                password: "<img src='/static/theme/redmond/images/iperror.png'>",
+                byteranglength: "<img src='/static/theme/redmond/images/iperror.png'>"
+            },
+            authpassword: {
+                required: "<img src='/static/theme/redmond/images/iperror.png'>",
+                equalTo: "<img src='/static/theme/redmond/images/iperror.png'>"
+            }
+        }
+    });
+    function clusterservicecifslistuser(){
+        checkSession();
+        var url = "/clusterservicecifslistuser?" + new Date().getTime();
+        $(ELT).ajax({
+            url: url,
+            type: 'POST',
+            data: 'service_name='+$(ELT)('#clusterservicename').val(),
+            beforeSend: function(){
+                $(ELT)(".beforesend").attr("style","display:block;")
+            },
+            dataType: 'JSON',
+            success: function(text){
+                var userinfo = text;
+                if (userinfo.length == 0){
+                    var user = "<tr class='username'><td>" + "$_('No user found')" + "</td></tr>";
+                    $(ELT)('#newcifsuser').before(user);
+                }
+                for(i=0; i < userinfo.length; i++){
+                    if(userinfo[i].user == 'nouser'){
+                        var user = "<tr class='username'><td>" + "$_('No user found')" + "</td></tr>";
+                        //var user = '<tr class="username"><td><span style="height:16px; width:16px;display: block">' + userinfo[i].user + '</span></td></tr>';
+                    }else{
+                        var user = '<tr class="username" id="'+userinfo[i].user+'"><td><dl class="opercommand">'
+                        user+='<dd><a id="'+ userinfo[i].user + '_edit" title="$_('edit')" href="javascript:void(0);" class="ui-icon ui-icon-inline ui-icon-pencil">&nbsp;</a></dd>'
+                        if(userinfo[i].link=='unlink'){
+                            user+='<dd><a id="'+ userinfo[i].user + '_del" title="$_('delete')" href="javascript:void(0);" class="ui-icon ui-icon-inline ui-icon-trash">&nbsp;</a></dd>'
+                            user+='</dl><span style="height:16px; width:200px;display: block">' + userinfo[i].user +'&nbsp;($_('Linked')：$_('No-link'))</span>'
+                        }else{
+                            user+='<dd><a title="$_('delete')$_('Linking')" href="javascript:void(0);" onclick=clusterservicecifsdellink("'+userinfo[i].node+'","'+userinfo[i].pid+'") class="ui-icon ui-icon-inline ui-icon-close">&nbsp;</a></dd>'
+                            user+='</dl><span style="height:16px; width:200px;display: block">' + userinfo[i].user +'&nbsp;($_('Linked')：$_('Linking'))</span>'
+                        }
+                        user+='</td></tr>';
+                    }
+                    $(ELT)('#newcifsuser').before(user);
+                    $(ELT)("#"+userinfo[i].user+"_del").bind("click",function() {
+                        clusterservicecifsdeluser($(ELT)(this).attr('id').split("_")[0]);
+                    });
+                    $(ELT)("#"+userinfo[i].user+"_edit").bind("click",function() {
+                        clusterservicecifsuseredit($(ELT)(this).attr('id').split("_")[0]);
+                    });
+                }
+                $(ELT)(".beforesend").attr("style","display:none;");
+            }
+        }); 
+    }
+    $(ELT)(function(){
+        $(ELT)('#cifsuseradd').bind({
+            click: clusterservicecifsuseradd,
+            mouseenter:function(){$(ELT)(this).css("color","blue");},
+            mouseleave:function(){$(ELT)(this).css("color","black");}
+        });
+        $(ELT)('#cifsusersave').bind({
+            click: clusterservicecifsusersave,
+            mouseenter:function(){$(ELT)(this).css("color","blue");},
+            mouseleave:function(){$(ELT)(this).css("color","black");}
+        });
+        clusterservicecifslistuser();
+    });
+    function clusterservicecifsuseradd() {
+        $(ELT)('#newcifsuser').show(1000, function(){
+            $(ELT)('.cifsuser').each(function(){
+                $(ELT)('input[name=optype][value=create]').attr('checked',true);
+                $(ELT)('input[name=optype][value=edit]').attr('checked',false);
+                $(ELT)("#user_name").val('');
+                $(ELT)("#user_name").attr("readonly",false);
+                $(ELT)("#password").val('');
+                $(ELT)("#authpassword").val('');
+                //$(ELT)(this).bind('focus', function(){
+                    //$(ELT)("#cifsusersave").tooltip({effect: 'slide', position: 'right'}).show();
+                    //var arrayhtml = '<div id="tooltiparray" ></div>';
+                    //$(ELT)('body').append(arrayhtml);
+                    //var top = $(ELT)(".tooltip").position().top + $(ELT)(".tooltip").height();
+                    //var left = $(ELT)(".tooltip").position().left - 5;
+                    //$(ELT)("#tooltiparray").css({'left': left, 'top':top , 'z-index':9999});
+                    //if(!$(ELT)(".tooltip").hasClass('ui-corner-all')){
+                    //    $(ELT)(".tooltip").addClass('ui-corner-all');
+                    //}
+                    //$(ELT)('#tooltiparray').show({effect: 'slide'});
+                //});
+                //$(ELT)(this).bind('focusout', function(){
+                    //$(ELT)("#cifsusersave").tooltip({effect: 'slide'}).hide();
+                    $(ELT)('#tooltiparray').hide();
+                //});		
+            });
+    	});
+        $(ELT)('#cifsusersave').show();
+    }
+    
+    function clusterservicecifsuseredit(user_name) {
+        $(ELT)('#newcifsuser').show(1000, function(){
+            $(ELT)('.cifsuser').each(function(){
+                $(ELT)('input[name=optype][value=create]').attr('checked',false);
+                $(ELT)('input[name=optype][value=edit]').attr('checked',true);
+                $(ELT)("#user_name").val(user_name);
+                $(ELT)("#user_name").attr("readonly",true);
+                $(ELT)(this).bind('focus', function(){
+                    $(ELT)("#cifsusersave").tooltip({effect: 'slide', position: 'right'}).show();
+                    var arrayhtml = '<div id="tooltiparray" ></div>';
+                    $(ELT)('body').append(arrayhtml);
+                    var top = $(ELT)(".tooltip").position().top + $(ELT)(".tooltip").height();
+                    var left = $(ELT)(".tooltip").position().left - 5;
+                    $(ELT)("#tooltiparray").css({'left': left, 'top':top , 'z-index':9999});
+                    if(!$(ELT)(".tooltip").hasClass('ui-corner-all')){
+                        $(ELT)(".tooltip").addClass('ui-corner-all');
+                    }
+                    $(ELT)('#tooltiparray').show({effect: 'slide'});
+                });
+                $(ELT)(this).bind('focusout', function(){
+                    $(ELT)("#cifsusersave").tooltip({effect: 'slide'}).hide();
+                    $(ELT)('#tooltiparray').hide();
+                });		
+            });
+        });
+        $(ELT)('#cifsusersave').show();
+    }
+    function clusterservicecifsusersave(){
+        var url = '/clusterservicecifsadduser?' + new Date().getTime();
+        if(!$(ELT)('#cuser').valid()){
+            return false;
+        }
+        $(ELT).ajax({
+            url: url,
+            type: 'POST',
+            data: 'service_name='+$(ELT)('#clusterservicename').val() + '&username=' + $(ELT)('#user_name').val() + '&password=' + $(ELT)('#password').val() + '&optype=' + $(ELT)('input[name=optype]:checked').val(),
+            beforeSend: function(){
+                $(ELT)(".beforesend").attr("style","display:block;")
+            },
+            dataType: 'JSON',
+            success: function(text){
+                if(isNaN(text)){
+                    custAlert("$_('operfail')",text);
+                }else{
+                    if(parseInt(text) == 0){
+                        $(ELT)('#loaddialog').dialog('close');
+                        if($(ELT)('input[name=optype]:checked').val() == 'edit'){
+                            custAlert("$_('opersucc')","$_('clusterservicecifseditusersucc')");
+                        }else{
+                            custAlert("$_('opersucc')","$_('clusterservicecifsaddusersucc')");
+                        }
+                    }else if(parseInt(text) == 13241){
+                        custAlert("$_('operfail')","$_('startcifsfirst')");
+                    }else{
+                        custAlert("$_('operfail')","$_('operfailinfo')");
+                    }
+                }
+                $(ELT)(".beforesend").attr("style","display:none;");
+                $(ELT)(".username").remove();
+                clusterservicecifslistuser();
+            }
+        });
+    	$(ELT)('#newcifsuser').hide();
+    	//$(ELT)('#cifsusersave').hide();
+    }
+    function clusterservicecifsdeluser(username){
+    	var url = '/clusterservicecifsdeluser?' + new Date().getTime();
+    	$(ELT).ajax({
+            url: url,
+            type: 'POST',
+            data: 'service_name='+$(ELT)('#clusterservicename').val() + '&username=' + username,
+            beforeSend: function(){
+                $(ELT)(".beforesend").attr("style","display:block;")
+            },
+            dataType: 'JSON',
+            success: function(text){
+                if(isNaN(text)){
+                    custAlert("$_('operfail')",text);
+                }else{
+                    if(parseInt(text) == 0){
+                        $(ELT)('#loaddialog').dialog('close');
+                        custAlert("$_('opersucc')","$_('clusterservicecifsdelusersucc')");
+                    }else if(parseInt(text) == 13241){
+                        custAlert("$_('operfail')","$_('startcifsfirst')");
+                    }else{
+                        custAlert("$_('operfail')","$_('operfailinfo')");
+                    }
+                }
+                $(ELT)(".beforesend").attr("style","display:none;");
+                $(ELT)(".username").remove();
+                clusterservicecifslistuser();
+            }
+        });
+    }
+	//删除连接
+    function clusterservicecifsdellink(node,pid){
+        var url = '/clusterservicecifsdellink?' + new Date().getTime();
+        $(ELT).ajax({
+            url: url,
+            type: 'POST',
+            data: 'service_name='+$(ELT)('#clusterservicename').val() + '&node_name=' + node + '&pid=' + pid,
+            beforeSend: function(){
+                $(ELT)(".beforesend").attr("style","display:block;")
+            },
+            dataType: 'JSON',
+            success: function(text){
+                if(isNaN(text)){
+                    custAlert("$_('operfail')",text);
+                }else{
+                    if(parseInt(text) == 0){
+                        $(ELT)('#loaddialog').dialog('close');
+                        custAlert("$_('opersucc')","$_('clusterservicecifsdellinksucc')");
+                    }else if(parseInt(text) == 13241){
+                        custAlert("$_('operfail')","$_('startcifsfirst')");
+                    }else{
+                        custAlert("$_('operfail')","$_('operfailinfo')");
+                    }
+                }
+                $(ELT)(".beforesend").attr("style","display:none;");
+                $(ELT)(".username").remove();
+                clusterservicecifslistuser();
+            }
+        });
+    }
+</script>

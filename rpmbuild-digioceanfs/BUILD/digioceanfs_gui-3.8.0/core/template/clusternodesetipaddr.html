@@ -1,0 +1,69 @@
+$def with (content)
+
+<form id="formclusterraid" method="post">
+    <fieldset class="createdialog">
+        <br />
+        <div>
+            <label for="clusternodenicinfo">$_('clusternodenicdev')</label>
+            <select id="clusternodenicinfo" name="clusternodenicinfo">
+                $for ifaceinfo in content.clusternodenicinfo:
+                    <option value="$ifaceinfo['devname']">$ifaceinfo['devname']</option>
+            </select>
+        </div>
+        <br />
+        <div id="ip_content">
+            <label for="newipaddr">$_('clusternewipaddr')</label>
+            <input name="newipaddr" id="newipaddr" class="ip" type="text" value="" />
+            <br /><br />
+            <label for="newmask">$_('clusternewmask')</label>
+            <input name="newmask" id="newmask" class="ip" type="text" value="" />
+            <br /><br />
+            <label for="newgateway">$_('clusternewgateway')</label>
+            <input name="newgateway" id="newgateway" class="ip" type="text" value="" />
+            <br /><br />
+            <label for="newbroadcast">$_('clusternewbroadcast')</label>
+            <input name="newbroadcast" id="newbroadcast" class="ip" type="text" value="" />
+        </div>
+        <label>&nbsp;</label>
+    </fieldset>
+</form>
+<script type="text/javascript">
+    $(ELT)('#formclusterraid').validate({
+        errorClass: "invalid",
+        rules: {
+            newipaddr : {
+                required: true 
+            },
+            newmask: {
+                required: true 
+            },
+            newgateway : {
+                required: true 
+            },
+            newbroadcast : {
+                required: true 
+            }
+        },
+        messages: {
+            newipaddr : {
+                required: "<img src='/static/theme/redmond/images/iperror.png'>" 
+            },
+            newmask: {
+                required: "<img src='/static/theme/redmond/images/iperror.png'>" 
+            },
+            newgateway : {
+                required: "<img src='/static/theme/redmond/images/iperror.png'>" 
+            },
+            newbroadcast : {
+                required: "<img src='/static/theme/redmond/images/iperror.png'>" 
+            }
+        }
+    });
+    $(ELT)(function(){
+        $(ELT)('#newipaddr').ipaddress(); 
+        $(ELT)('#newmask').ipaddress(); 
+        $(ELT)('#newgateway').ipaddress(); 
+        $(ELT)('#newbroadcast').ipaddress(); 
+    });
+
+</script>

@@ -1,0 +1,309 @@
+#!/usr/bin/python
+#################################################################
+#  Command execute format:
+#  /usr/bin/digioceanfs-afrgen					\
+#			[ -m MODE ]				\
+#			SOURCE_VOLFILE_PATH			\
+#			DEST_VOLFILE_PATH			\
+#			[ DISK_LIST ]
+#
+#  -m, --mode
+#	Execute mode. Can be either 'expand' or 'shrink'.
+#	'expand': expand subvolumes of each mirror by one.
+#	'shrink': shrink subvolumes of each mirror by one.
+#
+#  [ DISK_LIST ]
+#	List of disk to deal with, either 'expand' or 'shrink'.
+#	DISK_LIST format:
+#	    mirror_name:node:port
+#
+#################################################################
+
+import sys
+import os
+import string
+import StringIO
+from optparse import OptionParser
+
+VOLUME_START="volume"
+VOLUME_END="end-volume"
+VOLUME_TYPE="type"
+VOLUME_OPTION="option"
+VOLUME_SUBVOLUMES="subvolumes"
+
+TYPE_AFR="cluster/replicate"
+
+VOLUME_CLIENT="""
+volume %s
+    type protocol/client
+    option transport-type tcp 
+    option remote-host %s
+    option transport.socket.nodelay on
+    option remote-port %s
+    option remote-subvolume brick1
+end-volume
+
+"""
+VOLUME_MIRROR="""
+volume %s
+    type cluster/replicate
+    option metadata-change-log on
+    subvolumes %s
+end-volume
+"""
+
+def find_in_list (list, name):
+    try:
+        index = list.index(name)
+    except ValueError:
+        return None
+    return list[index]
+
+def del_in_list (list, name):
+    try:
+        list.remove(name)
+    except ValueError:
+        return False
+    return True
+
+class Volume:
+    def __init__(self, name, type, options):
+        self.name        = name    #string
+        self.type        = type    #string
+        self.options     = options #list of string
+        self.subvolumes  = []
+
+    def get_name(self):
+        return self.name
+
+    def get_subvolumes(self):
+        return self.subvolumes
+
+    def add_subvolume(self, subvolume):
+        if find_in_list(self.subvolumes, subvolume):
+            return False
+        self.subvolumes.append(subvolume)
+        return True
+
+    def del_subvolume(self, subvolume_name):
+        return del_in_list(self.subvolumes, subvolume_name)
+
+    def find_subvolume(self, subvolume_name):
+        return find_in_list(self.subvolumes, subvolume_name)
+
+    #Recursive print volume structure. 
+    #Must start from root.
+    def print_subvolumes(self, output_img):
+        subvols_str = ""
+        for subvolume in self.subvolumes:
+            subvolume.print_subvolumes(output_img)
+            subvols_str = string.join([subvols_str, subvolume.get_name()])
+
+        output_img.write("volume %s\n"%(self.name))
+        output_img.write("    type %s\n"%(self.type))
+        for option in self.options:
+            output_img.write("    option %s\n"%(option))
+        if subvols_str:
+            output_img.write("    subvolumes%s\n"%(subvols_str))
+        output_img.write("end-volume\n\n")
+
+    #Recursive find volume of 'type'. The result list is stored in result.
+    #Must start from root.
+    def find_by_type(self, type, result):
+        if self.type == type:
+            result.append(self)
+        for subvolume in self.subvolumes:
+            subvolume.find_by_type(type, result)
+
+    #Recursive find volume of 'name'. Once found, return straight to the caller.
+    #Must start from root.
+    def find_by_name(self, name):
+        if self.name == name:
+            return self
+        for subvolume in self.subvolumes:
+            ret = subvolume.find_by_name(name)
+            if ret:
+                return ret
+        return None
+
+    def __str__(self):
+        return self.name
+
+    def __eq__(self, other):
+        return self.name.__eq__(other.__str__())
+
+def parse_volfile(volfile_img):
+    comments = str()
+    volume_list = []
+
+    line = volfile_img.readline()
+    while line:
+        volume_name = ""
+        volume_options = []
+        volume_type = ""
+        volume_subvolumes = []
+
+        if line[0] == "#":
+            comments = string.join([comments, line], '')
+        else:
+            if line[0:6] == VOLUME_START:
+                volume_name = line.split()[1]
+                line = volfile_img.readline()
+                while line[0:10] != VOLUME_END:
+                    line_ele = line.split()
+                    if line_ele[0] == VOLUME_TYPE:
+                        volume_type = string.join(line_ele[1:], ' ')
+                    elif line_ele[0] == VOLUME_OPTION:
+                        volume_options.append(string.join(line_ele[1:], ' '))
+                    elif line_ele[0] == VOLUME_SUBVOLUMES:
+                        volume_subvolumes.extend(line_ele[1:])
+                    line = volfile_img.readline()
+                new_volume = Volume(volume_name, volume_type, volume_options)
+                for volume_subvolume in volume_subvolumes:
+                    a_subvolume = find_in_list(volume_list, volume_subvolume)
+                    if not a_subvolume:
+                        print "can not find subvolume:%s for:%s"%(volume_subvolume, 
+                                                                  volume_name)
+                        continue
+                    volume_list.remove(a_subvolume)
+                    if not new_volume.add_subvolume(a_subvolume):
+                        print "Duplicate subvolume found in volume:%s"%(new_volume)
+                        return (None, None)
+                volume_list.append(new_volume)
+
+        line = volfile_img.readline()
+
+    if len(volume_list) != 1:
+        print "Volume tree has more than one root, parse failed!"
+        return (None, None)
+
+    return (volume_list[0], comments)
+
+def gen_volfile(volume_root, comments):
+    volfile_img = StringIO.StringIO()
+    volfile_img.write(comments)
+    volume_root.print_subvolumes(volfile_img)
+    volfile_img.seek(0)
+    return volfile_img
+
+
+def make_volume_client(node, port):
+    volume_name = "%s-%s"%(node, port)
+    volume_type = "protocol/client"
+    volume_options = []
+    volume_options.append("transport-type tcp")
+    volume_options.append("remote-host %s"%(node))
+    volume_options.append("transport.socket.nodelay on")
+    volume_options.append("remote-port %s"%(port))
+    volume_options.append("remote-subvolume brick1")
+    return Volume(volume_name, volume_type, volume_options)
+
+def afr_expand(volume_root, disk_list):
+    expand_list = []
+    for disk in disk_list:
+        disk_info = disk.split(':')
+        if len(disk_info) != 3:
+            print "Volume format not match!"
+            return False
+        disk_volume = make_volume_client(disk_info[1], disk_info[2])
+        expand_list.append([disk_info[0], disk_volume])
+
+    afr_list = []
+    volume_root.find_by_type(TYPE_AFR, afr_list)
+
+    while len(expand_list) > 0:
+        [mirror_name, disk_volume] = expand_list.pop()
+        mirror = find_in_list(afr_list, mirror_name)
+        if not mirror:
+            print "Mirror to be expand:%s not found!"%(mirror_name)
+            return False
+        if not mirror.add_subvolume(disk_volume):
+            print "Volume:%s duplicate!"%(disk_volume.get_name())
+            return False
+
+    return True
+
+def afr_shrink(volume_root, disk_list):
+    shrink_list = []
+    for disk in disk_list:
+        disk_info = disk.split(':')
+        if len(disk_info) != 3:
+            print "Volume format not match!"
+            return False
+        shrink_list.append([disk_info[0], "%s-%s"%(disk_info[1], disk_info[2])])
+
+    afr_list = []
+    volume_root.find_by_type(TYPE_AFR, afr_list)
+
+    while len(shrink_list) > 0:
+        [mirror_name, disk_volume_name] = shrink_list.pop()
+        mirror = find_in_list(afr_list, mirror_name)
+        if not mirror:
+            print "Mirror to be shrink:%s not found!"%(mirror_name)
+            return False
+        if not mirror.del_subvolume(disk_volume_name):
+            print "Volume:%s not found!"%(disk_volume_name)
+            return False
+
+    return True
+
+def setup_parser():
+    parser = OptionParser(usage="hello")
+    parser.add_option("-m", "--mode", type="string", default="expand", dest="mode", 
+                      help="Execute mode. Can be either 'expand' or 'shrink'.")
+    return parser
+
+def main(argv):
+    parser = setup_parser()
+    (options, args) = parser.parse_args(argv)
+    if len(args) < 2:
+        print "Require at least 2 arguments!"
+        exit(-1)
+    src_path = args[0]
+    dst_path = args[1]
+    disk_list = args[2:]
+
+    if not os.path.isfile(src_path):
+        print "Source volfile:%s not exist!"%(src_path)
+        exit(-1)
+
+#    if os.path.isfile(dst_path):
+#        print "Destnation volfile:%s exist!"%(dst_path)
+#        exit(-1)
+
+    volfile_fd = open(src_path, "r")
+    volfile_img = StringIO.StringIO(volfile_fd.read())
+    volfile_fd.close()
+
+    (volume_root, comments) = parse_volfile(volfile_img)
+    if not volume_root:
+        print "Can not parse volfile!"
+        exit(-1)
+
+#    volume_list = [volume_root]
+#    while len(volume_list) > 0:
+#        volume = volume_list.pop(0)
+#        print volume.get_name()
+#        subvolumes = volume.get_subvolumes()
+#        volume_list.extend(subvolumes)
+
+    if options.mode == "expand":
+        ret = afr_expand(volume_root, disk_list)
+    elif options.mode == "shrink":
+        ret = afr_shrink(volume_root, disk_list)
+    else:
+        print "Unkown mode:%s"%(options.mode)
+        exit(-1)
+
+    if not ret:
+        print "Operation %s failed!"%(options.mode)
+        exit(-1)
+
+    volfile_img = gen_volfile(volume_root, comments)
+
+    volfile_fd = open(dst_path, "w")
+    volfile_fd.write(volfile_img.read())
+    volfile_fd.close()
+
+if __name__ == "__main__":
+    main(sys.argv[1:])

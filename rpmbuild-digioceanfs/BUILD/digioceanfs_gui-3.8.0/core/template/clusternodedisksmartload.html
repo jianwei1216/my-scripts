@@ -1,0 +1,185 @@
+$def with (content)
+
+<table cellpadding="0" class="datatable ui-widget ui-widget-content ui-corner-all">
+    <thead>
+        <tr>
+            <th style="width:130px;"><input id="checkalldisk" type="checkbox" class="ui-widget-content ui-corner-all" />&nbsp;$_("clusternodediskdev")</th>
+            <th style="width:120px;">$_("clusternode")</th>
+            <th style="width:150px;">$_("Serial_Number")</th>
+            <th style="width:130px;">$_("smart_O_C")</th>
+            <th style="width:70px;">$_("Health")</th>
+            <th style="width:140px;">$_("checkstate")</th>
+            <th style="width:70px;">$_("viewdetails")</th>
+        </tr>
+    </thead>
+    $if content.smartinfo:
+        $for disksmartinfo in content.smartinfo:
+            $if len(disksmartinfo) > 2:
+                <tr>
+                    <td><input type="checkbox" name="operdisk" value="$disksmartinfo['Nodename']:$disksmartinfo['Diskname']" class="ui-widget-content ui-corner-all" />&nbsp;DISK $(disksmartinfo['dposition'])($(disksmartinfo['Diskname']))</td>
+                    <td>$(disksmartinfo['Nodename'])</td>
+                    <td>$(disksmartinfo['Serial_Number'])</td>
+                    $if 'Status' in disksmartinfo and disksmartinfo['Status'] == 'Enabled':
+                        <td>$_("smart_opened")&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" style="font-size:0.8em" onclick="clusternodesmartstatus('$disksmartinfo['Diskname']','$disksmartinfo['Nodename']','disable');">$_("smart_close")</button></td>
+                    $elif 'Status' in disksmartinfo and disksmartinfo['Status'] == 'Disabled':
+                        <td>$_("smart_closed")&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" style="font-size:0.8em" onclick="clusternodesmartstatus('$disksmartinfo['Diskname']','$disksmartinfo['Nodename']','enable');">$_("smart_open")</button></td>
+                    $else:
+                        <td>$_("Not Support")</td>
+                    $if 'Health' in disksmartinfo:
+                        $if disksmartinfo['Health'] == 'PASSED' or disksmartinfo['Health'] == 'OK':
+                            <td><span style="color:#22FF33">$_('active')</span></td>
+                        $elif disksmartinfo['Health'] == 'WARNING':
+                            <td><span style="color:#FF0000">$_('warning')</span></td>
+                        $else:
+                            <td><span style="color:#FF0000">$_('failed')</span></td>
+                    $else:
+                        <td><span>$_("No_health")</span></td>
+                    $if 'Execution_Status'in disksmartinfo:
+                        $if disksmartinfo['Execution_Status'] == '100%':
+                            <td>$(disksmartinfo['Execution_Status'])</td>
+                        $else:
+                            <td>$(disksmartinfo['Execution_Status'])&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<button type="button" style="font-size:0.8em" onclick="clusternodesmartstop('$disksmartinfo['Diskname']','$disksmartinfo['Nodename']');">$_("stop")</button></td>
+                    $else:
+                        <td>-</td>
+                    <td><a href="javascript:void(0)" onclick="smartdetailview('$disksmartinfo['Diskname']','$disksmartinfo['Nodename']','$disksmartinfo['dposition']')">$_("view")</a></td>
+                </tr>
+            $else:
+                <tr>
+                    <td>DISK $(disksmartinfo['dposition'])($(disksmartinfo['Diskname']))</td>
+                    <td colspan="6">$_("disknoresponseornotexist")</td>
+                </tr>
+    $else:
+        <tr>
+            <td colspan="6">$_("nodiskornotsuport")</td>
+        </tr>
+</table>
+<script type="text/javascript">
+    $(ELT)(function() {
+        $(ELT)('button').button();
+        $(ELT)("#checkalldisk").click(function() {
+            $(ELT)('input[name="operdisk"]').attr("checked",this.checked);
+        });
+        var $(ELT)operdisk = $(ELT)("input[name='operdisk']");
+        $(ELT)operdisk.click(function(){
+            $(ELT)("#checkalldisk").attr("checked",$(ELT)operdisk.length == $(ELT)("input[name='operdisk']:checked").length ? true : false);
+        });
+    });
+
+    function clusternodesmartstatus(diskname,nodename,action){ 
+        checkSession();
+        var url = '/clusternodesmartstatus?' + new Date().getTime();
+        var buttons = {
+            "$_('cancel')": function() {
+                $(ELT)(this).dialog('close');
+            },
+            "$_('confirm')": function() {
+                $(ELT)(this).dialog('close');
+                $(ELT).ajax({
+                    url: url,
+                    type: 'POST',
+                    data: 'diskname=' + diskname + '&nodename=' + nodename + '&action=' + action,
+                    dataType: 'text',
+                    beforeSend: function(){
+                        custLoading("$_('changesmartstatusnow')");
+                    },
+                    error: function(){
+                        custAlert("$_('operfail')","Request Error!");
+                    },
+                    success: function(text){
+                        if(isNaN(text)){
+                            $(ELT)('#loaddialog').dialog('close');
+                            custAlert("$_('operfail')",text);
+                        }
+                        else{
+                            if(parseInt(text) == 0){
+                                $(ELT)('#loaddialog').dialog('close');
+                                clusternodedisksmartload();
+                                custAlert("$_('opersucc')","$_('changesmartstatussuccess')");
+                            }else{
+                                custAlert("$_('operfail')","$_('operfailinfo')");
+                            }
+                        }
+                    }
+                });
+            }
+        };
+        custConfirm("$_('confirmoper')","$_('clusternodechangesmartstatusconfirm')",buttons);
+    }
+
+    function smartdetailview(diskname,nodename,diskposition){
+        custLoading("$_('Loading Data ...')");
+        var url = '/clusternodesmartdetail?' + new Date().getTime();
+        checkSession();
+        var dataobj = {
+            diskname:diskname,
+            nodename:nodename,
+            position:diskposition
+        };
+        var data = $(ELT).param(dataobj);
+        var sddialog = $(ELT)('<div id="sddialog" title="$_('smart_msg')">').appendTo('body');
+        sddialog.load(
+            url,
+            data,
+            function (responseText, textStatus, XMLHttpRequest) {
+                $(ELT)('#loaddialog').dialog('close');
+                sddialog.dialog({
+                    bgiframe: true,
+                    autoOpen: true,
+                    width: 750,
+                    modal: true,
+                    resizable: false,
+                    buttons: {
+                        '$_("confirm")': function() {
+                            $(ELT)(this).dialog('close');
+                        }
+                    },
+                    close: function(){
+                        sddialog.remove();
+                    }
+                });
+            }
+        );
+    }
+
+    function clusternodesmartstop(diskname,nodename){ 
+        checkSession();
+        var url = '/clusternodesmartstop?' + new Date().getTime();
+        var buttons = {
+            "$_('cancel')": function() {
+                $(ELT)(this).dialog('close');
+            },
+            "$_('confirm')": function() {
+                $(ELT)(this).dialog('close');
+                $(ELT).ajax({
+                    url: url,
+                    type: 'POST',
+                    data: 'diskname=' + diskname + '&nodename=' + nodename,
+                    dataType: 'text',
+                    beforeSend: function(){
+                        custLoading("$_('clusternodesmartstopnow')");
+                    },
+                    error: function(){
+                        custAlert("$_('operfail')","Request Error!");
+                    },
+                    success: function(text){
+                        if(isNaN(text)){
+                            $(ELT)('#loaddialog').dialog('close');
+                            clusternodedisksmartload();
+                            custAlert("$_('operfail')",text);
+                        }
+                        else{
+                            if(parseInt(text) == 0){
+                                $(ELT)('#loaddialog').dialog('close');
+                                clusternodedisksmartload();
+                                custAlert("$_('opersucc')","$_('clusternodesmartstopsucc')");
+                            }else{
+                                custAlert("$_('operfail')","$_('operfailinfo')");
+                            }
+                        }
+                    }
+                });
+            }
+        };
+        custConfirm("$_('confirmoper')","$_('clusternodesmartstopconfirm')",buttons);
+    }
+</script>

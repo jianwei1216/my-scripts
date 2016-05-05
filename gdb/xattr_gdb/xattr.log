@@ -1,0 +1,366 @@
+Breakpoint 1 at 0x3d2001e8aa: file dict.c, line 141.
+Continuing.
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800439c, key1=0x7ff098001740 "trusted.glusterfs.dht", value1=0x7ff0980037ac, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$1 = 0x7ff098001740 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800439c, key1=0x7ff098003570 "trusted.ec.version", value1=0x7ff09800447c, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$2 = 0x7ff098003570 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a8002f7c, key1=0x7ff0a80334e0 "trusted.glusterfs.dht", value1=0x7ff0a8039cfc, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$3 = 0x7ff0a80334e0 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a8002f7c, key1=0x7ff0a8000920 "trusted.ec.version", value1=0x7ff0a803f8cc, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$4 = 0x7ff0a8000920 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0980016cc, key1=0x7ff098000920 "trusted.ec.version", value1=0x7ff0980033bc, data=0x7ff0a68c66c0) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$5 = 0x7ff098000920 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803ff2c, key1=0x7ff0a8039b50 "trusted.ec.version", value1=0x7ff0a8042aec, data=0x7ff0ae0166c0) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$6 = 0x7ff0a8039b50 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800447c, key1=0x7ff098000990 "trusted.glusterfs.dht", value1=0x7ff0980016cc, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$7 = 0x7ff098000990 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800447c, key1=0x7ff098000d80 "trusted.ec.version", value1=0x7ff0980037ac, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$8 = 0x7ff098000d80 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a800195c, key1=0x7ff0a8046130 "trusted.glusterfs.dht", value1=0x7ff0a80398ac, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$9 = 0x7ff0a8046130 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a800195c, key1=0x7ff0a8040bc0 "trusted.ec.version", value1=0x7ff0a8039cfc, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$10 = 0x7ff0a8040bc0 "trusted.ec.version"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a80011cc, key1=0x7ff0a8040170 "trusted.glusterfs.dht", value1=0x7ff0a80400fc, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$11 = 0x7ff0a8040170 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a80011cc, key1=0x7ff0a80397a0 "trusted.ec.version", value1=0x7ff0a803f8cc, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$12 = 0x7ff0a80397a0 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0980057dc, key1=0x7ff098005930 "trusted.glusterfs.dht", value1=0x7ff0980046dc, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$13 = 0x7ff098005930 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0980057dc, key1=0x7ff098005050 "trusted.ec.version", value1=0x7ff0980058bc, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$14 = 0x7ff098005050 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a800257c, key1=0x7ff0a803af20 "trusted.glusterfs.dht", value1=0x7ff0a8040a3c, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$15 = 0x7ff0a803af20 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a800257c, key1=0x7ff0a8040170 "trusted.ec.version", value1=0x7ff0a803f8cc, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$16 = 0x7ff0a8040170 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800241c, key1=0x7ff098008260 "trusted.glusterfs.dht", value1=0x7ff0980009dc, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$17 = 0x7ff098008260 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800241c, key1=0x7ff0980017b0 "trusted.ec.version", value1=0x7ff0980057dc, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$18 = 0x7ff0980017b0 "trusted.ec.version"
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800241c, key1=0x7ff098004fe0 "trusted.glusterfs.dht", value1=0x7ff09800093c, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$19 = 0x7ff098004fe0 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800241c, key1=0x7ff0980017b0 "trusted.ec.version", value1=0x7ff098000acc, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$20 = 0x7ff0980017b0 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a804099c, key1=0x7ff0a80397a0 "trusted.glusterfs.dht", value1=0x7ff0a800257c, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$21 = 0x7ff0a80397a0 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a804099c, key1=0x7ff0a80334e0 "trusted.ec.version", value1=0x7ff0a803f8cc, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$22 = 0x7ff0a80334e0 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800348c, key1=0x7ff0980016b0 "trusted.ec.size", value1=0x7ff09800593c, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$23 = 0x7ff0980016b0 "trusted.ec.size"
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800348c, key1=0x7ff098000d80 "trusted.ec.version", value1=0x7ff0980058ac, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$24 = 0x7ff098000d80 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a8040efc, key1=0x7ff0a803f220 "trusted.ec.size", value1=0x7ff0a804103c, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$25 = 0x7ff0a803f220 "trusted.ec.size"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a8040efc, key1=0x7ff0a80019d0 "trusted.ec.version", value1=0x7ff0a803998c, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$26 = 0x7ff0a80019d0 "trusted.ec.version"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803f08c, key1=0x7ff0a8039b60 "trusted.ec.size", value1=0x7ff0a803f8cc, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$27 = 0x7ff0a8039b60 "trusted.ec.size"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803f08c, key1=0x7ff0a803f410 "trusted.ec.version", value1=0x7ff0a8039cfc, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$28 = 0x7ff0a803f410 "trusted.ec.version"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a8002f7c, key1=0x7ff0a8040980 "trusted.ec.size", value1=0x7ff0a804109c, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$29 = 0x7ff0a8040980 "trusted.ec.size"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a8002f7c, key1=0x7ff0a803f480 "trusted.ec.version", value1=0x7ff0a803998c, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$30 = 0x7ff0a803f480 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800439c, key1=0x7ff0980016b0 "trusted.ec.size", value1=0x7ff098004f5c, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$31 = 0x7ff0980016b0 "trusted.ec.size"
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800439c, key1=0x7ff098007860 "trusted.ec.version", value1=0x7ff0980058ac, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$32 = 0x7ff098007860 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a8002f7c, key1=0x7ff0a80407b0 "trusted.ec.size", value1=0x7ff0a804073c, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$33 = 0x7ff0a80407b0 "trusted.ec.size"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a8002f7c, key1=0x7ff0a803f280 "trusted.ec.version", value1=0x7ff0a803f8cc, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$34 = 0x7ff0a803f280 "trusted.ec.version"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803f08c, key1=0x7ff0a803f4f0 "trusted.glusterfs.dht", value1=0x7ff0a80427ec, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$35 = 0x7ff0a803f4f0 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803f08c, key1=0x7ff0a80400e0 "trusted.ec.version", value1=0x7ff0a803f8cc, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$36 = 0x7ff0a80400e0 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800439c, key1=0x7ff098005920 "trusted.glusterfs.dht", value1=0x7ff098004f5c, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$37 = 0x7ff098005920 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800439c, key1=0x7ff098004fe0 "trusted.ec.version", value1=0x7ff0980058ac, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$38 = 0x7ff098004fe0 "trusted.ec.version"
+[Thread 0x7ff0a53c4700 (LWP 10906) exited]
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803f29c, key1=0x7ff0a803bd70 "trusted.glusterfs.dht", value1=0x7ff0a803bcfc, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$39 = 0x7ff0a803bd70 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803f29c, key1=0x7ff0a803fea0 "trusted.ec.version", value1=0x7ff0a804258c, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$40 = 0x7ff0a803fea0 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff098004f5c, key1=0x7ff098006410 "trusted.glusterfs.dht", value1=0x7ff09800175c, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$41 = 0x7ff098006410 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff098004f5c, key1=0x7ff098004650 "trusted.ec.version", value1=0x7ff0980016cc, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$42 = 0x7ff098004650 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a8002f7c, key1=0x7ff0a8000920 "trusted.glusterfs.dht", value1=0x7ff0a804073c, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$43 = 0x7ff0a8000920 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a8002f7c, key1=0x7ff0a8040820 "trusted.ec.version", value1=0x7ff0a803f8cc, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$44 = 0x7ff0a8040820 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0980016cc, key1=0x7ff098004480 "trusted.glusterfs.dht", value1=0x7ff0980059ec, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$45 = 0x7ff098004480 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0980016cc, key1=0x7ff098005960 "trusted.ec.version", value1=0x7ff0980017ac, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$46 = 0x7ff098005960 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a8040efc, key1=0x7ff0a8041bb0 "trusted.ec.version", value1=0x7ff0a8041a9c, data=0x7ff0ae0166c0) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$47 = 0x7ff0a8041bb0 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff098004e4c, key1=0x7ff0980053c0 "trusted.ec.version", value1=0x7ff098004fbc, data=0x7ff0a68c66c0) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$48 = 0x7ff0980053c0 "trusted.ec.version"
+
+Breakpoint 1, key_value_cmp (one=0x7ff098002ccc, key1=0x7ff098007c60 "trusted.glusterfs.dht", value1=0x7ff098007b4c, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$49 = 0x7ff098007c60 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff098002ccc, key1=0x7ff098008ba0 "trusted.ec.version", value1=0x7ff098002dac, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$50 = 0x7ff098008ba0 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a8040efc, key1=0x7ff0a8039990 "trusted.glusterfs.dht", value1=0x7ff0a803991c, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$51 = 0x7ff0a8039990 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a8040efc, key1=0x7ff0a8040c50 "trusted.ec.version", value1=0x7ff0a80427ec, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$52 = 0x7ff0a8040c50 "trusted.ec.version"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a80400fc, key1=0x7ff0a803f410 "trusted.glusterfs.dht", value1=0x7ff0a803f29c, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$53 = 0x7ff0a803f410 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a80400fc, key1=0x7ff0a8039ce0 "trusted.ec.version", value1=0x7ff0a8040acc, data=0x7ff0ae016580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$54 = 0x7ff0a8039ce0 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0980062fc, key1=0x7ff098008b30 "trusted.glusterfs.dht", value1=0x7ff0980037ac, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$55 = 0x7ff098008b30 "trusted.glusterfs.dht"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0980062fc, key1=0x7ff098000ac0 "trusted.ec.version", value1=0x7ff0980017ac, data=0x7ff0a68c6580) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$56 = 0x7ff098000ac0 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a804583c, key1=0x7ff0a8045200 "trusted.ec.version", value1=0x7ff0a804591c, data=0x7ff0ae0166c0) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$57 = 0x7ff0a8045200 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff098008b4c, key1=0x7ff0980065c0 "trusted.ec.version", value1=0x7ff09800602c, data=0x7ff0a68c66c0) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$58 = 0x7ff0980065c0 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803f36c, key1=0x7ff0a8040b10 "trusted.ec.version", value1=0x7ff0a8042c7c, data=0x7ff0ae0166b0) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$59 = 0x7ff0a8040b10 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0980025ac, key1=0x7ff098002670 "trusted.ec.version", value1=0x7ff09800282c, data=0x7ff0a68c66b0) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$60 = 0x7ff098002670 "trusted.ec.version"
+
+Breakpoint 1, key_value_cmp (one=0x7ff098000adc, key1=0x7ff098002d40 "trusted.ec.size", value1=0x7ff098002bcc, data=0x7ff0a68c6410) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$61 = 0x7ff098002d40 "trusted.ec.size"
+
+Breakpoint 1, key_value_cmp (one=0x7ff098000adc, key1=0x7ff098002b40 "trusted.ec.version", value1=0x7ff0980029cc, data=0x7ff0a68c6410) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$62 = 0x7ff098002b40 "trusted.ec.version"
+
+Breakpoint 1, key_value_cmp (one=0x7ff098000adc, key1=0x7ff098002940 "trusted.ec.config", value1=0x7ff09800282c, data=0x7ff0a68c6410) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$63 = 0x7ff098002940 "trusted.ec.config"
+
+Breakpoint 1, key_value_cmp (one=0x7ff098000adc, key1=0x7ff098002620 "gfid-req", value1=0x7ff0980024ac, data=0x7ff0a68c6410) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$64 = 0x7ff098002620 "gfid-req"
+
+Breakpoint 1, key_value_cmp (one=0x7ff098000adc, key1=0x7ff098000d80 "glusterfs.inodelk-count", value1=0x7ff09800241c, data=0x7ff0a68c6410) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$65 = 0x7ff098000d80 "glusterfs.inodelk-count"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803f37c, key1=0x7ff0a8000f50 "trusted.ec.size", value1=0x7ff0a8000ddc, data=0x7ff0ae016410) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$66 = 0x7ff0a8000f50 "trusted.ec.size"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803f37c, key1=0x7ff0a8000d50 "trusted.ec.version", value1=0x7ff0a8000bdc, data=0x7ff0ae016410) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$67 = 0x7ff0a8000d50 "trusted.ec.version"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803f37c, key1=0x7ff0a8000b50 "trusted.ec.config", value1=0x7ff0a80009dc, data=0x7ff0ae016410) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$68 = 0x7ff0a8000b50 "trusted.ec.config"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803f37c, key1=0x7ff0a803d740 "gfid-req", value1=0x7ff0a803d5cc, data=0x7ff0ae016410) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$69 = 0x7ff0a803d740 "gfid-req"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803f37c, key1=0x7ff0a8042670 "glusterfs.inodelk-count", value1=0x7ff0a803d4dc, data=0x7ff0ae016410) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$70 = 0x7ff0a8042670 "glusterfs.inodelk-count"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff098002e6c, key1=0x7ff098004c60 "trusted.ec.version", value1=0x7ff098004aec, data=0x7ff0a68c66c0) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$71 = 0x7ff098004c60 "trusted.ec.version"
+
+Breakpoint 1, key_value_cmp (one=0x7ff098002e6c, key1=0x7ff098004870 "trusted.ec.size", value1=0x7ff0980046fc, data=0x7ff0a68c66c0) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$72 = 0x7ff098004870 "trusted.ec.size"
+
+Breakpoint 1, key_value_cmp (one=0x7ff098002e6c, key1=0x7ff098003790 "trusted.ec.config", value1=0x7ff09800460c, data=0x7ff0a68c66c0) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$73 = 0x7ff098003790 "trusted.ec.config"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803e8ac, key1=0x7ff0a803c5a0 "trusted.ec.version", value1=0x7ff0a803c42c, data=0x7ff0ae0166c0) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$74 = 0x7ff0a803c5a0 "trusted.ec.version"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803e8ac, key1=0x7ff0a8046470 "trusted.ec.size", value1=0x7ff0a803e98c, data=0x7ff0ae0166c0) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$75 = 0x7ff0a8046470 "trusted.ec.size"
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803e8ac, key1=0x7ff0a803dd80 "trusted.ec.config", value1=0x7ff0a803f8cc, data=0x7ff0ae0166c0) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$76 = 0x7ff0a803dd80 "trusted.ec.config"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff09800662c, key1=0x7ff0980016b0 "trusted.ec.version", value1=0x7ff09800670c, data=0x7ff0a68c66c0) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$77 = 0x7ff0980016b0 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803e7ac, key1=0x7ff0a8040ab0 "trusted.ec.version", value1=0x7ff0a803e88c, data=0x7ff0ae0166c0) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$78 = 0x7ff0a8040ab0 "trusted.ec.version"
+[Switching to Thread 0x7ff0a68c7700 (LWP 10902)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff098002dbc, key1=0x7ff098003790 "trusted.ec.version", value1=0x7ff098002e9c, data=0x7ff0a68c66b0) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$79 = 0x7ff098003790 "trusted.ec.version"
+[Switching to Thread 0x7ff0ae017700 (LWP 10900)]
+
+Breakpoint 1, key_value_cmp (one=0x7ff0a803b98c, key1=0x7ff0a803e790 "trusted.ec.version", value1=0x7ff0a803e35c, data=0x7ff0ae0166b0) at dict.c:141
+141	        struct dict_cmp *cmp = data;
+$80 = 0x7ff0a803e790 "trusted.ec.version"
+
+Program received signal SIGINT, Interrupt.
+[Switching to Thread 0x7ff0b797a700 (LWP 10894)]
+0x0000003a7f0082ad in pthread_join () from /lib64/libpthread.so.0
+A debugging session is active.
+
+	Inferior 1 [process 10894] will be detached.
+
+Quit anyway? (y or n) Detaching from program: /usr/sbin/glusterfsd, process 10894

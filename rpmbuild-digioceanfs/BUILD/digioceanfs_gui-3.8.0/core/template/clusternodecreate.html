@@ -1,0 +1,53 @@
+$def with (content)
+
+<form id="formclusternode" method="post">
+    <fieldset>
+        <label for="clusternodeipaddr" id="clusteripaddr_label">$_("clusternodeipaddr")</label>
+        <input type="text" id="clusternodeipaddr" name="clusternodeipaddr" class="ip ui-widget-content ui-corner-all" /><br /><br />
+        <!--<label for="clusternodehostname" id="clusternodehostname_label" style="color:#bababa;">$_("clusternodehostname")</label>
+        <input type="text" id="clusternodehostname" name="clusternodehostname" class="ui-widget-content ui-corner-all" disabled="true" size="12"/>&nbsp<input type="checkbox" id="enable_nodehostname" name="enable_nodehostname" /><br /><br />-->
+        <!--<label for="clustergroupname">$_("clustergroupname")</label>
+        <select id="clustergroupname" name="clustergroupname">
+            $for clustergroupname in content.clustergroups.keys():
+                <option value="$clustergroupname">$clustergroupname</option>
+        </select><br />-->
+        <input type="hidden" id="clustergroupname" name="clustergroupname" value="" />
+    </fieldset>
+</form>
+<script tyep="text/javascript">
+    $(ELT)(function(){
+        $(ELT)('.ip').ipaddress();
+        $(ELT)('#formclusternode').validate({
+            errorClass: "invalid",
+            rules: {
+                clusternodehostname: {
+                    required: true,
+                    inputName: true,
+                    byterangelength: [3, 20]
+                }
+            },
+            messages: {
+                clusternodehostname: {
+                    required: "请输入节点名",
+                    inputName: "输入只能包括英文字母、数字、短横线以及圆点",
+                    byterangelength: "请确保输入的值在3-20个字节之间"
+                }
+            }
+        });
+    });
+    $(ELT)('#enable_nodehostname').bind('click', function(e){
+        if ($(ELT)(this).attr('checked')) {
+            $(ELT)('#clusternodehostname').attr('disabled', false);
+            $(ELT)('#clusternodehostname_label').css({color:'#000000'});
+        }
+        else{
+            $(ELT)('#clusternodehostname').attr('disabled', true);
+            $(ELT)('#clusternodehostname_label').css({color:'#bababa'});
+        }
+    });
+</script>
+<style type="text/css">
+    .ip_container{
+        margin-left:0;
+    }
+</style>

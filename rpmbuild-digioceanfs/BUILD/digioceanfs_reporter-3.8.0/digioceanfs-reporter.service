@@ -1,0 +1,14 @@
+[Unit]
+Description=digioceanfs-reporter Service
+After=network.target rpcbind.service
+Before=node-manager.service
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/digioceanfs-reporter start
+Restart=on-abort
+
+
+[Install]
+WantedBy=multi-user.target
