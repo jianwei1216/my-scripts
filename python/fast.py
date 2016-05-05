@@ -14,7 +14,6 @@ def multi_thread(func, nodes, cmd):
         locks = []
         for host in nodes:
                 try:
-                        print "==============>" + host + " " + cmd + "<=====================\n\n"
                         lock = thread.allocate_lock()
                         lock.acquire()
                         locks.append(lock)
@@ -26,16 +25,16 @@ def multi_thread(func, nodes, cmd):
                         pass
 
 def despatch_cmd(args):
-        cmd = args[1]
+        cmd = args[-1]
         print cmd
-        nodes = args[2:]
+        nodes = args[:-1]
         print nodes
         multi_thread(__despatch_cmd, nodes, cmd)
 
 if __name__ == '__main__':
         if len(sys.argv) < 2:
-                print "python " + __file__ + " your_command" + " your_nodes\n" \
-                      + "e.g. python " + __file__ + " \"date\" node-1 node-2 node-3\n"
+                print "python " + __file__ + " your_nodes" + " your_commands\n" \
+                      + "e.g. python " + __file__ + " node-1 node-2 node-3 \"date\"\n"
                 exit()
         
         despatch_cmd(sys.argv)
