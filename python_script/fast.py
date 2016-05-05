@@ -27,7 +27,7 @@ def multi_thread(func, nodes, cmd):
 def despatch_cmd(args):
         cmd = args[-1]
         print cmd
-        nodes = args[:-1]
+        nodes = args[1:-1]
         print nodes
         multi_thread(__despatch_cmd, nodes, cmd)
 
