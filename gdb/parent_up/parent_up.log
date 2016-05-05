@@ -1,0 +1,529 @@
+Breakpoint 1 at 0x7f60579940a1: file ec.c, line 402.
+Breakpoint 2 at 0x7f6057994aaf: file ec.c, line 645.
+Breakpoint 3 at 0x7f6057c3d8f7: file client.c, line 173.
+Breakpoint 4 at 0x7f6057c476f9: file client.c, line 2349.
+Breakpoint 5 at 0x7f6057c47790: file client.c, line 2362.
+Continuing.
+[Switching to Thread 0x7f605867e700 (LWP 17801)]
+
+Breakpoint 3, dofs_mongodb_insert_client_down (this=0x7f60500556b0) at client.c:173
+173	        int             ret = -1;
+$1 = _gf_false
+#0  dofs_mongodb_insert_client_down (this=0x7f60500556b0) at client.c:173
+#1  0x00007f6057c3de70 in client_notify_dispatch (this=0x7f60500556b0, event=6, data=0x0) at client.c:294
+#2  0x00007f6057c3d4e9 in client_notify_dispatch_uniq (this=0x7f60500556b0, event=6, data=0x0) at client.c:64
+#3  0x00007f6057c47467 in client_rpc_notify (rpc=0x7f60501b20f0, mydata=0x7f60500556b0, event=RPC_CLNT_DISCONNECT, data=0x0) at client.c:2285
+#4  0x00007f6064ece5a4 in rpc_clnt_notify (trans=0x7f60501b2580, mydata=0x7f60501b2120, event=RPC_TRANSPORT_DISCONNECT, data=0x7f60501b2580) at rpc-clnt.c:867
+#5  0x00007f6064ecaad1 in rpc_transport_notify (this=0x7f60501b2580, event=RPC_TRANSPORT_DISCONNECT, data=0x7f60501b2580) at rpc-transport.c:541
+#6  0x00007f605a34078e in socket_event_poll_err (this=0x7f60501b2580) at socket.c:1147
+#7  0x00007f605a34514c in socket_event_handler (fd=12, idx=6, data=0x7f60501b2580, poll_in=1, poll_out=0, poll_err=0) at socket.c:2353
+#8  0x00007f6065167aa8 in event_dispatch_epoll_handler (event_pool=0xcdada0, event=0x7f605867dea0) at event-epoll.c:571
+#9  0x00007f6065167e87 in event_dispatch_epoll_worker (data=0xd278c0) at event-epoll.c:674
+#10 0x00007f6063f5fdf3 in start_thread () from /lib64/libpthread.so.0
+#11 0x00007f60638a83dd in clone () from /lib64/libc.so.6
+Detaching after fork from child process 22990.
+[New Thread 0x7f60455fc700 (LWP 23011)]
+[Switching to Thread 0x7f605505c700 (LWP 17803)]
+
+Breakpoint 2, ec_notify (this=0x7f604c01ef80, event=1, data=0x7f604c01ff80, data2=0x7f6057994d88 <notify>) at ec.c:645
+645	        ec_t             *ec        = this->private;
+$2 = _gf_false
+#0  ec_notify (this=0x7f604c01ef80, event=1, data=0x7f604c01ff80, data2=0x7f6057994d88 <notify>) at ec.c:645
+#1  0x00007f6057994e92 in notify (this=0x7f604c01ef80, event=1, data=0x7f604c01ff80) at ec.c:745
+#2  0x00007f6065102660 in xlator_notify (xl=0x7f604c01ef80, event=1, data=0x7f604c01ff80) at xlator.c:496
+#3  0x00007f606519961d in default_notify (this=0x7f604c01ff80, event=1, data=0x7f604c020ef0) at defaults.c:2921
+#4  0x00007f605775c943 in dht_notify (this=0x7f604c01ff80, event=1, data=0x7f604c020ef0) at dht-common.c:8393
+#5  0x00007f6065102660 in xlator_notify (xl=0x7f604c01ff80, event=1, data=0x7f604c020ef0) at xlator.c:496
+#6  0x00007f606519961d in default_notify (this=0x7f604c020ef0, event=1, data=0x7f604c021cf0) at defaults.c:2921
+#7  0x00007f6065102660 in xlator_notify (xl=0x7f604c020ef0, event=1, data=0x7f604c021cf0) at xlator.c:496
+#8  0x00007f606519961d in default_notify (this=0x7f604c021cf0, event=1, data=0x7f604c022aa0) at defaults.c:2921
+#9  0x00007f6065102660 in xlator_notify (xl=0x7f604c021cf0, event=1, data=0x7f604c022aa0) at xlator.c:496
+#10 0x00007f606519961d in default_notify (this=0x7f604c022aa0, event=1, data=0x7f604c023910) at defaults.c:2921
+#11 0x00007f6065102660 in xlator_notify (xl=0x7f604c022aa0, event=1, data=0x7f604c023910) at xlator.c:496
+#12 0x00007f606519961d in default_notify (this=0x7f604c023910, event=1, data=0x7f604c024720) at defaults.c:2921
+#13 0x00007f6065102660 in xlator_notify (xl=0x7f604c023910, event=1, data=0x7f604c024720) at xlator.c:496
+#14 0x00007f606519961d in default_notify (this=0x7f604c024720, event=1, data=0x7f604c025530) at defaults.c:2921
+#15 0x00007f6065102660 in xlator_notify (xl=0x7f604c024720, event=1, data=0x7f604c025530) at xlator.c:496
+#16 0x00007f606519961d in default_notify (this=0x7f604c025530, event=1, data=0x7f604c026340) at defaults.c:2921
+#17 0x00007f6065102660 in xlator_notify (xl=0x7f604c025530, event=1, data=0x7f604c026340) at xlator.c:496
+#18 0x00007f606519961d in default_notify (this=0x7f604c026340, event=1, data=0x7f604c027150) at defaults.c:2921
+#19 0x00007f6065102660 in xlator_notify (xl=0x7f604c026340, event=1, data=0x7f604c027150) at xlator.c:496
+#20 0x00007f606519961d in default_notify (this=0x7f604c027150, event=1, data=0x7f604c028490) at defaults.c:2921
+#21 0x00007f605669d606 in notify (this=0x7f604c027150, event=1, data=0x7f604c028490) at io-stats.c:3841
+#22 0x00007f6065102660 in xlator_notify (xl=0x7f604c027150, event=1, data=0x7f604c028490) at xlator.c:496
+#23 0x00007f606519961d in default_notify (this=0x7f604c028490, event=1, data=0x7f604c028ff0) at defaults.c:2921
+#24 0x00007f6065102660 in xlator_notify (xl=0x7f604c028490, event=1, data=0x7f604c028ff0) at xlator.c:496
+#25 0x00007f606519961d in default_notify (this=0x7f604c028ff0, event=1, data=0x7f604c028ff0) at defaults.c:2921
+#26 0x00007f6065102660 in xlator_notify (xl=0x7f604c028ff0, event=1, data=0x7f604c028ff0) at xlator.c:496
+#27 0x00007f6065142cec in digioceanfs_graph_parent_up (graph=0x7f604c00d6c0) at graph.c:443
+#28 0x00007f6065143976 in digioceanfs_graph_activate (graph=0x7f604c00d6c0, ctx=0xcbc010) at graph.c:775
+#29 0x0000000000409f62 in digioceanfs_process_volfp (ctx=0xcbc010, fp=0x7f604c00a3c0) at digioceanfsd.c:2202
+#30 0x000000000040e75b in mgmt_getspec_cbk (req=0x7f604c00643c, iov=0x7f604c00647c, count=1, myframe=0x7f604c00c20c) at digioceanfsd-mgmt.c:1644
+#31 0x00007f6064ece267 in rpc_clnt_handle_reply (clnt=0xcf8c70, pollin=0x7f604c00c3c0) at rpc-clnt.c:759
+#32 0x00007f6064ece6d7 in rpc_clnt_notify (trans=0xcf90f0, mydata=0xcf8ca0, event=RPC_TRANSPORT_MSG_RECEIVED, data=0x7f604c00c3c0) at rpc-clnt.c:900
+#33 0x00007f6064ecaad1 in rpc_transport_notify (this=0xcf90f0, event=RPC_TRANSPORT_MSG_RECEIVED, data=0x7f604c00c3c0) at rpc-transport.c:541
+#34 0x00007f605a344bb4 in socket_event_poll_in (this=0xcf90f0) at socket.c:2233
+#35 0x00007f605a3450f1 in socket_event_handler (fd=9, idx=0, data=0xcf90f0, poll_in=1, poll_out=0, poll_err=0) at socket.c:2346
+#36 0x00007f6065167aa8 in event_dispatch_epoll_handler (event_pool=0xcdada0, event=0x7f605505bea0) at event-epoll.c:571
+#37 0x00007f6065167e87 in event_dispatch_epoll_worker (data=0x7f6050034e50) at event-epoll.c:674
+#38 0x00007f6063f5fdf3 in start_thread () from /lib64/libpthread.so.0
+#39 0x00007f60638a83dd in clone () from /lib64/libc.so.6
+[Switching to Thread 0x7f605867e700 (LWP 17801)]
+
+Breakpoint 2, ec_notify (this=0x7f6050057560, event=6, data=0x7f60500556b0, data2=0x7f6057994d88 <notify>) at ec.c:645
+645	        ec_t             *ec        = this->private;
+$3 = _gf_false
+#0  ec_notify (this=0x7f6050057560, event=6, data=0x7f60500556b0, data2=0x7f6057994d88 <notify>) at ec.c:645
+#1  0x00007f6057994e92 in notify (this=0x7f6050057560, event=6, data=0x7f60500556b0) at ec.c:745
+#2  0x00007f6065102660 in xlator_notify (xl=0x7f6050057560, event=6, data=0x7f60500556b0) at xlator.c:496
+#3  0x00007f6065199704 in default_notify (this=0x7f60500556b0, event=6, data=0x0) at defaults.c:2945
+#4  0x00007f6057c3dead in client_notify_dispatch (this=0x7f60500556b0, event=6, data=0x0) at client.c:303
+#5  0x00007f6057c3d4e9 in client_notify_dispatch_uniq (this=0x7f60500556b0, event=6, data=0x0) at client.c:64
+#6  0x00007f6057c47467 in client_rpc_notify (rpc=0x7f60501b20f0, mydata=0x7f60500556b0, event=RPC_CLNT_DISCONNECT, data=0x0) at client.c:2285
+#7  0x00007f6064ece5a4 in rpc_clnt_notify (trans=0x7f60501b2580, mydata=0x7f60501b2120, event=RPC_TRANSPORT_DISCONNECT, data=0x7f60501b2580) at rpc-clnt.c:867
+#8  0x00007f6064ecaad1 in rpc_transport_notify (this=0x7f60501b2580, event=RPC_TRANSPORT_DISCONNECT, data=0x7f60501b2580) at rpc-transport.c:541
+#9  0x00007f605a34078e in socket_event_poll_err (this=0x7f60501b2580) at socket.c:1147
+#10 0x00007f605a34514c in socket_event_handler (fd=12, idx=6, data=0x7f60501b2580, poll_in=1, poll_out=0, poll_err=0) at socket.c:2353
+#11 0x00007f6065167aa8 in event_dispatch_epoll_handler (event_pool=0xcdada0, event=0x7f605867dea0) at event-epoll.c:571
+#12 0x00007f6065167e87 in event_dispatch_epoll_worker (data=0xd278c0) at event-epoll.c:674
+#13 0x00007f6063f5fdf3 in start_thread () from /lib64/libpthread.so.0
+#14 0x00007f60638a83dd in clone () from /lib64/libc.so.6
+[Switching to Thread 0x7f605505c700 (LWP 17803)]
+
+Breakpoint 2, ec_notify (this=0x7f604c01ef80, event=5, data=0x7f604c01d0d0, data2=0x7f6057994d88 <notify>) at ec.c:645
+645	        ec_t             *ec        = this->private;
+$4 = _gf_false
+#0  ec_notify (this=0x7f604c01ef80, event=5, data=0x7f604c01d0d0, data2=0x7f6057994d88 <notify>) at ec.c:645
+#1  0x00007f6057994e92 in notify (this=0x7f604c01ef80, event=5, data=0x7f604c01d0d0) at ec.c:745
+#2  0x00007f6065102660 in xlator_notify (xl=0x7f604c01ef80, event=5, data=0x7f604c01d0d0) at xlator.c:496
+#3  0x00007f6065199704 in default_notify (this=0x7f604c01d0d0, event=5, data=0x0) at defaults.c:2945
+#4  0x00007f6057c3dead in client_notify_dispatch (this=0x7f604c01d0d0, event=5, data=0x0) at client.c:303
+#5  0x00007f6057c3d4e9 in client_notify_dispatch_uniq (this=0x7f604c01d0d0, event=5, data=0x0) at client.c:64
+#6  0x00007f6057c6bab4 in client_notify_parents_child_up (this=0x7f604c01d0d0) at client-handshake.c:133
+#7  0x00007f6057c6e541 in client_post_handshake (frame=0x7f604c18335c, this=0x7f604c01d0d0) at client-handshake.c:1053
+#8  0x00007f6057c6ec8e in client_setvolume_cbk (req=0x7f604c18352c, iov=0x7f604c18356c, count=1, myframe=0x7f604c18335c) at client-handshake.c:1210
+#9  0x00007f6064ece267 in rpc_clnt_handle_reply (clnt=0x7f604c179b90, pollin=0x7f604c181920) at rpc-clnt.c:759
+#10 0x00007f6064ece6d7 in rpc_clnt_notify (trans=0x7f604c17a020, mydata=0x7f604c179bc0, event=RPC_TRANSPORT_MSG_RECEIVED, data=0x7f604c181920) at rpc-clnt.c:900
+#11 0x00007f6064ecaad1 in rpc_transport_notify (this=0x7f604c17a020, event=RPC_TRANSPORT_MSG_RECEIVED, data=0x7f604c181920) at rpc-transport.c:541
+#12 0x00007f605a344bb4 in socket_event_poll_in (this=0x7f604c17a020) at socket.c:2233
+#13 0x00007f605a3450f1 in socket_event_handler (fd=7, idx=7, data=0x7f604c17a020, poll_in=1, poll_out=0, poll_err=0) at socket.c:2346
+#14 0x00007f6065167aa8 in event_dispatch_epoll_handler (event_pool=0xcdada0, event=0x7f605505bea0) at event-epoll.c:571
+#15 0x00007f6065167e87 in event_dispatch_epoll_worker (data=0x7f6050034e50) at event-epoll.c:674
+#16 0x00007f6063f5fdf3 in start_thread () from /lib64/libpthread.so.0
+#17 0x00007f60638a83dd in clone () from /lib64/libc.so.6
+
+Breakpoint 2, ec_notify (this=0x7f604c01ef80, event=5, data=0x7f604c01b290, data2=0x7f6057994d88 <notify>) at ec.c:645
+645	        ec_t             *ec        = this->private;
+$5 = _gf_false
+#0  ec_notify (this=0x7f604c01ef80, event=5, data=0x7f604c01b290, data2=0x7f6057994d88 <notify>) at ec.c:645
+#1  0x00007f6057994e92 in notify (this=0x7f604c01ef80, event=5, data=0x7f604c01b290) at ec.c:745
+#2  0x00007f6065102660 in xlator_notify (xl=0x7f604c01ef80, event=5, data=0x7f604c01b290) at xlator.c:496
+#3  0x00007f6065199704 in default_notify (this=0x7f604c01b290, event=5, data=0x0) at defaults.c:2945
+#4  0x00007f6057c3dead in client_notify_dispatch (this=0x7f604c01b290, event=5, data=0x0) at client.c:303
+#5  0x00007f6057c3d4e9 in client_notify_dispatch_uniq (this=0x7f604c01b290, event=5, data=0x0) at client.c:64
+#6  0x00007f6057c6bab4 in client_notify_parents_child_up (this=0x7f604c01b290) at client-handshake.c:133
+#7  0x00007f6057c6e541 in client_post_handshake (frame=0x7f604c00d47c, this=0x7f604c01b290) at client-handshake.c:1053
+#8  0x00007f6057c6ec8e in client_setvolume_cbk (req=0x7f604c18296c, iov=0x7f604c1829ac, count=1, myframe=0x7f604c00d47c) at client-handshake.c:1210
+#9  0x00007f6064ece267 in rpc_clnt_handle_reply (clnt=0x7f604c17fa90, pollin=0x7f604c00c3c0) at rpc-clnt.c:759
+#10 0x00007f6064ece6d7 in rpc_clnt_notify (trans=0x7f604c17ff20, mydata=0x7f604c17fac0, event=RPC_TRANSPORT_MSG_RECEIVED, data=0x7f604c00c3c0) at rpc-clnt.c:900
+#11 0x00007f6064ecaad1 in rpc_transport_notify (this=0x7f604c17ff20, event=RPC_TRANSPORT_MSG_RECEIVED, data=0x7f604c00c3c0) at rpc-transport.c:541
+#12 0x00007f605a344bb4 in socket_event_poll_in (this=0x7f604c17ff20) at socket.c:2233
+#13 0x00007f605a3450f1 in socket_event_handler (fd=12, idx=4, data=0x7f604c17ff20, poll_in=1, poll_out=0, poll_err=0) at socket.c:2346
+#14 0x00007f6065167aa8 in event_dispatch_epoll_handler (event_pool=0xcdada0, event=0x7f605505bea0) at event-epoll.c:571
+#15 0x00007f6065167e87 in event_dispatch_epoll_worker (data=0x7f6050034e50) at event-epoll.c:674
+#16 0x00007f6063f5fdf3 in start_thread () from /lib64/libpthread.so.0
+#17 0x00007f60638a83dd in clone () from /lib64/libc.so.6
+[Switching to Thread 0x7f605867e700 (LWP 17801)]
+
+Breakpoint 2, ec_notify (this=0x7f604c01ef80, event=5, data=0x7f604c01bd80, data2=0x7f6057994d88 <notify>) at ec.c:645
+645	        ec_t             *ec        = this->private;
+$6 = _gf_false
+#0  ec_notify (this=0x7f604c01ef80, event=5, data=0x7f604c01bd80, data2=0x7f6057994d88 <notify>) at ec.c:645
+#1  0x00007f6057994e92 in notify (this=0x7f604c01ef80, event=5, data=0x7f604c01bd80) at ec.c:745
+#2  0x00007f6065102660 in xlator_notify (xl=0x7f604c01ef80, event=5, data=0x7f604c01bd80) at xlator.c:496
+#3  0x00007f6065199704 in default_notify (this=0x7f604c01bd80, event=5, data=0x0) at defaults.c:2945
+#4  0x00007f6057c3dead in client_notify_dispatch (this=0x7f604c01bd80, event=5, data=0x0) at client.c:303
+#5  0x00007f6057c3d4e9 in client_notify_dispatch_uniq (this=0x7f604c01bd80, event=5, data=0x0) at client.c:64
+#6  0x00007f6057c6bab4 in client_notify_parents_child_up (this=0x7f604c01bd80) at client-handshake.c:133
+#7  0x00007f6057c6e541 in client_post_handshake (frame=0x7f60501bb2bc, this=0x7f604c01bd80) at client-handshake.c:1053
+#8  0x00007f6057c6ec8e in client_setvolume_cbk (req=0x7f60501bb48c, iov=0x7f60501bb4cc, count=1, myframe=0x7f60501bb2bc) at client-handshake.c:1210
+#9  0x00007f6064ece267 in rpc_clnt_handle_reply (clnt=0x7f604c17cb10, pollin=0x7f60501b9670) at rpc-clnt.c:759
+#10 0x00007f6064ece6d7 in rpc_clnt_notify (trans=0x7f604c17cfa0, mydata=0x7f604c17cb40, event=RPC_TRANSPORT_MSG_RECEIVED, data=0x7f60501b9670) at rpc-clnt.c:900
+#11 0x00007f6064ecaad1 in rpc_transport_notify (this=0x7f604c17cfa0, event=RPC_TRANSPORT_MSG_RECEIVED, data=0x7f60501b9670) at rpc-transport.c:541
+#12 0x00007f605a344bb4 in socket_event_poll_in (this=0x7f604c17cfa0) at socket.c:2233
+#13 0x00007f605a3450f1 in socket_event_handler (fd=10, idx=1, data=0x7f604c17cfa0, poll_in=1, poll_out=0, poll_err=0) at socket.c:2346
+#14 0x00007f6065167aa8 in event_dispatch_epoll_handler (event_pool=0xcdada0, event=0x7f605867dea0) at event-epoll.c:571
+#15 0x00007f6065167e87 in event_dispatch_epoll_worker (data=0xd278c0) at event-epoll.c:674
+#16 0x00007f6063f5fdf3 in start_thread () from /lib64/libpthread.so.0
+#17 0x00007f60638a83dd in clone () from /lib64/libc.so.6
+[Switching to Thread 0x7f6047fff700 (LWP 17806)]
+
+Breakpoint 2, ec_notify (this=0x7f6050057560, event=17, data=0x7f6050058560, data2=0x7f6057994d88 <notify>) at ec.c:645
+645	        ec_t             *ec        = this->private;
+$7 = _gf_false
+#0  ec_notify (this=0x7f6050057560, event=17, data=0x7f6050058560, data2=0x7f6057994d88 <notify>) at ec.c:645
+#1  0x00007f6057994e92 in notify (this=0x7f6050057560, event=17, data=0x7f6050058560) at ec.c:745
+#2  0x00007f6065102660 in xlator_notify (xl=0x7f6050057560, event=17, data=0x7f6050058560) at xlator.c:496
+#3  0x00007f606519961d in default_notify (this=0x7f6050058560, event=17, data=0x7f60500594d0) at defaults.c:2921
+#4  0x00007f605775c943 in dht_notify (this=0x7f6050058560, event=17, data=0x7f60500594d0) at dht-common.c:8393
+#5  0x00007f6065102660 in xlator_notify (xl=0x7f6050058560, event=17, data=0x7f60500594d0) at xlator.c:496
+#6  0x00007f606519961d in default_notify (this=0x7f60500594d0, event=17, data=0x7f605005a2d0) at defaults.c:2921
+#7  0x00007f6065102660 in xlator_notify (xl=0x7f60500594d0, event=17, data=0x7f605005a2d0) at xlator.c:496
+#8  0x00007f606519961d in default_notify (this=0x7f605005a2d0, event=17, data=0x7f605005b080) at defaults.c:2921
+#9  0x00007f6065102660 in xlator_notify (xl=0x7f605005a2d0, event=17, data=0x7f605005b080) at xlator.c:496
+#10 0x00007f606519961d in default_notify (this=0x7f605005b080, event=17, data=0x7f605005bef0) at defaults.c:2921
+#11 0x00007f6065102660 in xlator_notify (xl=0x7f605005b080, event=17, data=0x7f605005bef0) at xlator.c:496
+#12 0x00007f606519961d in default_notify (this=0x7f605005bef0, event=17, data=0x7f605005cd00) at defaults.c:2921
+#13 0x00007f6065102660 in xlator_notify (xl=0x7f605005bef0, event=17, data=0x7f605005cd00) at xlator.c:496
+#14 0x00007f606519961d in default_notify (this=0x7f605005cd00, event=17, data=0x7f605005db10) at defaults.c:2921
+#15 0x00007f6065102660 in xlator_notify (xl=0x7f605005cd00, event=17, data=0x7f605005db10) at xlator.c:496
+#16 0x00007f606519961d in default_notify (this=0x7f605005db10, event=17, data=0x7f605005e920) at defaults.c:2921
+#17 0x00007f6065102660 in xlator_notify (xl=0x7f605005db10, event=17, data=0x7f605005e920) at xlator.c:496
+#18 0x00007f606519961d in default_notify (this=0x7f605005e920, event=17, data=0x7f605005f730) at defaults.c:2921
+#19 0x00007f6065102660 in xlator_notify (xl=0x7f605005e920, event=17, data=0x7f605005f730) at xlator.c:496
+#20 0x00007f606519961d in default_notify (this=0x7f605005f730, event=17, data=0x7f6050060a70) at defaults.c:2921
+#21 0x00007f605669d606 in notify (this=0x7f605005f730, event=17, data=0x7f6050060a70) at io-stats.c:3841
+#22 0x00007f6065102660 in xlator_notify (xl=0x7f605005f730, event=17, data=0x7f6050060a70) at xlator.c:496
+#23 0x00007f606519961d in default_notify (this=0x7f6050060a70, event=17, data=0x7f60500615d0) at defaults.c:2921
+#24 0x00007f6065102660 in xlator_notify (xl=0x7f6050060a70, event=17, data=0x7f60500615d0) at xlator.c:496
+#25 0x00007f606519961d in default_notify (this=0x7f60500615d0, event=17, data=0x7f60500615d0) at defaults.c:2921
+#26 0x00007f6065102660 in xlator_notify (xl=0x7f60500615d0, event=17, data=0x7f60500615d0) at xlator.c:496
+#27 0x00007f605c57ab63 in fuse_graph_sync (this=0xce0de0) at fuse-bridge.c:4835
+#28 0x00007f605c57ae92 in fuse_thread_proc (data=0xce0de0) at fuse-bridge.c:4927
+#29 0x00007f6063f5fdf3 in start_thread () from /lib64/libpthread.so.0
+#30 0x00007f60638a83dd in clone () from /lib64/libc.so.6
+
+Breakpoint 4, notify (this=0x7f6050053810, event=17, data=0x7f6050057560) at client.c:2352
+2352	                gf_msg (this->name, GF_LOG_INFO, 0, PC_MSG_PARENT_DOWN,
+$8 = _gf_false
+#0  notify (this=0x7f6050053810, event=17, data=0x7f6050057560) at client.c:2352
+#1  0x00007f6065102660 in xlator_notify (xl=0x7f6050053810, event=17, data=0x7f6050057560) at xlator.c:496
+#2  0x00007f606519961d in default_notify (this=0x7f6050057560, event=17, data=0x7f6050058560) at defaults.c:2921
+#3  0x00007f6057994d54 in ec_notify (this=0x7f6050057560, event=17, data=0x7f6050058560, data2=0x7f6057994d88 <notify>) at ec.c:724
+#4  0x00007f6057994e92 in notify (this=0x7f6050057560, event=17, data=0x7f6050058560) at ec.c:745
+#5  0x00007f6065102660 in xlator_notify (xl=0x7f6050057560, event=17, data=0x7f6050058560) at xlator.c:496
+#6  0x00007f606519961d in default_notify (this=0x7f6050058560, event=17, data=0x7f60500594d0) at defaults.c:2921
+#7  0x00007f605775c943 in dht_notify (this=0x7f6050058560, event=17, data=0x7f60500594d0) at dht-common.c:8393
+#8  0x00007f6065102660 in xlator_notify (xl=0x7f6050058560, event=17, data=0x7f60500594d0) at xlator.c:496
+#9  0x00007f606519961d in default_notify (this=0x7f60500594d0, event=17, data=0x7f605005a2d0) at defaults.c:2921
+#10 0x00007f6065102660 in xlator_notify (xl=0x7f60500594d0, event=17, data=0x7f605005a2d0) at xlator.c:496
+#11 0x00007f606519961d in default_notify (this=0x7f605005a2d0, event=17, data=0x7f605005b080) at defaults.c:2921
+#12 0x00007f6065102660 in xlator_notify (xl=0x7f605005a2d0, event=17, data=0x7f605005b080) at xlator.c:496
+#13 0x00007f606519961d in default_notify (this=0x7f605005b080, event=17, data=0x7f605005bef0) at defaults.c:2921
+#14 0x00007f6065102660 in xlator_notify (xl=0x7f605005b080, event=17, data=0x7f605005bef0) at xlator.c:496
+#15 0x00007f606519961d in default_notify (this=0x7f605005bef0, event=17, data=0x7f605005cd00) at defaults.c:2921
+#16 0x00007f6065102660 in xlator_notify (xl=0x7f605005bef0, event=17, data=0x7f605005cd00) at xlator.c:496
+#17 0x00007f606519961d in default_notify (this=0x7f605005cd00, event=17, data=0x7f605005db10) at defaults.c:2921
+#18 0x00007f6065102660 in xlator_notify (xl=0x7f605005cd00, event=17, data=0x7f605005db10) at xlator.c:496
+#19 0x00007f606519961d in default_notify (this=0x7f605005db10, event=17, data=0x7f605005e920) at defaults.c:2921
+#20 0x00007f6065102660 in xlator_notify (xl=0x7f605005db10, event=17, data=0x7f605005e920) at xlator.c:496
+#21 0x00007f606519961d in default_notify (this=0x7f605005e920, event=17, data=0x7f605005f730) at defaults.c:2921
+#22 0x00007f6065102660 in xlator_notify (xl=0x7f605005e920, event=17, data=0x7f605005f730) at xlator.c:496
+#23 0x00007f606519961d in default_notify (this=0x7f605005f730, event=17, data=0x7f6050060a70) at defaults.c:2921
+#24 0x00007f605669d606 in notify (this=0x7f605005f730, event=17, data=0x7f6050060a70) at io-stats.c:3841
+#25 0x00007f6065102660 in xlator_notify (xl=0x7f605005f730, event=17, data=0x7f6050060a70) at xlator.c:496
+#26 0x00007f606519961d in default_notify (this=0x7f6050060a70, event=17, data=0x7f60500615d0) at defaults.c:2921
+#27 0x00007f6065102660 in xlator_notify (xl=0x7f6050060a70, event=17, data=0x7f60500615d0) at xlator.c:496
+#28 0x00007f606519961d in default_notify (this=0x7f60500615d0, event=17, data=0x7f60500615d0) at defaults.c:2921
+#29 0x00007f6065102660 in xlator_notify (xl=0x7f60500615d0, event=17, data=0x7f60500615d0) at xlator.c:496
+#30 0x00007f605c57ab63 in fuse_graph_sync (this=0xce0de0) at fuse-bridge.c:4835
+#31 0x00007f605c57ae92 in fuse_thread_proc (data=0xce0de0) at fuse-bridge.c:4927
+#32 0x00007f6063f5fdf3 in start_thread () from /lib64/libpthread.so.0
+#33 0x00007f60638a83dd in clone () from /lib64/libc.so.6
+
+Breakpoint 5, notify (this=0x7f6050053810, event=17, data=0x7f6050057560) at client.c:2363
+2363	                rpc_clnt_disable (conf->rpc);
+$9 = _gf_true
+#0  notify (this=0x7f6050053810, event=17, data=0x7f6050057560) at client.c:2363
+#1  0x00007f6065102660 in xlator_notify (xl=0x7f6050053810, event=17, data=0x7f6050057560) at xlator.c:496
+#2  0x00007f606519961d in default_notify (this=0x7f6050057560, event=17, data=0x7f6050058560) at defaults.c:2921
+#3  0x00007f6057994d54 in ec_notify (this=0x7f6050057560, event=17, data=0x7f6050058560, data2=0x7f6057994d88 <notify>) at ec.c:724
+#4  0x00007f6057994e92 in notify (this=0x7f6050057560, event=17, data=0x7f6050058560) at ec.c:745
+#5  0x00007f6065102660 in xlator_notify (xl=0x7f6050057560, event=17, data=0x7f6050058560) at xlator.c:496
+#6  0x00007f606519961d in default_notify (this=0x7f6050058560, event=17, data=0x7f60500594d0) at defaults.c:2921
+#7  0x00007f605775c943 in dht_notify (this=0x7f6050058560, event=17, data=0x7f60500594d0) at dht-common.c:8393
+#8  0x00007f6065102660 in xlator_notify (xl=0x7f6050058560, event=17, data=0x7f60500594d0) at xlator.c:496
+#9  0x00007f606519961d in default_notify (this=0x7f60500594d0, event=17, data=0x7f605005a2d0) at defaults.c:2921
+#10 0x00007f6065102660 in xlator_notify (xl=0x7f60500594d0, event=17, data=0x7f605005a2d0) at xlator.c:496
+#11 0x00007f606519961d in default_notify (this=0x7f605005a2d0, event=17, data=0x7f605005b080) at defaults.c:2921
+#12 0x00007f6065102660 in xlator_notify (xl=0x7f605005a2d0, event=17, data=0x7f605005b080) at xlator.c:496
+#13 0x00007f606519961d in default_notify (this=0x7f605005b080, event=17, data=0x7f605005bef0) at defaults.c:2921
+#14 0x00007f6065102660 in xlator_notify (xl=0x7f605005b080, event=17, data=0x7f605005bef0) at xlator.c:496
+#15 0x00007f606519961d in default_notify (this=0x7f605005bef0, event=17, data=0x7f605005cd00) at defaults.c:2921
+#16 0x00007f6065102660 in xlator_notify (xl=0x7f605005bef0, event=17, data=0x7f605005cd00) at xlator.c:496
+#17 0x00007f606519961d in default_notify (this=0x7f605005cd00, event=17, data=0x7f605005db10) at defaults.c:2921
+#18 0x00007f6065102660 in xlator_notify (xl=0x7f605005cd00, event=17, data=0x7f605005db10) at xlator.c:496
+#19 0x00007f606519961d in default_notify (this=0x7f605005db10, event=17, data=0x7f605005e920) at defaults.c:2921
+#20 0x00007f6065102660 in xlator_notify (xl=0x7f605005db10, event=17, data=0x7f605005e920) at xlator.c:496
+#21 0x00007f606519961d in default_notify (this=0x7f605005e920, event=17, data=0x7f605005f730) at defaults.c:2921
+#22 0x00007f6065102660 in xlator_notify (xl=0x7f605005e920, event=17, data=0x7f605005f730) at xlator.c:496
+#23 0x00007f606519961d in default_notify (this=0x7f605005f730, event=17, data=0x7f6050060a70) at defaults.c:2921
+#24 0x00007f605669d606 in notify (this=0x7f605005f730, event=17, data=0x7f6050060a70) at io-stats.c:3841
+#25 0x00007f6065102660 in xlator_notify (xl=0x7f605005f730, event=17, data=0x7f6050060a70) at xlator.c:496
+#26 0x00007f606519961d in default_notify (this=0x7f6050060a70, event=17, data=0x7f60500615d0) at defaults.c:2921
+#27 0x00007f6065102660 in xlator_notify (xl=0x7f6050060a70, event=17, data=0x7f60500615d0) at xlator.c:496
+#28 0x00007f606519961d in default_notify (this=0x7f60500615d0, event=17, data=0x7f60500615d0) at defaults.c:2921
+#29 0x00007f6065102660 in xlator_notify (xl=0x7f60500615d0, event=17, data=0x7f60500615d0) at xlator.c:496
+#30 0x00007f605c57ab63 in fuse_graph_sync (this=0xce0de0) at fuse-bridge.c:4835
+#31 0x00007f605c57ae92 in fuse_thread_proc (data=0xce0de0) at fuse-bridge.c:4927
+#32 0x00007f6063f5fdf3 in start_thread () from /lib64/libpthread.so.0
+#33 0x00007f60638a83dd in clone () from /lib64/libc.so.6
+
+Breakpoint 4, notify (this=0x7f6050054300, event=17, data=0x7f6050057560) at client.c:2352
+2352	                gf_msg (this->name, GF_LOG_INFO, 0, PC_MSG_PARENT_DOWN,
+$10 = _gf_false
+#0  notify (this=0x7f6050054300, event=17, data=0x7f6050057560) at client.c:2352
+#1  0x00007f6065102660 in xlator_notify (xl=0x7f6050054300, event=17, data=0x7f6050057560) at xlator.c:496
+#2  0x00007f606519961d in default_notify (this=0x7f6050057560, event=17, data=0x7f6050058560) at defaults.c:2921
+#3  0x00007f6057994d54 in ec_notify (this=0x7f6050057560, event=17, data=0x7f6050058560, data2=0x7f6057994d88 <notify>) at ec.c:724
+#4  0x00007f6057994e92 in notify (this=0x7f6050057560, event=17, data=0x7f6050058560) at ec.c:745
+#5  0x00007f6065102660 in xlator_notify (xl=0x7f6050057560, event=17, data=0x7f6050058560) at xlator.c:496
+#6  0x00007f606519961d in default_notify (this=0x7f6050058560, event=17, data=0x7f60500594d0) at defaults.c:2921
+#7  0x00007f605775c943 in dht_notify (this=0x7f6050058560, event=17, data=0x7f60500594d0) at dht-common.c:8393
+#8  0x00007f6065102660 in xlator_notify (xl=0x7f6050058560, event=17, data=0x7f60500594d0) at xlator.c:496
+#9  0x00007f606519961d in default_notify (this=0x7f60500594d0, event=17, data=0x7f605005a2d0) at defaults.c:2921
+#10 0x00007f6065102660 in xlator_notify (xl=0x7f60500594d0, event=17, data=0x7f605005a2d0) at xlator.c:496
+#11 0x00007f606519961d in default_notify (this=0x7f605005a2d0, event=17, data=0x7f605005b080) at defaults.c:2921
+#12 0x00007f6065102660 in xlator_notify (xl=0x7f605005a2d0, event=17, data=0x7f605005b080) at xlator.c:496
+#13 0x00007f606519961d in default_notify (this=0x7f605005b080, event=17, data=0x7f605005bef0) at defaults.c:2921
+#14 0x00007f6065102660 in xlator_notify (xl=0x7f605005b080, event=17, data=0x7f605005bef0) at xlator.c:496
+#15 0x00007f606519961d in default_notify (this=0x7f605005bef0, event=17, data=0x7f605005cd00) at defaults.c:2921
+#16 0x00007f6065102660 in xlator_notify (xl=0x7f605005bef0, event=17, data=0x7f605005cd00) at xlator.c:496
+#17 0x00007f606519961d in default_notify (this=0x7f605005cd00, event=17, data=0x7f605005db10) at defaults.c:2921
+#18 0x00007f6065102660 in xlator_notify (xl=0x7f605005cd00, event=17, data=0x7f605005db10) at xlator.c:496
+#19 0x00007f606519961d in default_notify (this=0x7f605005db10, event=17, data=0x7f605005e920) at defaults.c:2921
+#20 0x00007f6065102660 in xlator_notify (xl=0x7f605005db10, event=17, data=0x7f605005e920) at xlator.c:496
+#21 0x00007f606519961d in default_notify (this=0x7f605005e920, event=17, data=0x7f605005f730) at defaults.c:2921
+#22 0x00007f6065102660 in xlator_notify (xl=0x7f605005e920, event=17, data=0x7f605005f730) at xlator.c:496
+#23 0x00007f606519961d in default_notify (this=0x7f605005f730, event=17, data=0x7f6050060a70) at defaults.c:2921
+#24 0x00007f605669d606 in notify (this=0x7f605005f730, event=17, data=0x7f6050060a70) at io-stats.c:3841
+#25 0x00007f6065102660 in xlator_notify (xl=0x7f605005f730, event=17, data=0x7f6050060a70) at xlator.c:496
+#26 0x00007f606519961d in default_notify (this=0x7f6050060a70, event=17, data=0x7f60500615d0) at defaults.c:2921
+#27 0x00007f6065102660 in xlator_notify (xl=0x7f6050060a70, event=17, data=0x7f60500615d0) at xlator.c:496
+#28 0x00007f606519961d in default_notify (this=0x7f60500615d0, event=17, data=0x7f60500615d0) at defaults.c:2921
+#29 0x00007f6065102660 in xlator_notify (xl=0x7f60500615d0, event=17, data=0x7f60500615d0) at xlator.c:496
+#30 0x00007f605c57ab63 in fuse_graph_sync (this=0xce0de0) at fuse-bridge.c:4835
+#31 0x00007f605c57ae92 in fuse_thread_proc (data=0xce0de0) at fuse-bridge.c:4927
+#32 0x00007f6063f5fdf3 in start_thread () from /lib64/libpthread.so.0
+#33 0x00007f60638a83dd in clone () from /lib64/libc.so.6
+
+Breakpoint 5, notify (this=0x7f6050054300, event=17, data=0x7f6050057560) at client.c:2363
+2363	                rpc_clnt_disable (conf->rpc);
+$11 = _gf_true
+#0  notify (this=0x7f6050054300, event=17, data=0x7f6050057560) at client.c:2363
+#1  0x00007f6065102660 in xlator_notify (xl=0x7f6050054300, event=17, data=0x7f6050057560) at xlator.c:496
+#2  0x00007f606519961d in default_notify (this=0x7f6050057560, event=17, data=0x7f6050058560) at defaults.c:2921
+#3  0x00007f6057994d54 in ec_notify (this=0x7f6050057560, event=17, data=0x7f6050058560, data2=0x7f6057994d88 <notify>) at ec.c:724
+#4  0x00007f6057994e92 in notify (this=0x7f6050057560, event=17, data=0x7f6050058560) at ec.c:745
+#5  0x00007f6065102660 in xlator_notify (xl=0x7f6050057560, event=17, data=0x7f6050058560) at xlator.c:496
+#6  0x00007f606519961d in default_notify (this=0x7f6050058560, event=17, data=0x7f60500594d0) at defaults.c:2921
+#7  0x00007f605775c943 in dht_notify (this=0x7f6050058560, event=17, data=0x7f60500594d0) at dht-common.c:8393
+#8  0x00007f6065102660 in xlator_notify (xl=0x7f6050058560, event=17, data=0x7f60500594d0) at xlator.c:496
+#9  0x00007f606519961d in default_notify (this=0x7f60500594d0, event=17, data=0x7f605005a2d0) at defaults.c:2921
+#10 0x00007f6065102660 in xlator_notify (xl=0x7f60500594d0, event=17, data=0x7f605005a2d0) at xlator.c:496
+#11 0x00007f606519961d in default_notify (this=0x7f605005a2d0, event=17, data=0x7f605005b080) at defaults.c:2921
+#12 0x00007f6065102660 in xlator_notify (xl=0x7f605005a2d0, event=17, data=0x7f605005b080) at xlator.c:496
+#13 0x00007f606519961d in default_notify (this=0x7f605005b080, event=17, data=0x7f605005bef0) at defaults.c:2921
+#14 0x00007f6065102660 in xlator_notify (xl=0x7f605005b080, event=17, data=0x7f605005bef0) at xlator.c:496
+#15 0x00007f606519961d in default_notify (this=0x7f605005bef0, event=17, data=0x7f605005cd00) at defaults.c:2921
+#16 0x00007f6065102660 in xlator_notify (xl=0x7f605005bef0, event=17, data=0x7f605005cd00) at xlator.c:496
+#17 0x00007f606519961d in default_notify (this=0x7f605005cd00, event=17, data=0x7f605005db10) at defaults.c:2921
+#18 0x00007f6065102660 in xlator_notify (xl=0x7f605005cd00, event=17, data=0x7f605005db10) at xlator.c:496
+#19 0x00007f606519961d in default_notify (this=0x7f605005db10, event=17, data=0x7f605005e920) at defaults.c:2921
+#20 0x00007f6065102660 in xlator_notify (xl=0x7f605005db10, event=17, data=0x7f605005e920) at xlator.c:496
+#21 0x00007f606519961d in default_notify (this=0x7f605005e920, event=17, data=0x7f605005f730) at defaults.c:2921
+#22 0x00007f6065102660 in xlator_notify (xl=0x7f605005e920, event=17, data=0x7f605005f730) at xlator.c:496
+#23 0x00007f606519961d in default_notify (this=0x7f605005f730, event=17, data=0x7f6050060a70) at defaults.c:2921
+#24 0x00007f605669d606 in notify (this=0x7f605005f730, event=17, data=0x7f6050060a70) at io-stats.c:3841
+#25 0x00007f6065102660 in xlator_notify (xl=0x7f605005f730, event=17, data=0x7f6050060a70) at xlator.c:496
+#26 0x00007f606519961d in default_notify (this=0x7f6050060a70, event=17, data=0x7f60500615d0) at defaults.c:2921
+#27 0x00007f6065102660 in xlator_notify (xl=0x7f6050060a70, event=17, data=0x7f60500615d0) at xlator.c:496
+#28 0x00007f606519961d in default_notify (this=0x7f60500615d0, event=17, data=0x7f60500615d0) at defaults.c:2921
+#29 0x00007f6065102660 in xlator_notify (xl=0x7f60500615d0, event=17, data=0x7f60500615d0) at xlator.c:496
+#30 0x00007f605c57ab63 in fuse_graph_sync (this=0xce0de0) at fuse-bridge.c:4835
+#31 0x00007f605c57ae92 in fuse_thread_proc (data=0xce0de0) at fuse-bridge.c:4927
+#32 0x00007f6063f5fdf3 in start_thread () from /lib64/libpthread.so.0
+#33 0x00007f60638a83dd in clone () from /lib64/libc.so.6
+
+Breakpoint 4, notify (this=0x7f60500556b0, event=17, data=0x7f6050057560) at client.c:2352
+2352	                gf_msg (this->name, GF_LOG_INFO, 0, PC_MSG_PARENT_DOWN,
+$12 = _gf_false
+#0  notify (this=0x7f60500556b0, event=17, data=0x7f6050057560) at client.c:2352
+#1  0x00007f6065102660 in xlator_notify (xl=0x7f60500556b0, event=17, data=0x7f6050057560) at xlator.c:496
+#2  0x00007f606519961d in default_notify (this=0x7f6050057560, event=17, data=0x7f6050058560) at defaults.c:2921
+#3  0x00007f6057994d54 in ec_notify (this=0x7f6050057560, event=17, data=0x7f6050058560, data2=0x7f6057994d88 <notify>) at ec.c:724
+#4  0x00007f6057994e92 in notify (this=0x7f6050057560, event=17, data=0x7f6050058560) at ec.c:745
+#5  0x00007f6065102660 in xlator_notify (xl=0x7f6050057560, event=17, data=0x7f6050058560) at xlator.c:496
+#6  0x00007f606519961d in default_notify (this=0x7f6050058560, event=17, data=0x7f60500594d0) at defaults.c:2921
+#7  0x00007f605775c943 in dht_notify (this=0x7f6050058560, event=17, data=0x7f60500594d0) at dht-common.c:8393
+#8  0x00007f6065102660 in xlator_notify (xl=0x7f6050058560, event=17, data=0x7f60500594d0) at xlator.c:496
+#9  0x00007f606519961d in default_notify (this=0x7f60500594d0, event=17, data=0x7f605005a2d0) at defaults.c:2921
+#10 0x00007f6065102660 in xlator_notify (xl=0x7f60500594d0, event=17, data=0x7f605005a2d0) at xlator.c:496
+#11 0x00007f606519961d in default_notify (this=0x7f605005a2d0, event=17, data=0x7f605005b080) at defaults.c:2921
+#12 0x00007f6065102660 in xlator_notify (xl=0x7f605005a2d0, event=17, data=0x7f605005b080) at xlator.c:496
+#13 0x00007f606519961d in default_notify (this=0x7f605005b080, event=17, data=0x7f605005bef0) at defaults.c:2921
+#14 0x00007f6065102660 in xlator_notify (xl=0x7f605005b080, event=17, data=0x7f605005bef0) at xlator.c:496
+#15 0x00007f606519961d in default_notify (this=0x7f605005bef0, event=17, data=0x7f605005cd00) at defaults.c:2921
+#16 0x00007f6065102660 in xlator_notify (xl=0x7f605005bef0, event=17, data=0x7f605005cd00) at xlator.c:496
+#17 0x00007f606519961d in default_notify (this=0x7f605005cd00, event=17, data=0x7f605005db10) at defaults.c:2921
+#18 0x00007f6065102660 in xlator_notify (xl=0x7f605005cd00, event=17, data=0x7f605005db10) at xlator.c:496
+#19 0x00007f606519961d in default_notify (this=0x7f605005db10, event=17, data=0x7f605005e920) at defaults.c:2921
+#20 0x00007f6065102660 in xlator_notify (xl=0x7f605005db10, event=17, data=0x7f605005e920) at xlator.c:496
+#21 0x00007f606519961d in default_notify (this=0x7f605005e920, event=17, data=0x7f605005f730) at defaults.c:2921
+#22 0x00007f6065102660 in xlator_notify (xl=0x7f605005e920, event=17, data=0x7f605005f730) at xlator.c:496
+#23 0x00007f606519961d in default_notify (this=0x7f605005f730, event=17, data=0x7f6050060a70) at defaults.c:2921
+#24 0x00007f605669d606 in notify (this=0x7f605005f730, event=17, data=0x7f6050060a70) at io-stats.c:3841
+#25 0x00007f6065102660 in xlator_notify (xl=0x7f605005f730, event=17, data=0x7f6050060a70) at xlator.c:496
+#26 0x00007f606519961d in default_notify (this=0x7f6050060a70, event=17, data=0x7f60500615d0) at defaults.c:2921
+#27 0x00007f6065102660 in xlator_notify (xl=0x7f6050060a70, event=17, data=0x7f60500615d0) at xlator.c:496
+#28 0x00007f606519961d in default_notify (this=0x7f60500615d0, event=17, data=0x7f60500615d0) at defaults.c:2921
+#29 0x00007f6065102660 in xlator_notify (xl=0x7f60500615d0, event=17, data=0x7f60500615d0) at xlator.c:496
+#30 0x00007f605c57ab63 in fuse_graph_sync (this=0xce0de0) at fuse-bridge.c:4835
+#31 0x00007f605c57ae92 in fuse_thread_proc (data=0xce0de0) at fuse-bridge.c:4927
+#32 0x00007f6063f5fdf3 in start_thread () from /lib64/libpthread.so.0
+#33 0x00007f60638a83dd in clone () from /lib64/libc.so.6
+
+Breakpoint 5, notify (this=0x7f60500556b0, event=17, data=0x7f6050057560) at client.c:2363
+2363	                rpc_clnt_disable (conf->rpc);
+$13 = _gf_true
+#0  notify (this=0x7f60500556b0, event=17, data=0x7f6050057560) at client.c:2363
+#1  0x00007f6065102660 in xlator_notify (xl=0x7f60500556b0, event=17, data=0x7f6050057560) at xlator.c:496
+#2  0x00007f606519961d in default_notify (this=0x7f6050057560, event=17, data=0x7f6050058560) at defaults.c:2921
+#3  0x00007f6057994d54 in ec_notify (this=0x7f6050057560, event=17, data=0x7f6050058560, data2=0x7f6057994d88 <notify>) at ec.c:724
+#4  0x00007f6057994e92 in notify (this=0x7f6050057560, event=17, data=0x7f6050058560) at ec.c:745
+#5  0x00007f6065102660 in xlator_notify (xl=0x7f6050057560, event=17, data=0x7f6050058560) at xlator.c:496
+#6  0x00007f606519961d in default_notify (this=0x7f6050058560, event=17, data=0x7f60500594d0) at defaults.c:2921
+#7  0x00007f605775c943 in dht_notify (this=0x7f6050058560, event=17, data=0x7f60500594d0) at dht-common.c:8393
+#8  0x00007f6065102660 in xlator_notify (xl=0x7f6050058560, event=17, data=0x7f60500594d0) at xlator.c:496
+#9  0x00007f606519961d in default_notify (this=0x7f60500594d0, event=17, data=0x7f605005a2d0) at defaults.c:2921
+#10 0x00007f6065102660 in xlator_notify (xl=0x7f60500594d0, event=17, data=0x7f605005a2d0) at xlator.c:496
+#11 0x00007f606519961d in default_notify (this=0x7f605005a2d0, event=17, data=0x7f605005b080) at defaults.c:2921
+#12 0x00007f6065102660 in xlator_notify (xl=0x7f605005a2d0, event=17, data=0x7f605005b080) at xlator.c:496
+#13 0x00007f606519961d in default_notify (this=0x7f605005b080, event=17, data=0x7f605005bef0) at defaults.c:2921
+#14 0x00007f6065102660 in xlator_notify (xl=0x7f605005b080, event=17, data=0x7f605005bef0) at xlator.c:496
+#15 0x00007f606519961d in default_notify (this=0x7f605005bef0, event=17, data=0x7f605005cd00) at defaults.c:2921
+#16 0x00007f6065102660 in xlator_notify (xl=0x7f605005bef0, event=17, data=0x7f605005cd00) at xlator.c:496
+#17 0x00007f606519961d in default_notify (this=0x7f605005cd00, event=17, data=0x7f605005db10) at defaults.c:2921
+#18 0x00007f6065102660 in xlator_notify (xl=0x7f605005cd00, event=17, data=0x7f605005db10) at xlator.c:496
+#19 0x00007f606519961d in default_notify (this=0x7f605005db10, event=17, data=0x7f605005e920) at defaults.c:2921
+#20 0x00007f6065102660 in xlator_notify (xl=0x7f605005db10, event=17, data=0x7f605005e920) at xlator.c:496
+#21 0x00007f606519961d in default_notify (this=0x7f605005e920, event=17, data=0x7f605005f730) at defaults.c:2921
+#22 0x00007f6065102660 in xlator_notify (xl=0x7f605005e920, event=17, data=0x7f605005f730) at xlator.c:496
+#23 0x00007f606519961d in default_notify (this=0x7f605005f730, event=17, data=0x7f6050060a70) at defaults.c:2921
+#24 0x00007f605669d606 in notify (this=0x7f605005f730, event=17, data=0x7f6050060a70) at io-stats.c:3841
+#25 0x00007f6065102660 in xlator_notify (xl=0x7f605005f730, event=17, data=0x7f6050060a70) at xlator.c:496
+#26 0x00007f606519961d in default_notify (this=0x7f6050060a70, event=17, data=0x7f60500615d0) at defaults.c:2921
+#27 0x00007f6065102660 in xlator_notify (xl=0x7f6050060a70, event=17, data=0x7f60500615d0) at xlator.c:496
+#28 0x00007f606519961d in default_notify (this=0x7f60500615d0, event=17, data=0x7f60500615d0) at defaults.c:2921
+#29 0x00007f6065102660 in xlator_notify (xl=0x7f60500615d0, event=17, data=0x7f60500615d0) at xlator.c:496
+#30 0x00007f605c57ab63 in fuse_graph_sync (this=0xce0de0) at fuse-bridge.c:4835
+#31 0x00007f605c57ae92 in fuse_thread_proc (data=0xce0de0) at fuse-bridge.c:4927
+#32 0x00007f6063f5fdf3 in start_thread () from /lib64/libpthread.so.0
+#33 0x00007f60638a83dd in clone () from /lib64/libc.so.6
+[Switching to Thread 0x7f605505c700 (LWP 17803)]
+
+Breakpoint 3, dofs_mongodb_insert_client_down (this=0x7f6050053810) at client.c:173
+173	        int             ret = -1;
+$14 = _gf_true
+#0  dofs_mongodb_insert_client_down (this=0x7f6050053810) at client.c:173
+#1  0x00007f6057c3de70 in client_notify_dispatch (this=0x7f6050053810, event=6, data=0x0) at client.c:294
+#2  0x00007f6057c3d4e9 in client_notify_dispatch_uniq (this=0x7f6050053810, event=6, data=0x0) at client.c:64
+#3  0x00007f6057c47467 in client_rpc_notify (rpc=0x7f60501b7fb0, mydata=0x7f6050053810, event=RPC_CLNT_DISCONNECT, data=0x0) at client.c:2285
+#4  0x00007f6064ece5a4 in rpc_clnt_notify (trans=0x7f60501b8440, mydata=0x7f60501b7fe0, event=RPC_TRANSPORT_DISCONNECT, data=0x7f60501b8440) at rpc-clnt.c:867
+#5  0x00007f6064ecaad1 in rpc_transport_notify (this=0x7f60501b8440, event=RPC_TRANSPORT_DISCONNECT, data=0x7f60501b8440) at rpc-transport.c:541
+#6  0x00007f605a34078e in socket_event_poll_err (this=0x7f60501b8440) at socket.c:1147
+#7  0x00007f605a34514c in socket_event_handler (fd=11, idx=5, data=0x7f60501b8440, poll_in=1, poll_out=0, poll_err=16) at socket.c:2353
+#8  0x00007f6065167aa8 in event_dispatch_epoll_handler (event_pool=0xcdada0, event=0x7f605505bea0) at event-epoll.c:571
+#9  0x00007f6065167e87 in event_dispatch_epoll_worker (data=0x7f6050034e50) at event-epoll.c:674
+#10 0x00007f6063f5fdf3 in start_thread () from /lib64/libpthread.so.0
+#11 0x00007f60638a83dd in clone () from /lib64/libc.so.6
+
+Breakpoint 2, ec_notify (this=0x7f6050057560, event=6, data=0x7f6050053810, data2=0x7f6057994d88 <notify>) at ec.c:645
+645	        ec_t             *ec        = this->private;
+$15 = _gf_true
+#0  ec_notify (this=0x7f6050057560, event=6, data=0x7f6050053810, data2=0x7f6057994d88 <notify>) at ec.c:645
+#1  0x00007f6057994e92 in notify (this=0x7f6050057560, event=6, data=0x7f6050053810) at ec.c:745
+#2  0x00007f6065102660 in xlator_notify (xl=0x7f6050057560, event=6, data=0x7f6050053810) at xlator.c:496
+#3  0x00007f6065199704 in default_notify (this=0x7f6050053810, event=6, data=0x0) at defaults.c:2945
+#4  0x00007f6057c3dead in client_notify_dispatch (this=0x7f6050053810, event=6, data=0x0) at client.c:303
+#5  0x00007f6057c3d4e9 in client_notify_dispatch_uniq (this=0x7f6050053810, event=6, data=0x0) at client.c:64
+#6  0x00007f6057c47467 in client_rpc_notify (rpc=0x7f60501b7fb0, mydata=0x7f6050053810, event=RPC_CLNT_DISCONNECT, data=0x0) at client.c:2285
+#7  0x00007f6064ece5a4 in rpc_clnt_notify (trans=0x7f60501b8440, mydata=0x7f60501b7fe0, event=RPC_TRANSPORT_DISCONNECT, data=0x7f60501b8440) at rpc-clnt.c:867
+#8  0x00007f6064ecaad1 in rpc_transport_notify (this=0x7f60501b8440, event=RPC_TRANSPORT_DISCONNECT, data=0x7f60501b8440) at rpc-transport.c:541
+#9  0x00007f605a34078e in socket_event_poll_err (this=0x7f60501b8440) at socket.c:1147
+#10 0x00007f605a34514c in socket_event_handler (fd=11, idx=5, data=0x7f60501b8440, poll_in=1, poll_out=0, poll_err=16) at socket.c:2353
+#11 0x00007f6065167aa8 in event_dispatch_epoll_handler (event_pool=0xcdada0, event=0x7f605505bea0) at event-epoll.c:571
+#12 0x00007f6065167e87 in event_dispatch_epoll_worker (data=0x7f6050034e50) at event-epoll.c:674
+#13 0x00007f6063f5fdf3 in start_thread () from /lib64/libpthread.so.0
+#14 0x00007f60638a83dd in clone () from /lib64/libc.so.6
+
+Breakpoint 1, dofs_mongodb_insert_ec_down (this=0x7f6050057560) at ec.c:402
+402	        int ret = -1;
+$16 = _gf_true
+#0  dofs_mongodb_insert_ec_down (this=0x7f6050057560) at ec.c:402
+#1  0x00007f6057994605 in ec_down (this=0x7f6050057560, ec=0x7f6050078410) at ec.c:526
+#2  0x00007f6057994d06 in ec_notify (this=0x7f6050057560, event=6, data=0x7f6050053810, data2=0x7f6057994d88 <notify>) at ec.c:709
+#3  0x00007f6057994e92 in notify (this=0x7f6050057560, event=6, data=0x7f6050053810) at ec.c:745
+#4  0x00007f6065102660 in xlator_notify (xl=0x7f6050057560, event=6, data=0x7f6050053810) at xlator.c:496
+#5  0x00007f6065199704 in default_notify (this=0x7f6050053810, event=6, data=0x0) at defaults.c:2945
+#6  0x00007f6057c3dead in client_notify_dispatch (this=0x7f6050053810, event=6, data=0x0) at client.c:303
+#7  0x00007f6057c3d4e9 in client_notify_dispatch_uniq (this=0x7f6050053810, event=6, data=0x0) at client.c:64
+#8  0x00007f6057c47467 in client_rpc_notify (rpc=0x7f60501b7fb0, mydata=0x7f6050053810, event=RPC_CLNT_DISCONNECT, data=0x0) at client.c:2285
+#9  0x00007f6064ece5a4 in rpc_clnt_notify (trans=0x7f60501b8440, mydata=0x7f60501b7fe0, event=RPC_TRANSPORT_DISCONNECT, data=0x7f60501b8440) at rpc-clnt.c:867
+#10 0x00007f6064ecaad1 in rpc_transport_notify (this=0x7f60501b8440, event=RPC_TRANSPORT_DISCONNECT, data=0x7f60501b8440) at rpc-transport.c:541
+#11 0x00007f605a34078e in socket_event_poll_err (this=0x7f60501b8440) at socket.c:1147
+#12 0x00007f605a34514c in socket_event_handler (fd=11, idx=5, data=0x7f60501b8440, poll_in=1, poll_out=0, poll_err=16) at socket.c:2353
+#13 0x00007f6065167aa8 in event_dispatch_epoll_handler (event_pool=0xcdada0, event=0x7f605505bea0) at event-epoll.c:571
+#14 0x00007f6065167e87 in event_dispatch_epoll_worker (data=0x7f6050034e50) at event-epoll.c:674
+#15 0x00007f6063f5fdf3 in start_thread () from /lib64/libpthread.so.0
+#16 0x00007f60638a83dd in clone () from /lib64/libc.so.6
+[Switching to Thread 0x7f605867e700 (LWP 17801)]
+
+Breakpoint 3, dofs_mongodb_insert_client_down (this=0x7f6050054300) at client.c:173
+173	        int             ret = -1;
+$17 = _gf_true
+#0  dofs_mongodb_insert_client_down (this=0x7f6050054300) at client.c:173
+#1  0x00007f6057c3de70 in client_notify_dispatch (this=0x7f6050054300, event=6, data=0x0) at client.c:294
+#2  0x00007f6057c3d4e9 in client_notify_dispatch_uniq (this=0x7f6050054300, event=6, data=0x0) at client.c:64
+#3  0x00007f6057c47467 in client_rpc_notify (rpc=0x7f60501b5050, mydata=0x7f6050054300, event=RPC_CLNT_DISCONNECT, data=0x0) at client.c:2285
+#4  0x00007f6064ece5a4 in rpc_clnt_notify (trans=0x7f60501b54e0, mydata=0x7f60501b5080, event=RPC_TRANSPORT_DISCONNECT, data=0x7f60501b54e0) at rpc-clnt.c:867
+#5  0x00007f6064ecaad1 in rpc_transport_notify (this=0x7f60501b54e0, event=RPC_TRANSPORT_DISCONNECT, data=0x7f60501b54e0) at rpc-transport.c:541
+#6  0x00007f605a34078e in socket_event_poll_err (this=0x7f60501b54e0) at socket.c:1147
+#7  0x00007f605a34514c in socket_event_handler (fd=6, idx=2, data=0x7f60501b54e0, poll_in=1, poll_out=0, poll_err=16) at socket.c:2353
+#8  0x00007f6065167aa8 in event_dispatch_epoll_handler (event_pool=0xcdada0, event=0x7f605867dea0) at event-epoll.c:571
+#9  0x00007f6065167e87 in event_dispatch_epoll_worker (data=0xd278c0) at event-epoll.c:674
+#10 0x00007f6063f5fdf3 in start_thread () from /lib64/libpthread.so.0
+#11 0x00007f60638a83dd in clone () from /lib64/libc.so.6
+
+Breakpoint 2, ec_notify (this=0x7f6050057560, event=6, data=0x7f6050054300, data2=0x7f6057994d88 <notify>) at ec.c:645
+645	        ec_t             *ec        = this->private;
+$18 = _gf_true
+#0  ec_notify (this=0x7f6050057560, event=6, data=0x7f6050054300, data2=0x7f6057994d88 <notify>) at ec.c:645
+#1  0x00007f6057994e92 in notify (this=0x7f6050057560, event=6, data=0x7f6050054300) at ec.c:745
+#2  0x00007f6065102660 in xlator_notify (xl=0x7f6050057560, event=6, data=0x7f6050054300) at xlator.c:496
+#3  0x00007f6065199704 in default_notify (this=0x7f6050054300, event=6, data=0x0) at defaults.c:2945
+#4  0x00007f6057c3dead in client_notify_dispatch (this=0x7f6050054300, event=6, data=0x0) at client.c:303
+#5  0x00007f6057c3d4e9 in client_notify_dispatch_uniq (this=0x7f6050054300, event=6, data=0x0) at client.c:64
+#6  0x00007f6057c47467 in client_rpc_notify (rpc=0x7f60501b5050, mydata=0x7f6050054300, event=RPC_CLNT_DISCONNECT, data=0x0) at client.c:2285
+#7  0x00007f6064ece5a4 in rpc_clnt_notify (trans=0x7f60501b54e0, mydata=0x7f60501b5080, event=RPC_TRANSPORT_DISCONNECT, data=0x7f60501b54e0) at rpc-clnt.c:867
+#8  0x00007f6064ecaad1 in rpc_transport_notify (this=0x7f60501b54e0, event=RPC_TRANSPORT_DISCONNECT, data=0x7f60501b54e0) at rpc-transport.c:541
+#9  0x00007f605a34078e in socket_event_poll_err (this=0x7f60501b54e0) at socket.c:1147
+#10 0x00007f605a34514c in socket_event_handler (fd=6, idx=2, data=0x7f60501b54e0, poll_in=1, poll_out=0, poll_err=16) at socket.c:2353
+#11 0x00007f6065167aa8 in event_dispatch_epoll_handler (event_pool=0xcdada0, event=0x7f605867dea0) at event-epoll.c:571
+#12 0x00007f6065167e87 in event_dispatch_epoll_worker (data=0xd278c0) at event-epoll.c:674
+#13 0x00007f6063f5fdf3 in start_thread () from /lib64/libpthread.so.0
+#14 0x00007f60638a83dd in clone () from /lib64/libc.so.6
+
+Program received signal SIGINT, Interrupt.
+[Switching to Thread 0x7f60655c5780 (LWP 17795)]
+0x00007f6063f60f37 in pthread_join () from /lib64/libpthread.so.0
+Continuing.
+
+Program received signal SIGINT, Interrupt.
+0x00007f6063f60f37 in pthread_join () from /lib64/libpthread.so.0
+Undefined command: "y".  Try "help".
+A debugging session is active.
+
+	Inferior 1 [process 17795] will be detached.
+
+Quit anyway? (y or n) Detaching from program: /usr/sbin/digioceanfsd, process 17795
