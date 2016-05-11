@@ -1,17 +1,18 @@
 #!/bin/bash
 
 WORK_DIR=""
+# ALL_SIZE = WRITE_CNT * one_write(10G)
 WRITE_CNT=4000
 
 write_day()
 {
         #clear
-        echo rm -rf /$HOSTNAME/*
-        rm -rf /$HOSTNAME/*
+        echo bash.exe rm -rf /$HOSTNAME/*
+        bash.exe rm -rf /$HOSTNAME/*
 
         for ((i = 1; i <= 4; i++)); do
                 #mkdir
-                mkdir /$HOSTNAME/day$i
+                bash.exe mkdir -p /$HOSTNAME/day$i
                 WORK_DIR="/$HOSTNAME/day$i"
 
                 #write
