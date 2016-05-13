@@ -1,0 +1,117 @@
+Breakpoint 1 at 0x7fbd2de42021: file digioceand-utils.c, line 5165.
+Breakpoint 2 at 0x7fbd2de42021: file digioceand-utils.c, line 5165.
+Continuing.
+Detaching after fork from child process 9854.
+Detaching after fork from child process 9917.
+Detaching after fork from child process 9920.
+[Switching to Thread 0x7fbd2a17a700 (LWP 6279)]
+
+Breakpoint 2, digioceand_set_brick_status (brickinfo=0x7fbd14020e00, status=GF_BRICK_STARTED) at digioceand-utils.c:5165
+5165	        GF_ASSERT (brickinfo);
+$1 = "node-1.test", '\000' <repeats 1012 times>
+#0  digioceand_set_brick_status (brickinfo=0x7fbd14020e00, status=GF_BRICK_STARTED) at digioceand-utils.c:5165
+#1  0x00007fbd2de168c0 in __digioceand_brick_rpc_notify (rpc=0x7fbd141c6350, mydata=0x7fbd141ab430, event=RPC_CLNT_CONNECT, data=0x0) at digioceand-handler.c:4996
+#2  0x00007fbd2de07ed8 in digioceand_big_locked_notify (rpc=0x7fbd141c6350, mydata=0x7fbd141ab430, event=RPC_CLNT_CONNECT, data=0x0, notify_fn=0x7fbd2de1658b <__digioceand_brick_rpc_notify>) at digioceand-handler.c:67
+#3  0x00007fbd2de16a32 in digioceand_brick_rpc_notify (rpc=0x7fbd141c6350, mydata=0x7fbd141ab430, event=RPC_CLNT_CONNECT, data=0x0) at digioceand-handler.c:5030
+#4  0x00007fbd388cb792 in rpc_clnt_notify (trans=0x7fbd141b95d0, mydata=0x7fbd141c6380, event=RPC_TRANSPORT_CONNECT, data=0x7fbd141b95d0) at rpc-clnt.c:932
+#5  0x00007fbd388c7ad1 in rpc_transport_notify (this=0x7fbd141b95d0, event=RPC_TRANSPORT_CONNECT, data=0x7fbd141b95d0) at rpc-transport.c:541
+#6  0x00007fbd2bb81ecb in socket_connect_finish (this=0x7fbd141b95d0) at socket.c:2309
+#7  0x00007fbd2bb820b4 in socket_event_handler (fd=16, idx=8, data=0x7fbd141b95d0, poll_in=0, poll_out=4, poll_err=0) at socket.c:2339
+#8  0x00007fbd38b649c0 in event_dispatch_epoll_handler (event_pool=0x1ce0da0, event=0x7fbd2a179ea0) at event-epoll.c:571
+#9  0x00007fbd38b64d9f in event_dispatch_epoll_worker (data=0x1ceb0e0) at event-epoll.c:674
+#10 0x00007fbd3795cdf3 in start_thread () from /lib64/libpthread.so.0
+#11 0x00007fbd372a53dd in clone () from /lib64/libc.so.6
+Detaching after fork from child process 10344.
+Detaching after fork from child process 10533.
+Detaching after fork from child process 10622.
+Detaching after fork from child process 10853.
+Detaching after fork from child process 11055.
+Detaching after fork from child process 11075.
+Detaching after fork from child process 11212.
+Detaching after fork from child process 11670.
+Detaching after fork from child process 11678.
+Detaching after fork from child process 11686.
+Detaching after fork from child process 12015.
+Detaching after fork from child process 12023.
+Detaching after fork from child process 12054.
+Detaching after fork from child process 12553.
+Detaching after fork from child process 12583.
+Detaching after fork from child process 12591.
+Detaching after fork from child process 12870.
+Detaching after fork from child process 12902.
+Detaching after fork from child process 12934.
+Detaching after fork from child process 13633.
+Detaching after fork from child process 13654.
+Detaching after fork from child process 13662.
+[Switching to Thread 0x7fbd2f185700 (LWP 5888)]
+
+Breakpoint 1, digioceand_set_brick_status (brickinfo=0x7fbd14020e00, status=GF_BRICK_STOPPED) at digioceand-utils.c:5165
+5165	        GF_ASSERT (brickinfo);
+$2 = "node-1.test", '\000' <repeats 1012 times>
+#0  digioceand_set_brick_status (brickinfo=0x7fbd14020e00, status=GF_BRICK_STOPPED) at digioceand-utils.c:5165
+#1  0x00007fbd2de36dde in digioceand_volume_stop_digioceanfs (volinfo=0x7fbd1400cc70, brickinfo=0x7fbd14020e00, del_brick=_gf_false) at digioceand-utils.c:1962
+#2  0x00007fbd2de444f4 in digioceand_brick_stop (volinfo=0x7fbd1400cc70, brickinfo=0x7fbd14020e00, del_brick=_gf_false) at digioceand-utils.c:5832
+#3  0x00007fbd2deb53e1 in digioceand_stop_volume (volinfo=0x7fbd1400cc70) at digioceand-volume-ops.c:2763
+#4  0x00007fbd2deb5864 in digioceand_op_stop_volume (dict=0x7fbd2410738c) at digioceand-volume-ops.c:2844
+#5  0x00007fbd2de2b3b9 in digioceand_op_commit_perform (op=GD_OP_STOP_VOLUME, dict=0x7fbd2410738c, op_errstr=0x7fbd20405c70, rsp_dict=0x7fbd240bf01c) at digioceand-op-sm.c:5710
+#6  0x00007fbd2dec7c36 in gd_commit_op_phase (op=GD_OP_STOP_VOLUME, op_ctx=0x7fbd1438d6bc, req_dict=0x7fbd2410738c, op_errstr=0x7fbd20405c70, txn_opinfo=0x7fbd20405be0) at digioceand-syncop.c:1375
+#7  0x00007fbd2dec9238 in gd_sync_task_begin (op_ctx=0x7fbd1438d6bc, req=0x7fbd2000b7ec) at digioceand-syncop.c:1895
+#8  0x00007fbd2dec94bf in digioceand_op_begin_synctask (req=0x7fbd2000b7ec, op=GD_OP_STOP_VOLUME, dict=0x7fbd1438d6bc) at digioceand-syncop.c:1960
+#9  0x00007fbd2deaea2c in __digioceand_handle_cli_stop_volume (req=0x7fbd2000b7ec) at digioceand-volume-ops.c:619
+#10 0x00007fbd2de07f40 in digioceand_big_locked_handler (req=0x7fbd2000b7ec, actor_fn=0x7fbd2deae67c <__digioceand_handle_cli_stop_volume>) at digioceand-handler.c:79
+#11 0x00007fbd2deaead1 in digioceand_handle_cli_stop_volume (req=0x7fbd2000b7ec) at digioceand-volume-ops.c:638
+#12 0x00007fbd38b429d4 in synctask_wrap (old_task=0x7fbd20013270) at syncop.c:375
+#13 0x00007fbd371f6570 in ?? () from /lib64/libc.so.6
+#14 0x0000000000000000 in ?? ()
+[Switching to Thread 0x7fbd2a17a700 (LWP 6279)]
+
+Breakpoint 1, digioceand_set_brick_status (brickinfo=0x7fbd14020e00, status=GF_BRICK_STOPPED) at digioceand-utils.c:5165
+5165	        GF_ASSERT (brickinfo);
+$3 = "node-1.test", '\000' <repeats 1012 times>
+#0  digioceand_set_brick_status (brickinfo=0x7fbd14020e00, status=GF_BRICK_STOPPED) at digioceand-utils.c:5165
+#1  0x00007fbd2de1697f in __digioceand_brick_rpc_notify (rpc=0x7fbd141c6350, mydata=0x7fbd141ab430, event=RPC_CLNT_DISCONNECT, data=0x0) at digioceand-handler.c:5009
+#2  0x00007fbd2de07ed8 in digioceand_big_locked_notify (rpc=0x7fbd141c6350, mydata=0x7fbd141ab430, event=RPC_CLNT_DISCONNECT, data=0x0, notify_fn=0x7fbd2de1658b <__digioceand_brick_rpc_notify>) at digioceand-handler.c:67
+#3  0x00007fbd2de16a32 in digioceand_brick_rpc_notify (rpc=0x7fbd141c6350, mydata=0x7fbd141ab430, event=RPC_CLNT_DISCONNECT, data=0x0) at digioceand-handler.c:5030
+#4  0x00007fbd388cb5a4 in rpc_clnt_notify (trans=0x7fbd141b95d0, mydata=0x7fbd141c6380, event=RPC_TRANSPORT_DISCONNECT, data=0x7fbd141b95d0) at rpc-clnt.c:867
+#5  0x00007fbd388c7ad1 in rpc_transport_notify (this=0x7fbd141b95d0, event=RPC_TRANSPORT_DISCONNECT, data=0x7fbd141b95d0) at rpc-transport.c:541
+#6  0x00007fbd2bb7d78e in socket_event_poll_err (this=0x7fbd141b95d0) at socket.c:1147
+#7  0x00007fbd2bb8214c in socket_event_handler (fd=16, idx=8, data=0x7fbd141b95d0, poll_in=1, poll_out=0, poll_err=16) at socket.c:2353
+#8  0x00007fbd38b649c0 in event_dispatch_epoll_handler (event_pool=0x1ce0da0, event=0x7fbd2a179ea0) at event-epoll.c:571
+#9  0x00007fbd38b64d9f in event_dispatch_epoll_worker (data=0x1ceb0e0) at event-epoll.c:674
+#10 0x00007fbd3795cdf3 in start_thread () from /lib64/libpthread.so.0
+#11 0x00007fbd372a53dd in clone () from /lib64/libc.so.6
+Detaching after fork from child process 22928.
+Detaching after fork from child process 22987.
+Detaching after fork from child process 22992.
+
+Breakpoint 2, digioceand_set_brick_status (brickinfo=0x7fbd2413b410, status=GF_BRICK_STARTED) at digioceand-utils.c:5165
+5165	        GF_ASSERT (brickinfo);
+$4 = "node-1.test", '\000' <repeats 1012 times>
+#0  digioceand_set_brick_status (brickinfo=0x7fbd2413b410, status=GF_BRICK_STARTED) at digioceand-utils.c:5165
+#1  0x00007fbd2de168c0 in __digioceand_brick_rpc_notify (rpc=0x7fbd242262e0, mydata=0x7fbd242260d0, event=RPC_CLNT_CONNECT, data=0x0) at digioceand-handler.c:4996
+#2  0x00007fbd2de07ed8 in digioceand_big_locked_notify (rpc=0x7fbd242262e0, mydata=0x7fbd242260d0, event=RPC_CLNT_CONNECT, data=0x0, notify_fn=0x7fbd2de1658b <__digioceand_brick_rpc_notify>) at digioceand-handler.c:67
+#3  0x00007fbd2de16a32 in digioceand_brick_rpc_notify (rpc=0x7fbd242262e0, mydata=0x7fbd242260d0, event=RPC_CLNT_CONNECT, data=0x0) at digioceand-handler.c:5030
+#4  0x00007fbd388cb792 in rpc_clnt_notify (trans=0x7fbd2420b940, mydata=0x7fbd24226310, event=RPC_TRANSPORT_CONNECT, data=0x7fbd2420b940) at rpc-clnt.c:932
+#5  0x00007fbd388c7ad1 in rpc_transport_notify (this=0x7fbd2420b940, event=RPC_TRANSPORT_CONNECT, data=0x7fbd2420b940) at rpc-transport.c:541
+#6  0x00007fbd2bb81ecb in socket_connect_finish (this=0x7fbd2420b940) at socket.c:2309
+#7  0x00007fbd2bb820b4 in socket_event_handler (fd=16, idx=8, data=0x7fbd2420b940, poll_in=0, poll_out=4, poll_err=0) at socket.c:2339
+#8  0x00007fbd38b649c0 in event_dispatch_epoll_handler (event_pool=0x1ce0da0, event=0x7fbd2a179ea0) at event-epoll.c:571
+#9  0x00007fbd38b64d9f in event_dispatch_epoll_worker (data=0x1ceb0e0) at event-epoll.c:674
+#10 0x00007fbd3795cdf3 in start_thread () from /lib64/libpthread.so.0
+#11 0x00007fbd372a53dd in clone () from /lib64/libc.so.6
+Detaching after fork from child process 23648.
+Detaching after fork from child process 23705.
+Detaching after fork from child process 23872.
+Detaching after fork from child process 24322.
+Detaching after fork from child process 24351.
+Detaching after fork from child process 24361.
+
+Program received signal SIGINT, Interrupt.
+[Switching to Thread 0x7fbd38fc2780 (LWP 5885)]
+0x00007fbd3795df37 in pthread_join () from /lib64/libpthread.so.0
+Missing separate debuginfos, use: debuginfo-install libacl-2.2.51-12.el7.x86_64 libaio-0.3.109-12.el7.x86_64 libattr-2.4.46-12.el7.x86_64 sqlite-3.7.17-4.el7.x86_64 sssd-client-1.11.2-65.el7.x86_64
+A debugging session is active.
+
+	Inferior 1 [process 5885] will be detached.
+
+Quit anyway? (y or n) Detaching from program: /usr/sbin/digioceanfsd, process 5885
