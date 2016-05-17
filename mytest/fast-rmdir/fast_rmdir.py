@@ -6,8 +6,10 @@ import os
 import sys
 import logging
 import logging.handlers
+import socket
 
-LOG_FILE = "test.log"
+TEST_DIR = "test_fast_rmdir"
+LOG_FILE = "/var/log/digioceanfs/test.log"
 mylog = ""
 
 class log:
@@ -40,10 +42,19 @@ class log:
         self.logger.error(message)
 
 def create_files(workdir, dir_count, one_dir_file_count):
+    # MKDIR HOSTNAME dir
+    hostname = socket.gethostname()
+    workdir = workdir + '/' + hostname
+    if os.path.exists(workdir) == False:
+        try:
+            os.mkdir(workdir)
+        except OSError, data:
+            myinfo.error(data)
+            exit(-1)
+
     # begin create time
     begin_create_time = time.time()
     mylog.info("BEGIN_CREATE_TIME=" + str(begin_create_time))
-
     # create 100 dir
     for i in range(0, dir_count):
         dirname = workdir + "/newdir" + str(i)
@@ -94,12 +105,25 @@ if __name__ == '__main__':
         print '--file_count: need create all file count;'
         print '--LogLevel: DEBUG INFO ERROR, default is INFO'
         print 'Note: one_dir_file_count = file_count / dir_count\n'
+        print 'TEST_DIRECTORY: workdir/test_fast_rmdir'
         exit(0)
 
     workdir = sys.argv[1]
     if os.path.exists(workdir) == False:
         print 'filepath:' + workdir + ' is not exists!'
         exit(0)
+    
+    # create test directory test_fast_rmdir
+    workdir = workdir + '/' + TEST_DIR
+    if os.path.exists(workdir) == False:
+        try:
+            os.mkdir(workdir)
+        except OSError, data:
+            print 'Create directory ' + workdir + 'failed', data
+            mylog.error(data)
+            exit(-1)
+        else:
+            print 'TEST_PATH=' + workdir
 
     if len(sys.argv) == 5:
         log_level = sys.argv[-1]
