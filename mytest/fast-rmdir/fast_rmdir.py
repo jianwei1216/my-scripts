@@ -67,7 +67,7 @@ def create_files(workdir, dir_count, one_dir_file_count):
         except WindowsError, data:
             mylog.error(data)
         else:
-            mylog.debug ('Mkdir ' + dirname + ' success!')
+            mylog.info ('Mkdir ' + dirname + ' success!')
             # create 10000 files      
             for j in range(0, one_dir_file_count):
                 filename = dirname + '/newfile' + str(j)
@@ -104,8 +104,8 @@ if __name__ == '__main__':
         print '--dir_count: need create directory count;'
         print '--file_count: need create all file count;'
         print '--LogLevel: DEBUG INFO ERROR, default is INFO'
-        print 'Note: one_dir_file_count = file_count / dir_count\n'
-        print 'TEST_DIRECTORY: workdir/test_fast_rmdir'
+        print 'Note: one_dir_file_count = file_count / dir_count'
+        print 'TEST_DIRECTORY: workdir/test_fast_rmdir\n'
         exit(0)
 
     workdir = sys.argv[1]
