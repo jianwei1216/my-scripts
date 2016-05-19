@@ -49,7 +49,7 @@ def create_files(workdir, dir_count, one_dir_file_count):
         try:
             os.mkdir(workdir)
         except OSError, data:
-            myinfo.error(data)
+            mylog.error(data)
             exit(-1)
 
     # begin create time
