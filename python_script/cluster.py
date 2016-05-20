@@ -138,14 +138,50 @@ if __name__ == "__main__":
         if len(sys.argv) < 2:
                 print "python cluster.py gitdir giturl nodes [clone|pull|install|uninstall]\n"\
                       "e.g. python cluster.py",\
-                      "/root/git 10.10.12.16:/root/git/glusterfs",\
-                      "node-1 node-2 node-3 clone"
+                      "/root/git 10.10.12.16:/root/git/glusterfs node-{1,2,3} clone\n"\
+                      "Notes:\nwhen all these args given, will record in the ./.cluster.py.config,\n"\
+                      "if not, read the config file to get these args\n"
                 exit()
 
-        gitdir = sys.argv[1]
-        giturl = sys.argv[2]
+        config_file_pathname = './.cluster.py.config'
+        gitdir = ''
+        giturl = ''
+        nodes = ()
         cmd = sys.argv[-1]
-        nodes = tuple(sys.argv[3:-1])
-        #print sys.argv
+        if len(sys.argv) >= 5:
+                gitdir = sys.argv[1]
+                giturl = sys.argv[2]
+                nodes = tuple(sys.argv[3:-1])
 
+        # judge file exists or not
+        has_config_file = os.path.isfile(config_file_pathname)
+        if ('' == gitdir) or ('' == giturl) or (() == nodes):
+                # if config_file_is_not_exists, fatal error
+                if has_config_file == False:
+                        print 'Error: don\'t have ' + config_file_pathname +\
+                              '!Please give all args!!!'
+                        exit(-1)
+                # if config_file_is_exists, read file and get these args
+                fp = open (config_file_pathname, 'rb')
+                fargs = fp.readline()
+                args = fargs.split(' ')
+                gitdir = args[0]
+                giturl = args[1]
+                nodes = tuple(args[2:])
+        else:
+                # need update config_file.
+                if has_config_file == False:
+                        os.mknod(config_file_pathname)
+                fp = open (config_file_pathname, 'wb')
+                fp.truncate(0)
+                fp.write(gitdir + ' ')
+                fp.write(giturl + ' ')
+                for i in range(0, len(nodes)):
+                        if i == len(nodes)-1:
+                                fp.write(nodes[i])
+                        else:
+                                fp.write(nodes[i] + ' ')
+
+        fp.close()
         cluster_test (gitdir, giturl, nodes, cmd)
+
