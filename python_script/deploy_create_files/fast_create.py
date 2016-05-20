@@ -13,6 +13,7 @@ LOG_FILE = "/var/log/digioceanfs/test_fast_create.log"
 mylog = ""
 
 class log:
+    global LOG_FILE
     logger = ""
     fmt = "[%(asctime)s] [%(filename)s:%(lineno)s %(levelname)s] %(message)s"
     formatter = ""
