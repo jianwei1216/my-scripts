@@ -9,7 +9,7 @@ import logging.handlers
 import socket
 
 TEST_DIR = "test_fast_rmdir"
-LOG_FILE = "/var/log/digioceanfs/test.log"
+LOG_FILE = "/var/log/digioceanfs/test_fast_rmdir.log"
 mylog = ""
 
 class log:
@@ -64,8 +64,6 @@ def create_files(workdir, dir_count, one_dir_file_count):
             mylog.error(data)
         except IOError, data:
             mylog.error(data)
-        except WindowsError, data:
-            mylog.error(data)
         else:
             mylog.info ('Mkdir ' + dirname + ' success!')
             # create 10000 files      
@@ -76,8 +74,6 @@ def create_files(workdir, dir_count, one_dir_file_count):
                 except OSError, data:
                     mylog.error(data)
                 except IOError, data:
-                    mylog.error(data)
-                except WindowsError, data:
                     mylog.error(data)
                 else:
                     mylog.debug ('Create ' + filename + ' success!')
