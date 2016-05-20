@@ -35,6 +35,10 @@ def despatch_cmd(args):
                 fp = open (config_file, 'rb')
                 fnodes = fp.readline()
                 nodes = fnodes.split(' ') 
+                if len(nodes) == 0:
+                        print 'Fatal error: ./.fast.py.config is empty,'\
+                              'please give all args!'
+                        exit(-1)
         else:
                 fp = open (config_file, 'wb')
                 fp.truncate(0)

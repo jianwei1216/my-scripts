@@ -165,6 +165,10 @@ if __name__ == "__main__":
                 fp = open (config_file_pathname, 'rb')
                 fargs = fp.readline()
                 args = fargs.split(' ')
+                if len(args) < 3:
+                        print 'Fatal error: cannot read the correct args from '\
+                              ' the ./.cluster.py.config, please give all args!'
+                        exit(-1)
                 gitdir = args[0]
                 giturl = args[1]
                 nodes = tuple(args[2:])
