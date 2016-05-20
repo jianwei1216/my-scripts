@@ -8,8 +8,8 @@ import logging
 import logging.handlers
 import socket
 
-TEST_DIR = "test_fast_rmdir"
-LOG_FILE = "/var/log/digioceanfs/test_fast_rmdir.log"
+TEST_DIR = "test_fast_create"
+LOG_FILE = "/var/log/digioceanfs/test_fast_create.log"
 mylog = ""
 
 class log:
@@ -94,14 +94,14 @@ def delete_files():
 
 if __name__ == '__main__':
     if len(sys.argv) < 4:
-        print 'Usage: ' + __file__ + ' workdir' + ' dir_count' + ' file_count' + ' [LogLevel]\n'
-        print 'Description: This python script used for fast-rmdir-speed test.'
-        print '--workdir: work directory;'
-        print '--dir_count: need create directory count;'
-        print '--file_count: need create all file count;'
-        print '--LogLevel: DEBUG INFO ERROR, default is INFO'
-        print 'Note: one_dir_file_count = file_count / dir_count'
-        print 'TEST_DIRECTORY: workdir/test_fast_rmdir\n'
+        print 'Usage: ' + __file__ + ' workdir' + ' dir_count' + ' file_count' + ' [LogLevel]\n'\
+              + 'Description: This python script used for fast-create test.\n'\
+              + '--workdir: work directory;\n'\
+              + '--dir_count: need create directory count;\n'\
+              + '--file_count: need create all file count;\n'\
+              + '--LogLevel: DEBUG INFO ERROR, default is INFO(log_path=' + LOG_FILE + ')\n'\
+              + 'Note: one_dir_file_count = file_count / dir_count\n'\
+              + 'TEST_DIRECTORY: workdir/test_fast_create\n'
         exit(0)
 
     workdir = sys.argv[1]
@@ -109,7 +109,7 @@ if __name__ == '__main__':
         print 'filepath:' + workdir + ' is not exists!'
         exit(0)
     
-    # create test directory test_fast_rmdir
+    # create test directory test_fast_create
     workdir = workdir + '/' + TEST_DIR
     if os.path.exists(workdir) == False:
         try:
