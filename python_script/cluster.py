@@ -29,6 +29,10 @@ class Cluster:
                 self.workdir = currdir
                 self.nodes = node
                 print self.url, self.gitdir, self.workdir, self.nodes
+                print 'gitdir=' + YELLOW + self.gitdir + ENDC + '\n' +\
+                      'giturl=' + YELLOW + self.url + ENDC + '\n' +\
+                      'workdir=' + YELLOW + self.workdir + ENDC + '\n' +\
+                      'nodes=' + YELLOW, self.nodes, ENDC + '\n'
 
         def __clone(self, host, lock):
                 clone_cmd = "ssh " + host + " " + "\"" + "cd " + self.gitdir + ";"\
