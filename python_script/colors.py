@@ -5,6 +5,7 @@ RED     = COLORPRE + '[31m'
 GREEN   = COLORPRE + '[32m'
 YELLOW  = COLORPRE + '[33m'
 BLUE    = COLORPRE + '[34m'
+PURPLE  = COLORPRE + '[35m'
 ENDC    = COLORPRE + '[0m'
 
 if __name__ == '__main__':
