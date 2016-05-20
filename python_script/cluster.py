@@ -5,6 +5,7 @@ import os
 import thread
 import time
 import sys
+from colors import *
 
 class Cluster:
         url = ""
@@ -136,11 +137,12 @@ def mgmt_test(gitdir, giturl, nodes, cmd):
 
 if __name__ == "__main__":
         if len(sys.argv) < 2:
-                print "python cluster.py gitdir giturl nodes [clone|pull|install|uninstall]\n"\
-                      "e.g. python cluster.py",\
-                      "/root/git 10.10.12.16:/root/git/glusterfs node-{1,2,3} clone\n"\
-                      "Notes:\nwhen all these args given, will record in the ./.cluster.py.config,\n"\
-                      "if not, read the config file to get these args\n"
+                print 'Usage: ' + RED + 'python cluster.py gitdir giturl nodes [clone|pull|install|uninstall]\n' + ENDC\
+                      + 'e.g. python cluster.py '\
+                      + '/root/git 10.10.12.16:/root/git/glusterfs node-{1,2,3} clone\n'\
+                      + 'Notes:\nwhen all these args given, will record in the ./.cluster.py.config,\n'\
+                      + 'you can directly execute ' + RED + './cluster.py [clone|pull|install|uninstall].\n' + ENDC\
+                      + 'if not, read the config file to get these args\n'
                 exit()
 
         config_file_pathname = './.cluster.py.config'
@@ -166,8 +168,8 @@ if __name__ == "__main__":
                 fargs = fp.readline()
                 args = fargs.split(' ')
                 if len(args) < 3:
-                        print 'Fatal error: cannot read the correct args from '\
-                              ' the ./.cluster.py.config, please give all args!'
+                        print RED + 'Fatal error: cannot read the correct args from '\
+                              + ' the ./.cluster.py.config, please give all args!' + ENDC
                         exit(-1)
                 gitdir = args[0]
                 giturl = args[1]

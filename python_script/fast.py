@@ -3,6 +3,7 @@
 import os
 import sys
 import thread
+from colors import *
 
 def __despatch_cmd(host, lock, cmd):
         cmd = "ssh " + host + " \"" + cmd + "\""
@@ -52,11 +53,11 @@ def despatch_cmd(args):
 
 if __name__ == '__main__':
         if len(sys.argv) < 2:
-                print "Usage: python " + __file__ + " your_nodes" + " your_commands\n" \
-                      + "e.g. python " + __file__ + " 10.10.21.9{1,2,3} \"date\""
-                print 'Notes: When python ' + __file__ + ' 10.10.21.9{1,2,3} date,\n'\
+                print 'Usage: ' + RED + 'python ' + __file__ + ' your_nodes' + ' your_commands\n' + ENDC\
+                      + 'e.g. python ' + __file__ + ' 10.10.21.9{1,2,3} \"date\"'
+                print 'Notes:\nwhen give all all args,\n'\
                       + 'it can record your_nodes in the .fast.py.config,\n'\
-                      + 'and next time you can directly execute ./fast.py \"date\"'
+                      + 'and next time you can directly execute ' + RED + './fast.py \"date\"' + ENDC
                 exit()
         
         despatch_cmd(sys.argv)
