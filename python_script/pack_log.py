@@ -214,22 +214,21 @@ if __name__ == '__main__':
         global ssh_password
 
         if len(sys.argv) < 2:
-                print 'Usage: python %s [--pack --nodes nodes --save_pack_path pathname '\
-                      '--need_pack_files pathname]'\
-                      '\n\t\t\t--password ssh_password'\
-                      '\n\t\t\t[--unpack nodes:/pathname] '\
-                      '\n\t\t\t[--scp --src_nodes nodes --src_files pathname --dst_nodes nodes --dst_save_path pathname]'\
-                      '\n\t\t\t[--not-use-ssh-passwd --nodes nodes]'\
+                print 'Usage:\npython %s --password ssh_password '\
+                      '[--pack --nodes nodes_ip --save_pack_path pathname --need_pack_files pathname] '\
+                      '[--unpack nodes:/pathname] '\
+                      '[--scp --src_nodes nodes_ip --src_files pathname --dst_nodes nodes_ip --dst_save_path pathname] '\
+                      '[--not-use-ssh-passwd --nodes nodes_ip] '\
                       % (__file__)
 
-                print 'e.g.\n'\
-                      '<1>--scp:\n' + __file__ + ' --scp --src_nodes 10.10.21.11{1,2,3,4,5} --src_files \'/root/10.10.21.11?_1464071514.tar.gz\' \n'\
-                      '              --dst_nodes 10.10.12.16 --dst_save_path /root/log/ --password 123456\n'\
-                      '<2>--pack:\n' + __file__ + ' --pack --nodes 10.10.21.11{1,2,3,4,5} --save_pack_path /root/ \n'\
-                      '              --need_pack_files /var/log/digioceanfs/* /var/lib/digioceand/* --password 123456\n'\
-                      '<3>--not-use-ssh-passwd:\n' + __file__ + ' --not-use-ssh-passwd --nodes 10.10.21.11{1,2,3,4,5}'
+                print '\ne.g.\n'\
+                      '(1)--scp:\n' + __file__ + ' --scp --src_nodes 10.10.21.11{1,2,3,4,5} --src_files \'/root/10.10.21.11?_1464071514.tar.gz\' '\
+                      '--dst_nodes 10.10.12.16 --dst_save_path /root/log/ --password 123456\n'\
+                      '(2)--pack:\n' + __file__ + ' --pack --nodes 10.10.21.11{1,2,3,4,5} --save_pack_path /root/ '\
+                      '--need_pack_files /var/log/digioceanfs/* /var/lib/digioceand/* --password 123456\n'\
+                      '(3)--not-use-ssh-passwd:\n' + __file__ + ' --not-use-ssh-passwd --nodes 10.10.21.11{1,2,3,4,5}'
 
-                print 'Note:\n--not-use-ssh-passwd: \n\tif execute these command success, but login in host still need password! \n'\
+                print '\nNote:\n--not-use-ssh-passwd: \n\tif execute these command success, but login in host still need password! \n'\
                       '\tPlease manual exec ssh-keygen on every host, and re-execute command --not-use-ssh-passwd!'
                 exit (-1)
 
