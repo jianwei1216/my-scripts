@@ -176,10 +176,11 @@ if __name__ == '__main__':
         global ssh_password
 
         if len(sys.argv) < 2:
-                print 'Usage: python %s \n\t\t[--pack --nodes nodes --save_pack_path pathname '\
-                      '--need_pack_files pathname] \n\t\t[--unpack nodes:/pathname] '\
-                      '\n\t\t[--scp --src_nodes nodes --src_files pathname --dst_nodes nodes --dst_save_path pathname]'\
-                      ' \n\t\t--password ssh_password'\
+                print 'Usage: python %s [--pack --nodes nodes --save_pack_path pathname '\
+                      '--need_pack_files pathname] \n'\
+                      '\t\t\t[--unpack nodes:/pathname] '\
+                      '\n\t\t\t[--scp --src_nodes nodes --src_files pathname --dst_nodes nodes --dst_save_path pathname]'\
+                      '\n\t\t\t--password ssh_password'\
                       % (__file__)
                 exit (-1)
 
