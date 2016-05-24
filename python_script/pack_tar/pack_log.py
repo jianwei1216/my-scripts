@@ -6,30 +6,27 @@ import os
 import tarfile
 import ssh
 import thread
-import socket
 import time
 
-def get_ssh_client():
+def get_ssh_client(host):
         client = ssh.SSHClient()
         client.set_missing_host_key_policy(ssh.AutoAddPolicy())
+        client.connect(host, port=22, username='root', password=ssh_password)
         return client
         
 def __pack_tar(host, lock, args):
         global ssh_password
         packcmd = ''
-        #time_suffix = time.strftime("%Y-%m-%d_%H:%M:%S", time.localtime())
         time_suffix = str(int(time.time()))
         save_pack_path = args[0]
         need_pack_files = args[1]
-        print 'debug1:', save_pack_path
-        print 'debug2:', need_pack_files
         packcmd = 'cd ' + save_pack_path[0] + '; tar -czvf ' + \
-                  socket.gethostname() + '_' + time_suffix + '.tar.gz'
+                  host + '_' + time_suffix + '.tar.gz'
         for filepath in need_pack_files:
                 packcmd += ' ' + filepath
         print host, packcmd
-        client = get_ssh_client()
-        client.connect(host, port=22, username='root', password=ssh_password)
+        client = get_ssh_client(host)
+        stdin, stdout, stderr =  client.exec_command('mkdir -p ' + save_pack_path[0])
         stdin, stdout, stderr =  client.exec_command(packcmd)
         print stderr.read()
         print stdout.read()
@@ -87,16 +84,90 @@ def pack_tar(args):
                 print 'Error: args are invalid!'
                 exit(-1)
 
-        print 'debug:', need_pack_nodes
-        print 'debug:', save_pack_path
-        print 'debug:', need_pack_files
+        print 'need_pack_nodes:', need_pack_nodes
+        print 'save_pack_path:', save_pack_path
+        print 'need_pack_files:', need_pack_files
         __multi_thread(need_pack_nodes, __pack_tar, save_pack_path, need_pack_files) 
 
 def unpack_tar(args):
         pass
 
+def __scp_tar(host, lock, args):
+        global ssh_password
+        print '__scp_tar', host, lock, args
+        src_files = args[0]
+        dst_nodes = args[1]
+        dst_save_path = args[2]
+        
+        scpcmd = 'scp -r'
+        for tmp in src_files:
+                scpcmd += ' ' + tmp
+        scpcmd += ' ' + dst_nodes[0] + ':' 
+        scpcmd += dst_save_path[0]
+        print scpcmd
+
+        client = get_ssh_client(host)
+        stdin, stdout, stderr =  client.exec_command('mkdir -p ' + dst_save_path[0])
+        stdin, stdout, stderr =  client.exec_command(scpcmd)
+        print stderr.read()
+        print stdout.read()
+        client.close()
+        lock.release()
+
 def scp_tar(args):
-        pass
+        print args
+        is_src_nodes = False
+        is_dst_nodes = False
+        is_src_files = False
+        is_dst_save_path = False
+        src_nodes = []
+        src_files = []
+        dst_nodes = []
+        dst_save_path = []
+
+        if len(args) == 0:
+                print 'Error: args are zero!'
+                exit(-1)
+
+        for arg in args:
+                if arg == '--src_nodes':
+                        is_src_nodes = True
+                        is_dst_nodes = False
+                        is_src_files = False
+                        is_dst_save_path = False
+                elif arg == '--dst_nodes':
+                        is_src_nodes = False
+                        is_dst_nodes = True
+                        is_src_files = False
+                        is_dst_save_path = False
+                elif arg == '--src_files':
+                        is_src_nodes = False
+                        is_dst_nodes = False
+                        is_src_files = True
+                        is_dst_save_path = False
+                elif arg == '--dst_save_path':
+                        is_src_nodes = False
+                        is_dst_nodes = False
+                        is_src_files = False
+                        is_dst_save_path = True
+                else:
+                        if is_src_nodes == True:
+                                src_nodes.append(arg)
+                        elif is_dst_nodes == True:
+                                dst_nodes.append(arg)
+                        elif is_src_files == True:
+                                src_files.append(arg)
+                        elif is_dst_save_path == True:
+                                dst_save_path.append(arg)
+
+        print "src_nodes=", src_nodes, "src_files=", src_files
+        print 'dst_nodes=', dst_nodes, 'dst_save_path=', dst_save_path
+        if len(src_nodes) == 0 or len(dst_nodes) == 0 or \
+           len(src_files) == 0 or len(dst_save_path) == 0:
+                print 'Error: args are invalid!'
+                exit(-1)
+
+        __multi_thread (src_nodes, __scp_tar, src_files, dst_nodes, dst_save_path)
 
 if __name__ == '__main__':
         is_password = False
@@ -105,8 +176,10 @@ if __name__ == '__main__':
         global ssh_password
 
         if len(sys.argv) < 2:
-                print 'Usage: python %s \n\t\t[--pack --nodes nodes --save_pack_path pathname --need_pack_files pathname] \n\t\t[--unpack nodes:/pathname] '\
-                      '\n\t\t[--scp --src nodes:/pathname --dst nodes:pathname] \n\t\t--password ssh_password'\
+                print 'Usage: python %s \n\t\t[--pack --nodes nodes --save_pack_path pathname '\
+                      '--need_pack_files pathname] \n\t\t[--unpack nodes:/pathname] '\
+                      '\n\t\t[--scp --src_nodes nodes --src_files pathname --dst_nodes nodes --dst_save_path pathname]'\
+                      ' \n\t\t--password ssh_password'\
                       % (__file__)
                 exit (-1)
 
@@ -137,7 +210,7 @@ if __name__ == '__main__':
         elif cmd == '--unpack':
                 pass
         elif cmd == '--scp':
-                pass
+                scp_tar(args)
         else:
                 print 'Error: unknown option!'
                 exit (-1)
