@@ -168,6 +168,45 @@ def scp_tar(args):
 
         __multi_thread (src_nodes, __scp_tar, src_files, dst_nodes, dst_save_path)
 
+def not_use_ssh_passwd(args):
+        id_rsa_pub = ''
+        nodes = []
+        is_nodes = False
+
+        if len(args) == 0:
+                print 'Error: args are zero!'
+                exit(-1)
+
+        for arg in args:
+                print arg
+                if arg == '--nodes':
+                        is_nodes = True
+                else:
+                        if is_nodes == True:
+                                nodes.append(arg)
+
+        for host in nodes:
+                client = get_ssh_client(host)
+                #stdin, stdout, stderr = client.exec_command('rm -rf /root/.ssh/authorized_keys')
+                #if len(stderr.read()) > 0:
+                        #print stderr.read()
+                stdin, stdout, stderr = client.exec_command('cat /root/.ssh/id_rsa.pub')
+                if len(stderr.read()) > 0:
+                        print stderr.read()
+                id_rsa_pub += stdout.read()
+                client.close()
+
+        print id_rsa_pub
+        for host in nodes:
+                client = get_ssh_client(host)
+                echocmd = 'echo \'' + id_rsa_pub + '\' >> /root/.ssh/authorized_keys'
+                print echocmd
+                stdin, stdout, stderr = client.exec_command(echocmd)
+                if len(stderr.read()) > 0:
+                        print stderr.read()
+                client.close()
+        print 'success!'
+
 if __name__ == '__main__':
         is_password = False
         password_pos = ''
@@ -176,14 +215,22 @@ if __name__ == '__main__':
 
         if len(sys.argv) < 2:
                 print 'Usage: python %s [--pack --nodes nodes --save_pack_path pathname '\
-                      '--need_pack_files pathname] \n'\
-                      '\t\t\t[--unpack nodes:/pathname] '\
-                      '\n\t\t\t[--scp --src_nodes nodes --src_files pathname --dst_nodes nodes --dst_save_path pathname]'\
+                      '--need_pack_files pathname]'\
                       '\n\t\t\t--password ssh_password'\
+                      '\n\t\t\t[--unpack nodes:/pathname] '\
+                      '\n\t\t\t[--scp --src_nodes nodes --src_files pathname --dst_nodes nodes --dst_save_path pathname]'\
+                      '\n\t\t\t[--not-use-ssh-passwd --nodes nodes]'\
                       % (__file__)
+
                 print 'e.g.\n'\
-                      '<1>--scp: ./pack_log.py --scp --src_nodes 10.10.21.11{1,2,3,4,5} --src_files \'/root/10.10.21.11?_1464071514.tar.gz\' --dst_nodes 10.10.12.16 --dst_save_path /root/log/ --password 123456\n'\
-                      '<2>--pack: ./pack_log.py --pack --nodes 10.10.21.11{1,2,3,4,5} --save_pack_path /root/ --need_pack_files /var/log/digioceanfs/* /var/lib/digioceand/* --password 123456'
+                      '<1>--scp:\n' + __file__ + ' --scp --src_nodes 10.10.21.11{1,2,3,4,5} --src_files \'/root/10.10.21.11?_1464071514.tar.gz\' \n'\
+                      '              --dst_nodes 10.10.12.16 --dst_save_path /root/log/ --password 123456\n'\
+                      '<2>--pack:\n' + __file__ + ' --pack --nodes 10.10.21.11{1,2,3,4,5} --save_pack_path /root/ \n'\
+                      '              --need_pack_files /var/log/digioceanfs/* /var/lib/digioceand/* --password 123456\n'\
+                      '<3>--not-use-ssh-passwd:\n' + __file__ + ' --not-use-ssh-passwd --nodes 10.10.21.11{1,2,3,4,5}'
+
+                print 'Note:\n--not-use-ssh-passwd: \n\tif execute these command success, but login in host still need password! \n'\
+                      '\tPlease manual exec ssh-keygen on every host, and re-execute command --not-use-ssh-passwd!'
                 exit (-1)
 
         for i in range(0, len(sys.argv)):
@@ -214,6 +261,8 @@ if __name__ == '__main__':
                 pass
         elif cmd == '--scp':
                 scp_tar(args)
+        elif cmd == '--not-use-ssh-passwd':
+                not_use_ssh_passwd(args)
         else:
                 print 'Error: unknown option!'
                 exit (-1)
