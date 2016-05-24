@@ -104,7 +104,6 @@ def __scp_tar(host, lock, args):
                 scpcmd += ' ' + tmp
         scpcmd += ' ' + dst_nodes[0] + ':' 
         scpcmd += dst_save_path[0]
-        print scpcmd
 
         client = get_ssh_client(host)
         stdin, stdout, stderr =  client.exec_command('mkdir -p ' + dst_save_path[0])
@@ -182,6 +181,9 @@ if __name__ == '__main__':
                       '\n\t\t\t[--scp --src_nodes nodes --src_files pathname --dst_nodes nodes --dst_save_path pathname]'\
                       '\n\t\t\t--password ssh_password'\
                       % (__file__)
+                print 'e.g.\n'\
+                      '<1>--scp: ./pack_log.py --scp --src_nodes 10.10.21.11{1,2,3,4,5} --src_files \'/root/10.10.21.11?_1464071514.tar.gz\' --dst_nodes 10.10.12.16 --dst_save_path /root/log/ --password 123456\n'\
+                      '<2>--pack: ./pack_log.py --pack --nodes 10.10.21.11{1,2,3,4,5} --save_pack_path /root/ --need_pack_files /var/log/digioceanfs/* /var/lib/digioceand/* --password 123456'
                 exit (-1)
 
         for i in range(0, len(sys.argv)):
