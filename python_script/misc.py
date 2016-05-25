@@ -207,6 +207,46 @@ def not_use_ssh_passwd(args):
                 client.close()
         print 'success!'
 
+def help_option():
+        print 'Usage: %s [--help] --password ssh_password\n'\
+              '                 [--pack --nodes nodes_ip --save_pack_path pathname --need_pack_files pathname]\n'\
+              '                 [--unpack --nodes nodes_ip --files pathname [--dir pathname]]\n'\
+              '                 [--scp --src_nodes nodes_ip --src_files pathname --dst_nodes nodes_ip --dst_save_path pathname]\n'\
+              '                 [--not-use-ssh-passwd --nodes nodes_ip] [--clean-all-digioceanfs-env]'\
+              % (__file__)
+
+def help_info():
+        help_option()
+        print ''
+        print 'Mandatory arguments.\n' \
+              '  --help                         display this help and exit\n' \
+              '  --scp                          login the specified source host(--src_nodes) and\n' \
+              '                                 copy the specified files(--src_files) to destination\n' \
+              '                                 save directory(--dst_save_path) on the destination\n' \
+              '                                 host(--dst_nodes)\n' \
+              '  --pack                         login the specified host(--nodes) and compress the\n' \
+              '  --unpack                       not implemented, cannot use\n' \
+              '                                 specified files(--need_pack_files) to the specified\n' \
+              '                                 directory(--save_pack_path), the compressed filename\n' \
+              '                                 is host_currentTimeSeconds.tar.gz\n' \
+              '  --not-use-ssh-passwd           used to implement non-password ssh login\n'\
+              '                                 login the specified host(--nodes) and get all nodes\n' \
+              '                                 /root/.ssh/id_rsa.pub keys, write to all nodes\'s\n' \
+              '                                 /root/.ssh/authorized_keys. (Note: if exec the cmd, but\n' \
+              '                                 ssh login host still need to input password, in case, please\n' \
+              '                                 manual exec ssh-keygen on all nodes and re-exec the cmd!)\n' \
+              '  --clean-all-digioceanfs-env    loggin the specified host(--nodes) and clean up all digioceanfs\n' \
+              '                                 related process(MGMT/digioceanfs), library and configure files\n' \
+              '  --password                     used to login the specified host, all nodes\'s password must\n' \
+              '                                 be same, because only recieve one password! (Note: all that need\n' \
+              '                                 to login, must specify this option!\n' \
+              'Here are some examples:\n' \
+              '(1)' + __file__ + ' --scp --src_nodes 10.10.21.11{1,2,3,4,5} --src_files \'/root/10.10.21.11?_1464071514.tar.gz\' \n' \
+              '             --dst_nodes 10.10.12.16 --dst_save_path /root/log/ --password 123456\n' \
+              '(2)' + __file__ + ' --pack --nodes 10.10.21.11{1,2,3,4,5} --save_pack_path /root/\n' \
+              '             --need_pack_files /var/log/digioceanfs/* /var/lib/digioceand/* --password 123456\n'\
+              '(3)' + __file__ + ' --not-use-ssh-passwd --nodes 10.10.21.11{1,2,3,4,5}\n'
+
 if __name__ == '__main__':
         is_password = False
         password_pos = ''
@@ -214,23 +254,12 @@ if __name__ == '__main__':
         global ssh_password
 
         if len(sys.argv) < 2:
-                print 'Usage:\npython %s --password ssh_password '\
-                      '[--pack --nodes nodes_ip --save_pack_path pathname --need_pack_files pathname] '\
-                      '[--unpack nodes:/pathname] '\
-                      '[--scp --src_nodes nodes_ip --src_files pathname --dst_nodes nodes_ip --dst_save_path pathname] '\
-                      '[--not-use-ssh-passwd --nodes nodes_ip] '\
-                      % (__file__)
-
-                print '\ne.g.\n'\
-                      '(1)--scp:\n' + __file__ + ' --scp --src_nodes 10.10.21.11{1,2,3,4,5} --src_files \'/root/10.10.21.11?_1464071514.tar.gz\' '\
-                      '--dst_nodes 10.10.12.16 --dst_save_path /root/log/ --password 123456\n'\
-                      '(2)--pack:\n' + __file__ + ' --pack --nodes 10.10.21.11{1,2,3,4,5} --save_pack_path /root/ '\
-                      '--need_pack_files /var/log/digioceanfs/* /var/lib/digioceand/* --password 123456\n'\
-                      '(3)--not-use-ssh-passwd:\n' + __file__ + ' --not-use-ssh-passwd --nodes 10.10.21.11{1,2,3,4,5}'
-
-                print '\nNote:\n--not-use-ssh-passwd: \n\tif execute these command success, but login in host still need password! \n'\
-                      '\tPlease manual exec ssh-keygen on every host, and re-execute command --not-use-ssh-passwd!'
+                help_option()
                 exit (-1)
+
+        if sys.argv[1] == '--help':
+                help_info()      
+                exit(0)
 
         for i in range(0, len(sys.argv)):
                 if sys.argv[i] == '--password':
