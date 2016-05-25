@@ -31,20 +31,29 @@ def __multi_thread(nodes, func, *args):
 
 # compress files to .tar.gz
 def __pack_tar(host, lock, args):
-        packcmd = ''
-        time_suffix = str(int(time.time()))
+        cmd_list = []
         save_pack_path = args[0]
         need_pack_files = args[1]
-        packcmd = 'cd ' + save_pack_path[0] + '; tar -czvf ' + \
-                  host + '_' + time_suffix + '.tar.gz'
+        time_suffix = args[2]
+        log_pack_path = 'digioceanfs.' + host
+        tmp_pack_path = save_pack_path[0] + '/' + log_pack_path
+        mkdir_cmd = 'mkdir -p ' + tmp_pack_path
+        cmd_list.append(mkdir_cmd)
+        cp_cmd = 'cp -rf'
         for filepath in need_pack_files:
-                packcmd += ' ' + filepath
-        print host, packcmd
+                cp_cmd += ' ' + filepath
+        cp_cmd += ' ' + tmp_pack_path
+        cmd_list.append(cp_cmd)
+        packcmd = 'cd ' + save_pack_path[0] + ';tar -czvf ' + \
+                  'digioceanfs_' + host + '_' + time_suffix + '.tar.gz' + ' ' + log_pack_path
+        cmd_list.append(packcmd)
         client = get_ssh_client(host)
-        stdin, stdout, stderr =  client.exec_command('mkdir -p ' + save_pack_path[0])
-        stdin, stdout, stderr =  client.exec_command(packcmd)
-        print stderr.read()
-        print stdout.read()
+        for cmd in cmd_list:
+                print host, cmd
+                stdin, stdout, stderr = client.exec_command(cmd)
+                err = stderr.read()
+                if len(err) > 0:
+                        print host, err,
         client.close()
         lock.release()
 
@@ -89,7 +98,8 @@ def pack_tar(args):
         print 'need_pack_nodes:', need_pack_nodes
         print 'save_pack_path:', save_pack_path
         print 'need_pack_files:', need_pack_files
-        __multi_thread(need_pack_nodes, __pack_tar, save_pack_path, need_pack_files) 
+        timestamp = str(int(time.time()))
+        __multi_thread(need_pack_nodes, __pack_tar, save_pack_path, need_pack_files, timestamp)
 
 # decopress tar.gz
 def unpack_tar(args):
@@ -192,7 +202,7 @@ def __clean_all_digioceanfs_env(host, lock, args):
                            '/var/log/digioceanfs_manager/ /usr/lib/ocf/resource.d/digioceanfs '\
                            '/usr/share/doc/digioceanfs /usr/share/digioceanfs '\
                            '/usr/include/digioceanfs /usr/libexec/digioceanfs /var/run/digiocean '\
-                           '/data'
+                           '/data /var/log/digioceanfs_gui/'
         cmd_list.append(clean_log_config)
         client = get_ssh_client(host)
         for cmd in cmd_list:
