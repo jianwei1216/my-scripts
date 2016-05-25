@@ -9,13 +9,13 @@ import thread
 import time
 
 def get_ssh_client(host):
+        global ssh_password
         client = ssh.SSHClient()
         client.set_missing_host_key_policy(ssh.AutoAddPolicy())
         client.connect(host, port=22, username='root', password=ssh_password)
         return client
         
 def __pack_tar(host, lock, args):
-        global ssh_password
         packcmd = ''
         time_suffix = str(int(time.time()))
         save_pack_path = args[0]
@@ -93,7 +93,6 @@ def unpack_tar(args):
         pass
 
 def __scp_tar(host, lock, args):
-        global ssh_password
         print '__scp_tar', host, lock, args
         src_files = args[0]
         dst_nodes = args[1]
@@ -168,6 +167,51 @@ def scp_tar(args):
 
         __multi_thread (src_nodes, __scp_tar, src_files, dst_nodes, dst_save_path)
 
+def __clean_all_digioceanfs_env(host, lock, args):
+        cmd_list = []
+        print '__clean_all_digioceanfs_env()', host
+        clean_process = 'killall digioceanfs; killall digioceand; killall digioceanfsd; killall mongod;'\
+                        'killall mdadm;'
+        cmd_list.append(clean_process)
+        clean_rpm = 'for i in `rpm -qa | grep digioceanfs`; do rpm -e $i --nodeps; done'
+        cmd_list.append(clean_rpm)
+        clean_lib = 'cd /usr/lib64/; rm -rf digioceanfs libgfdb.* libgfxdr.* libgfrpc.* libgfchangelog.*'
+        cmd_list.append(clean_lib)
+        clean_mgmt = 'cd /usr/local/; rm -rf digioceanfs_backup digioceanfs_manager '\
+                     'digioceanfs_client digioceanfs_gui digiserver'
+        cmd_list.append(clean_mgmt)
+        clean_log_config = 'rm -rf /var/lib/digioceand /var/log/digioceanfs '\
+                           '/etc/digioceanfs /etc/digioceanfs_manager '\
+                           '/etc/systemd/system/multi-user.target.wants/digioceanfs-client.service '\
+                           '/etc/nginx/digioceanfs.* /etc/sudoers.d/digioceanfs '\
+                           '/var/log/digioceanfs_manager/ /usr/lib/ocf/resource.d/digioceanfs '\
+                           '/usr/share/doc/digioceanfs /usr/share/digioceanfs '\
+                           '/usr/include/digioceanfs /usr/libexec/digioceanfs /var/run/digiocean '\
+                           '/data'
+        cmd_list.append(clean_log_config)
+        client = get_ssh_client(host)
+        for cmd in cmd_list:
+                stdin, stdout, stderr =  client.exec_command(cmd)
+                print stderr.read()
+                print stdout.read()
+        client.close()
+        lock.release()
+
+def clean_all_digioceanfs_env(args):
+        nodes = []
+        if len(args) == 0:
+                print 'Error: args are zero!'
+                exit(-1)
+        
+        for i in range(0, len(args)):
+                if args[i] == '--nodes':
+                        del args[i]
+                        break
+
+        nodes = args
+        print 'debug:', nodes
+        __multi_thread(nodes, __clean_all_digioceanfs_env, '')
+
 def not_use_ssh_passwd(args):
         id_rsa_pub = ''
         nodes = []
@@ -177,13 +221,11 @@ def not_use_ssh_passwd(args):
                 print 'Error: args are zero!'
                 exit(-1)
 
-        for arg in args:
-                print arg
-                if arg == '--nodes':
-                        is_nodes = True
-                else:
-                        if is_nodes == True:
-                                nodes.append(arg)
+        for i in range(0, len(args)):
+                if args[i] == '--nodes':
+                        del args[i]
+                        break
+        nodes = args
 
         for host in nodes:
                 client = get_ssh_client(host)
@@ -212,7 +254,7 @@ def help_option():
               '                 [--pack --nodes nodes_ip --save_pack_path pathname --need_pack_files pathname]\n'\
               '                 [--unpack --nodes nodes_ip --files pathname [--dir pathname]]\n'\
               '                 [--scp --src_nodes nodes_ip --src_files pathname --dst_nodes nodes_ip --dst_save_path pathname]\n'\
-              '                 [--not-use-ssh-passwd --nodes nodes_ip] [--clean-all-digioceanfs-env]'\
+              '                 [--not-use-ssh-passwd --nodes nodes_ip] [--clean-all-digioceanfs-env --nodes nodes_ip]'\
               % (__file__)
 
 def help_info():
@@ -245,7 +287,9 @@ def help_info():
               '             --dst_nodes 10.10.12.16 --dst_save_path /root/log/ --password 123456\n' \
               '(2)' + __file__ + ' --pack --nodes 10.10.21.11{1,2,3,4,5} --save_pack_path /root/\n' \
               '             --need_pack_files /var/log/digioceanfs/* /var/lib/digioceand/* --password 123456\n'\
-              '(3)' + __file__ + ' --not-use-ssh-passwd --nodes 10.10.21.11{1,2,3,4,5}\n'
+              '(3)' + __file__ + ' --not-use-ssh-passwd --nodes 10.10.21.11{1,2,3,4,5}\n' \
+              '(4)' + __file__ + ' --clean-all-digioceanfs-env --nodes 10.10.21.9{1,2,3} --password 123456\n'
+
 
 if __name__ == '__main__':
         is_password = False
@@ -291,6 +335,8 @@ if __name__ == '__main__':
                 scp_tar(args)
         elif cmd == '--not-use-ssh-passwd':
                 not_use_ssh_passwd(args)
+        elif cmd == '--clean-all-digioceanfs-env':
+                clean_all_digioceanfs_env(args)
         else:
                 print 'Error: unknown option!'
                 exit (-1)
