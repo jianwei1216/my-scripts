@@ -3,11 +3,11 @@
 
 import sys
 import os
-import tarfile
 import ssh
 import thread
 import time
 
+# according ssh get a client for remote exec cmds, close after using
 def get_ssh_client(host):
         global ssh_password
         client = ssh.SSHClient()
@@ -15,6 +15,21 @@ def get_ssh_client(host):
         client.connect(host, port=22, username='root', password=ssh_password)
         return client
         
+# get multi threads
+def __multi_thread(nodes, func, *args):
+        locks = []
+        for host in nodes:
+                lock = thread.allocate_lock()
+                lock.acquire()
+                locks.append(lock)
+                thread.start_new_thread(func, (host, lock, args))
+
+        for lock in locks:
+                while lock.locked():
+                        pass
+        pass
+
+# compress files to .tar.gz
 def __pack_tar(host, lock, args):
         packcmd = ''
         time_suffix = str(int(time.time()))
@@ -32,19 +47,6 @@ def __pack_tar(host, lock, args):
         print stdout.read()
         client.close()
         lock.release()
-
-def __multi_thread(nodes, func, *args):
-        locks = []
-        for host in nodes:
-                lock = thread.allocate_lock()
-                lock.acquire()
-                locks.append(lock)
-                thread.start_new_thread(func, (host, lock, args))
-
-        for lock in locks:
-                while lock.locked():
-                        pass
-        pass
 
 def pack_tar(args):
         is_nodes = False
@@ -89,9 +91,11 @@ def pack_tar(args):
         print 'need_pack_files:', need_pack_files
         __multi_thread(need_pack_nodes, __pack_tar, save_pack_path, need_pack_files) 
 
+# decopress tar.gz
 def unpack_tar(args):
         pass
 
+# remote copy files
 def __scp_tar(host, lock, args):
         print '__scp_tar', host, lock, args
         src_files = args[0]
@@ -167,6 +171,7 @@ def scp_tar(args):
 
         __multi_thread (src_nodes, __scp_tar, src_files, dst_nodes, dst_save_path)
 
+# clean up all digioceanfs environment
 def __clean_all_digioceanfs_env(host, lock, args):
         cmd_list = []
         print '__clean_all_digioceanfs_env()', host
@@ -212,6 +217,7 @@ def clean_all_digioceanfs_env(args):
         print 'debug:', nodes
         __multi_thread(nodes, __clean_all_digioceanfs_env, '')
 
+# ssh non-password login
 def not_use_ssh_passwd(args):
         id_rsa_pub = ''
         nodes = []
@@ -249,6 +255,7 @@ def not_use_ssh_passwd(args):
                 client.close()
         print 'success!'
 
+# help info
 def help_option():
         print 'Usage: %s [--help] --password ssh_password\n'\
               '                 [--pack --nodes nodes_ip --save_pack_path pathname --need_pack_files pathname]\n'\
@@ -291,6 +298,7 @@ def help_info():
               '(4)' + __file__ + ' --clean-all-digioceanfs-env --nodes 10.10.21.9{1,2,3} --password 123456\n'
 
 
+# main
 if __name__ == '__main__':
         is_password = False
         password_pos = ''
