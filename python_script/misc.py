@@ -273,13 +273,43 @@ def not_use_ssh_passwd(args):
                 client.close()
         print 'success!'
 
+# calc avg
+def calc_avg(args):
+        allsum = 0.0
+        count = 0
+        avg = 0.0
+
+        if len(args) == 0:
+                print 'Error: args are zero!'
+                exit(-1)
+
+        for i in range(0, len(args)):
+                if args[i] == '--filename':
+                        del args[i]
+                        break
+        datafile = args[0]
+
+        fp = open (datafile, 'r')
+
+        while True:
+                fr = fp.readline().strip('\n') 
+                if len(fr) == 0:
+                        break
+                data = float(fr)
+                allsum += data
+                count += 1
+
+        avg = allsum / count
+        print 'count=%d, sum=%f, avg=%f\n' % (count, allsum, avg)
+
 # help info
 def help_option():
         print 'Usage: %s [--help] --password ssh_password\n'\
               '                 [--pack --nodes nodes_ip --save_pack_path pathname --need_pack_files pathname]\n'\
               '                 [--unpack --nodes nodes_ip --files pathname [--dir pathname]]\n'\
               '                 [--scp --src_nodes nodes_ip --src_files pathname --dst_nodes nodes_ip --dst_save_path pathname]\n'\
-              '                 [--not-use-ssh-passwd --nodes nodes_ip] [--clean-all-digioceanfs-env --nodes nodes_ip]'\
+              '                 [--not-use-ssh-passwd --nodes nodes_ip] [--clean-all-digioceanfs-env --nodes nodes_ip]\n'\
+              '                 [--calc-avg --filename datafile]\n'\
               % (__file__)
 
 def help_info():
@@ -307,13 +337,16 @@ def help_info():
               '  --password                     used to login the specified host, all nodes\'s password must\n' \
               '                                 be same, because only recieve one password! (Note: all that need\n' \
               '                                 to login, must specify this option!\n' \
+              '  --calc-avg                     give a data file that one digit takes up a raw and calculate\n'\
+              '                                 sum, avg and count\n'\
               'Here are some examples:\n' \
               '(1)' + __file__ + ' --scp --src_nodes 10.10.21.11{1,2,3,4,5} --src_files \'/root/10.10.21.11?_1464071514.tar.gz\' \n' \
               '             --dst_nodes 10.10.12.16 --dst_save_path /root/log/ --password 123456\n' \
               '(2)' + __file__ + ' --pack --nodes 10.10.21.11{1,2,3,4,5} --save_pack_path /root/\n' \
               '             --need_pack_files /var/log/digioceanfs/* /var/lib/digioceand/* --password 123456\n'\
               '(3)' + __file__ + ' --not-use-ssh-passwd --nodes 10.10.21.11{1,2,3,4,5} 10.10.12.16 --password 123456\n' \
-              '(4)' + __file__ + ' --clean-all-digioceanfs-env --nodes 10.10.21.9{1,2,3} --password 123456\n'
+              '(4)' + __file__ + ' --clean-all-digioceanfs-env --nodes 10.10.21.9{1,2,3} --password 123456\n'\
+              '(5)' + __file__ + ' --calc-avg /root/log/mkdir_create_speed_test/lookup_seconds_dht_is_do_force-10.10.21.111\n'
 
 
 # main
@@ -329,6 +362,10 @@ if __name__ == '__main__':
 
         if sys.argv[1] == '--help':
                 help_info()      
+                exit(0)
+
+        if sys.argv[1] == '--calc-avg':
+                calc_avg(sys.argv[2:])
                 exit(0)
 
         for i in range(0, len(sys.argv)):
