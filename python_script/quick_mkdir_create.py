@@ -8,7 +8,7 @@ import logging
 import logging.handlers
 import socket
 
-TEST_DIR = "test_fast_create"
+TEST_DIR = "quick_mkdir_create"
 LOG_FILE = '/var/log/digioceanfs/quick_mkdir_create.log'
 mylog = ""
 
@@ -102,7 +102,7 @@ if __name__ == '__main__':
               + '--file_count: need create all file count;\n'\
               + '--LogLevel: DEBUG INFO ERROR, default is INFO(log_path=' + LOG_FILE + ')\n'\
               + 'Note: one_dir_file_count = file_count / dir_count\n'\
-              + 'TEST_DIRECTORY: workdir/test_fast_create\n'
+              + 'TEST_DIRECTORY: workdir/quick_mkdir_create\n'
         exit(0)
 
     workdir = sys.argv[1]
@@ -110,7 +110,7 @@ if __name__ == '__main__':
         print 'filepath:' + workdir + ' is not exists!'
         exit(0)
     
-    # create test directory test_fast_create
+    # create test directory quick_mkdir_create
     workdir = workdir + '/' + TEST_DIR
     if os.path.exists(workdir) == False:
         try:
