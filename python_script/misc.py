@@ -185,6 +185,8 @@ def scp_tar(args):
 def __clean_all_digioceanfs_env(host, lock, args):
         cmd_list = []
         print '__clean_all_digioceanfs_env()', host
+        clean_hosts = 'node-manager stop; node-manager clear;'
+        cmd_list.append(clean_hosts)
         clean_process = 'killall digioceanfs; killall digioceand; killall digioceanfsd; killall mongod;'\
                         'killall mdadm; ps -ef | grep node_manager | grep -v grep | awk \'{print $2}\' | xargs kill -9;'\
                         'ps -ef | grep digioceanfs_gui | grep -v grep | awk \'{print $2}\' | xargs kill -9;'
@@ -310,7 +312,7 @@ def help_info():
               '             --dst_nodes 10.10.12.16 --dst_save_path /root/log/ --password 123456\n' \
               '(2)' + __file__ + ' --pack --nodes 10.10.21.11{1,2,3,4,5} --save_pack_path /root/\n' \
               '             --need_pack_files /var/log/digioceanfs/* /var/lib/digioceand/* --password 123456\n'\
-              '(3)' + __file__ + ' --not-use-ssh-passwd --nodes 10.10.21.11{1,2,3,4,5}\n' \
+              '(3)' + __file__ + ' --not-use-ssh-passwd --nodes 10.10.21.11{1,2,3,4,5} 10.10.12.16 --password 123456\n' \
               '(4)' + __file__ + ' --clean-all-digioceanfs-env --nodes 10.10.21.9{1,2,3} --password 123456\n'
 
 

@@ -9,7 +9,7 @@ import logging.handlers
 import socket
 
 TEST_DIR = "test_fast_create"
-LOG_FILE = "/var/log/digioceanfs/test_fast_create.log"
+LOG_FILE = '/var/log/digioceanfs/quick_mkdir_create.log'
 mylog = ""
 
 class log:
