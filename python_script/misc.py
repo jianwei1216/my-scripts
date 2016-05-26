@@ -186,7 +186,8 @@ def __clean_all_digioceanfs_env(host, lock, args):
         cmd_list = []
         print '__clean_all_digioceanfs_env()', host
         clean_process = 'killall digioceanfs; killall digioceand; killall digioceanfsd; killall mongod;'\
-                        'killall mdadm;'
+                        'killall mdadm; ps -ef | grep node_manager | grep -v grep | awk \'{print $2}\' | xargs kill -9;'\
+                        'ps -ef | grep digioceanfs_gui | grep -v grep | awk \'{print $2}\' | xargs kill -9;'
         cmd_list.append(clean_process)
         clean_rpm = 'for i in `rpm -qa | grep digioceanfs`; do rpm -e $i --nodeps; done'
         cmd_list.append(clean_rpm)
@@ -206,6 +207,7 @@ def __clean_all_digioceanfs_env(host, lock, args):
         cmd_list.append(clean_log_config)
         client = get_ssh_client(host)
         for cmd in cmd_list:
+                print cmd
                 stdin, stdout, stderr =  client.exec_command(cmd)
                 print stderr.read()
                 print stdout.read()
