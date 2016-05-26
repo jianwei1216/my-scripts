@@ -203,14 +203,18 @@ def __clean_all_digioceanfs_env(host, lock, args):
                            '/var/log/digioceanfs_manager/ /usr/lib/ocf/resource.d/digioceanfs '\
                            '/usr/share/doc/digioceanfs /usr/share/digioceanfs '\
                            '/usr/include/digioceanfs /usr/libexec/digioceanfs /var/run/digiocean '\
-                           '/data /var/log/digioceanfs_gui/'
+                           '/data /var/log/digioceanfs_gui/ /usr/sbin/digiocean*'
         cmd_list.append(clean_log_config)
         client = get_ssh_client(host)
         for cmd in cmd_list:
-                print cmd
+                print host, cmd
                 stdin, stdout, stderr =  client.exec_command(cmd)
-                print stderr.read()
-                print stdout.read()
+                err = stderr.read()
+                out = stdout.read()
+                if len(err) > 0:
+                        print host, err
+                if len(out) > 0:
+                        print host, out
         client.close()
         lock.release()
 
