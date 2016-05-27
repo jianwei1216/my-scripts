@@ -207,7 +207,8 @@ def __clean_all_digioceanfs_env(host, lock, args):
                            '/usr/include/digioceanfs /usr/libexec/digioceanfs /var/run/digiocean '\
                            '/data /var/log/digioceanfs_gui/ /usr/sbin/digiocean* /usr/bin/digioceanfs-client '\
                            '/usr/bin/digioceanfs-gui /usr/bin/digioceanfs-reporter /usr/bin/digioceanfind '\
-                           '/usr/bin/digi_partition /usr/bin/digioceanfs-volgen /usr/bin/digioceanfs-afrgen'
+                           '/usr/bin/digi_partition /usr/bin/digioceanfs-volgen /usr/bin/digioceanfs-afrgen '\
+                           '/usr/bin/node-manager'
         cmd_list.append(clean_log_config)
         client = get_ssh_client(host)
         for cmd in cmd_list:
@@ -424,8 +425,11 @@ def calc_avg(args):
                 allsum += data
                 count += 1
 
-        avg = allsum / count
-        print 'count=%d, sum=%f, avg=%f\n' % (count, allsum, avg)
+        if count != 0:
+                avg = allsum / count
+                print '%s:\tcount=%d\t\tsum=%f\t\tavg=%f' % (datafile, count, allsum, avg)
+        else:
+                print '%s:\tcount == 0' % (datafile)
 
 # help info
 def help_option():

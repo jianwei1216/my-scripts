@@ -43,6 +43,7 @@ class log:
         self.logger.error(message)
 
 def create_files(workdir, dir_count, one_dir_file_count):
+    global hours
     # MKDIR HOSTNAME dir
     hostname = socket.gethostname()
     workdir = workdir + '/' + hostname
@@ -78,6 +79,12 @@ def create_files(workdir, dir_count, one_dir_file_count):
                     mylog.error(data)
                 else:
                     mylog.debug ('Create ' + filename + ' success!')
+            # limit time
+            if hours != -1:
+                tmp_time = time.time()
+                if (tmp_time - begin_create_time) > (hours * 3600):
+                    mylog.info ('already run more than ' + str(hours) + ' hours')
+                    exit(0)
 
     # end create time
     end_create_time = time.time()
@@ -95,17 +102,80 @@ def delete_files():
 
 if __name__ == '__main__':
     if len(sys.argv) < 4:
-        print 'Usage: ' + __file__ + ' workdir' + ' dir_count' + ' file_count' + ' [LogLevel]\n'\
+        print 'Usage: ' + __file__ + ' --workdir' + ' --dir-count' + ' --file-count' + ' [--log-level]' + ' [--hours]\n'\
               + 'Description: This python script used for fast-create test.\n'\
               + '--workdir: work directory;\n'\
               + '--dir_count: need create directory count;\n'\
               + '--file_count: need create all file count;\n'\
               + '--LogLevel: DEBUG INFO ERROR, default is INFO(log_path=' + LOG_FILE + ')\n'\
+              + '--hours: you want to run this py time, default not set hours\n'\
               + 'Note: one_dir_file_count = file_count / dir_count\n'\
               + 'TEST_DIRECTORY: workdir/quick_mkdir_create\n'
         exit(0)
 
-    workdir = sys.argv[1]
+    args = sys.argv[1:]
+   
+    workdir = ''
+    log_level = ''
+    dir_count = -1
+    file_count = -1
+    global hours
+    hours = -1
+    commands = ''
+
+    flags = {'is_workdir':False, 'is_dir_count':False,\
+             'is_file_count':False, 'is_log_level':False, 'is_hours':False}
+    flags_tmp = flags.copy()
+
+    for arg in args:
+        if arg == '--workdir':
+            flags_tmp = flags.copy()
+            flags_tmp['is_workdir'] = True
+        elif arg == '--dir-count':
+            flags_tmp = flags.copy()
+            flags_tmp['is_dir_count'] = True
+        elif arg == '--file-count':
+            flags_tmp = flags.copy()
+            flags_tmp['is_file_count'] = True
+        elif arg == '--log-level':
+            flags_tmp = flags.copy()
+            flags_tmp['is_log_level'] = True
+        elif arg == '--hours':
+            flags_tmp = flags.copy()
+            flags_tmp['is_hours'] = True
+        else:
+            if flags_tmp['is_workdir']:
+                workdir = arg
+            elif flags_tmp['is_dir_count']:
+                dir_count = int(arg)
+            elif flags_tmp['is_file_count']:
+                file_count = int(arg)
+            elif flags_tmp['is_log_level']:
+                log_level = arg
+            elif flags_tmp['is_hours']:
+                hours = int(arg)
+            else:
+                print '%d: Error: args are invalid' % (sys.__getframe().f_lineno)
+                exit(-1)
+    
+    if workdir == '' or dir_count == -1 or file_count == -1:
+        print '%d: Error: args are not enough' % (sys.__getframe().f_lineno)
+        exit(-1)
+
+    commands += sys.argv[0] + ' ' + workdir + ' dir_count=' + str(dir_count) + \
+                ' file_count=' + str(file_count) + ' '
+
+    if log_level == '':
+        log_level = 'INFO'
+    mylog = log(log_level)
+
+    commands += 'log_levle=' + log_level
+    if hours != -1:
+        commands += ' hours=' + str(hours)
+
+    if len(commands) != 0:
+        mylog.info (commands)
+
     if os.path.exists(workdir) == False:
         print 'filepath:' + workdir + ' is not exists!'
         exit(0)
@@ -122,14 +192,6 @@ if __name__ == '__main__':
         else:
             print 'TEST_PATH=' + workdir
 
-    if len(sys.argv) == 5:
-        log_level = sys.argv[-1]
-    else:
-        log_level = 'INFO'
-    mylog = log(log_level)
-
-    dir_count = sys.argv[2] 
-    file_count = sys.argv[3] 
-    one_dir_file_count = int(file_count) / int(dir_count)
-    create_files(workdir, int(dir_count), one_dir_file_count)
+    one_dir_file_count = file_count / dir_count
+    create_files(workdir, dir_count, one_dir_file_count)
 
