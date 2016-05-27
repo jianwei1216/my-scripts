@@ -162,16 +162,16 @@ if __name__ == '__main__':
         print '%d: Error: args are not enough' % (sys.__getframe().f_lineno)
         exit(-1)
 
-    commands += sys.argv[0] + ' ' + workdir + ' dir_count=' + str(dir_count) + \
-                ' file_count=' + str(file_count) + ' '
+    commands += sys.argv[0] + ' ' + workdir + ' --dir-count ' + str(dir_count) + \
+                ' --file-count ' + str(file_count) + ' '
 
     if log_level == '':
         log_level = 'INFO'
     mylog = log(log_level)
 
-    commands += 'log_levle=' + log_level
+    commands += '--log-level ' + log_level
     if hours != -1:
-        commands += ' hours=' + str(hours)
+        commands += ' --hours ' + str(hours)
 
     if len(commands) != 0:
         mylog.info (commands)
@@ -193,5 +193,6 @@ if __name__ == '__main__':
             print 'TEST_PATH=' + workdir
 
     one_dir_file_count = file_count / dir_count
+    mylog.info(str(one_dir_file_count))
     create_files(workdir, dir_count, one_dir_file_count)
 
