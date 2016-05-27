@@ -205,7 +205,9 @@ def __clean_all_digioceanfs_env(host, lock, args):
                            '/var/log/digioceanfs_manager/ /usr/lib/ocf/resource.d/digioceanfs '\
                            '/usr/share/doc/digioceanfs /usr/share/digioceanfs '\
                            '/usr/include/digioceanfs /usr/libexec/digioceanfs /var/run/digiocean '\
-                           '/data /var/log/digioceanfs_gui/ /usr/sbin/digiocean*'
+                           '/data /var/log/digioceanfs_gui/ /usr/sbin/digiocean* /usr/bin/digioceanfs-client '\
+                           '/usr/bin/digioceanfs-gui /usr/bin/digioceanfs-reporter /usr/bin/digioceanfind '\
+                           '/usr/bin/digi_partition /usr/bin/digioceanfs-volgen /usr/bin/digioceanfs-afrgen'
         cmd_list.append(clean_log_config)
         client = get_ssh_client(host)
         for cmd in cmd_list:
