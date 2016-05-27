@@ -4,7 +4,10 @@ import os
 import sys
 import ssh
 import thread
+import threading
 from colors import *
+
+mutex = threading.Lock()
 
 def get_ssh_client(host):
         global ssh_passwd
@@ -18,10 +21,12 @@ def __despatch_cmd(host, lock, cmd):
         stdin, stdout, stderr = client.exec_command(cmd)
         err = stderr.read()
         out = stdout.read()
-        if len(err) > 0:
-                print host, err,
-        if len(out) > 0:
-                print host, out,
+        if mutex.acquire(1):
+                if len(err) > 0:
+                        print host, err,
+                if len(out) > 0:
+                        print host, out,
+                mutex.release()
         client.close()
         lock.release()
 
