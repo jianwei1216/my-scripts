@@ -466,7 +466,10 @@ def help_info():
               '                                 to login, must specify this option!\n' \
               '  --calc-avg                     give a data file that one digit takes up a raw and calculate\n'\
               '                                 sum, avg and count\n'\
-              '  --add-trace-for-gluster        add\n'\
+              '  --add-trace-for-gluster        loggin the nodes(--nodes) and add trace module for gluster/digiocean,\n'\
+              '                                 you need to give configure file path(--path), what line that start inserting\n'\
+              '                                 (--start-line), next volume name(--next-module-name), what line that prev volume\n'\
+              '                                 subvolumes line(--prev-module-subvolumes-line) and volume name(--volname)\n'\
               'Here are some examples:\n' \
               '(1)' + __file__ + ' --scp --src_nodes 10.10.21.11{1,2,3,4,5} --src_files \'/root/10.10.21.11?_1464071514.tar.gz\' \n' \
               '             --dst_nodes 10.10.12.16 --dst_save_path /root/log/ --password 123456\n' \
