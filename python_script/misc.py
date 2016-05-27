@@ -256,17 +256,19 @@ def __client_exec_commands (host, cmd_list, sleep=0):
 
 def __add_trace_for_gluster(host, lock, args):
         cmd_list = []
-        if len(args) != 5:
+        if len(args) != 4:
                 print 'Error: args are zero'
                 exit (-1)
 
         path_config = args[0]
         start_line = args[1]
-        prev_module_line = args[2]
-        next_module_name = args[3]
-        volname = args[4]
-
-        cmd1 = 'sed -i \'' + start_line + 'a\\volume ' + volname + '-trace\' ' + path_config  
+        need_trace_vol_name = args[2]
+        volname = args[3]
+        subvolume_trace_name = volname + '-trace'
+        need_subvolumes_name = 'subvolumes ' + need_trace_vol_name
+        need_replace_trace_name = 'subvolumes ' + subvolume_trace_name
+        
+        cmd1 = 'sed -i \'' + start_line + 'a\\volume ' + subvolume_trace_name + '\' ' + path_config  
         cmd_list.append(cmd1)
         cmd2 = 'sed -i \'' + str(int(start_line)+1) + 'a\\    type debug/trace\' ' + path_config
         cmd_list.append(cmd2)
@@ -274,7 +276,9 @@ def __add_trace_for_gluster(host, lock, args):
         cmd_list.append(cmd3)
         cmd4 = 'sed -i \'' + str(int(start_line)+3) + 'a\\    option log-history yes\' ' + path_config
         cmd_list.append(cmd4)
-        cmd5 = 'sed -i \'' + str(int(start_line)+4) + 'a\\    subvolumes '  + next_module_name + '\' ' + path_config
+        cmd9 = 'sed -i \'s/' + need_subvolumes_name + '/' + need_replace_trace_name + '/g\' ' + path_config
+        cmd_list.append(cmd9)
+        cmd5 = 'sed -i \'' + str(int(start_line)+4) + 'a\\    '  + need_subvolumes_name + '\' ' + path_config
         cmd_list.append(cmd5)
         cmd6 = 'sed -i \'' + str(int(start_line)+5) + 'a\\end-volume\' ' + path_config
         cmd_list.append(cmd6)
@@ -282,10 +286,6 @@ def __add_trace_for_gluster(host, lock, args):
         cmd_list.append(cmd7)
         cmd8 = 'sed -i \'s/zhangjianwei//g\' ' + path_config
         cmd_list.append(cmd8)
-        cmd9 = 'sed -i \'' + prev_module_line + 'a\\    subvolumes ' + volname + '-trace\' ' + path_config
-        cmd_list.append(cmd9)
-        cmd10 = 'sed -i \'' + prev_module_line + 'd\' ' + path_config
-        cmd_list.append(cmd10)
 
         __client_exec_commands(host, cmd_list)
 
@@ -294,12 +294,11 @@ def __add_trace_for_gluster(host, lock, args):
 def add_trace_for_gluster(args):
         nodes = []
         start_line = ''
-        prev_module_line = ''
         path_config = ''
-        next_module_name = ''
+        need_trace_vol_name = ''
         volname = ''
-        flags_tmp = {'is_nodes':False, 'is_start_line':False, 'is_prev_module_line':False, \
-                     'is_path_config':False, 'is_next_module_name':False, 'is_volname':False}
+        flags_tmp = {'is_nodes':False, 'is_start_line':False, \
+                     'is_path_config':False, 'is_need_trace_name':False, 'is_volname':False}
 
         flags = {}
         if len(args) == 0:
@@ -310,18 +309,14 @@ def add_trace_for_gluster(args):
                 if arg == '--nodes':
                         flags = flags_tmp.copy()
                         flags['is_nodes'] = True
-                        print '\nflags_tmp:', flags_tmp
-                        print '\nflags:', flags
-                elif arg == '--next-module-name':
+                elif arg == '--need-trace-volume-name':
                         flags = flags_tmp.copy()
-                        flags['is_next_module_name'] = True
-                elif arg == '--prev-module-subvolumes-line':
-                        flags = flags_tmp.copy()
-                        flags['is_prev_module_line'] = True
+                        flags['is_need_trace_name'] = True
                 elif arg == '--path':
                         flags = flags_tmp.copy()
                         flags['is_path_config'] = True
                 elif arg == '--start-line':
+                        print 'debug:-=---'
                         flags = flags_tmp.copy()
                         flags['is_start_line'] = True
                 elif arg == '--volname':
@@ -333,12 +328,11 @@ def add_trace_for_gluster(args):
                                 exit(-1)
                         if flags['is_nodes'] == True:
                                 nodes.append(arg)
-                        elif flags['is_next_module_name'] == True:
-                                next_module_name = arg
-                        elif flags['is_prev_module_line'] == True:
-                                prev_module_line = arg
+                        elif flags['is_need_trace_name'] == True:
+                                need_trace_vol_name = arg
                         elif flags['is_start_line'] == True:
                                 start_line = arg
+                                print 'debug:-=---', start_line
                         elif flags['is_path_config'] == True:
                                 path_config = arg
                         elif flags['is_volname'] == True:
@@ -348,18 +342,17 @@ def add_trace_for_gluster(args):
                                 exit(-1)
 
         print 'nodes:', nodes
-        print 'next_module_name:', next_module_name
-        print 'prev_module_line:', prev_module_line
+        print 'need_trace_vol_name:', need_trace_vol_name
         print 'start_line:', start_line
         print 'path_config:', path_config
         print 'volname:', volname
-        if len(nodes) == 0 or next_module_name == '' or prev_module_line == '' \
+        if len(nodes) == 0 or need_trace_vol_name == ''\
            or start_line == '' or path_config == '' or volname == '':
                    print '%d: Error: args are error' % (sys._getframe().f_lineno)
                    exit(-1)
 
         __multi_thread(nodes, __add_trace_for_gluster, path_config,\
-                       start_line, prev_module_line, next_module_name, volname)
+                       start_line, need_trace_vol_name, volname)
 
 # ssh non-password login
 def not_use_ssh_passwd(args):
@@ -438,8 +431,8 @@ def help_option():
               '                 [--unpack --nodes nodes_ip --files pathname [--dir pathname]]\n'\
               '                 [--scp --src_nodes nodes_ip --src_files pathname --dst_nodes nodes_ip --dst_save_path pathname]\n'\
               '                 [--not-use-ssh-passwd --nodes nodes_ip] [--clean-all-digioceanfs-env --nodes nodes_ip]\n'\
-              '                 [--add-trace-for-gluster --path configfile --nodes nodes_ip --start-line linenum\n'\
-              '                  --next-module-name modulename --prev-module-subvolumes-line linenum --volname volumename]\n'\
+              '                 [--add-trace-for-gluster --nodes nodes_ip --path configfile --start-line linenum\n'\
+              '                  --need-trace-volume-name modulename --volname volumename]\n'\
               '                 [--calc-avg --filename datafile]\n'\
               % (__file__)
 
@@ -472,8 +465,8 @@ def help_info():
               '                                 sum, avg and count\n'\
               '  --add-trace-for-gluster        loggin the nodes(--nodes) and add trace module for gluster/digiocean,\n'\
               '                                 you need to give configure file path(--path), what line that start inserting\n'\
-              '                                 (--start-line), next volume name(--next-module-name), what line that prev volume\n'\
-              '                                 subvolumes line(--prev-module-subvolumes-line) and volume name(--volname)\n'\
+              '                                 (--start-line), next volume name(--need-trace-volume-name),and volume\n'\
+              '                                 name(--volname)\n'\
               'Here are some examples:\n' \
               '(1)' + __file__ + ' --scp --src_nodes 10.10.21.11{1,2,3,4,5} --src_files \'/root/10.10.21.11?_1464071514.tar.gz\' \n' \
               '             --dst_nodes 10.10.12.16 --dst_save_path /root/log/ --password 123456\n' \
@@ -482,9 +475,8 @@ def help_info():
               '(3)' + __file__ + ' --not-use-ssh-passwd --nodes 10.10.21.11{1,2,3,4,5} 10.10.12.16 --password 123456\n' \
               '(4)' + __file__ + ' --clean-all-digioceanfs-env --nodes 10.10.21.9{1,2,3} --password 123456\n'\
               '(5)' + __file__ + ' --calc-avg /root/log/mkdir_create_speed_test/lookup_seconds_dht_is_do_force-10.10.21.111\n'\
-              '(6)' + __file__ + ' --add-trace-for-gluster --path /root/git/my-scripts/python_script/trusted-test.tcp-fuse.vol\n'\
-              '             --nodes 10.10.21.111 --start-line 150 --next-module-name test-dht --prev-module-subvolumes-line 160\n'\
-              '             --volname test --password 123456'
+              '(6)' + __file__ + ' --add-trace-for-gluster --nodes 10.10.21.111 --path /var/lib/digioceand/vols/test/trusted-test.tcp-fuse.vol\n'\
+              '             --start-line 150 --need-trace-volume-name test-dht --volname test --password 123456\n'\
 
 # main
 if __name__ == '__main__':
