@@ -155,11 +155,11 @@ if __name__ == '__main__':
             elif flags_tmp['is_hours']:
                 hours = int(arg)
             else:
-                print '%d: Error: args are invalid' % (sys.__getframe().f_lineno)
+                print '%d: Error: args are invalid' % (sys._getframe().f_lineno)
                 exit(-1)
     
     if workdir == '' or dir_count == -1 or file_count == -1:
-        print '%d: Error: args are not enough' % (sys.__getframe().f_lineno)
+        print '%d: Error: args are not enough' % (sys._getframe().f_lineno)
         exit(-1)
 
     commands += sys.argv[0] + ' ' + workdir + ' --dir-count ' + str(dir_count) + \
