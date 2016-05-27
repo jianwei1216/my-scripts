@@ -234,8 +234,131 @@ def clean_all_digioceanfs_env(args):
                         break
 
         nodes = args
-        print 'debug:', nodes
         __multi_thread(nodes, __clean_all_digioceanfs_env, '')
+
+def __client_exec_commands (host, cmd_list, sleep=0):
+        if host == '' or len(cmd_list) == 0:
+                print 'Error: args are NULL'
+                exit(-1)
+
+        client = get_ssh_client(host)
+        for cmd in cmd_list:
+                print host, cmd
+                stdin, stdout, stderr = client.exec_command(cmd)
+                err = stderr.read()
+                if len(err) > 0:
+                        print host, err,
+                if sleep != 0:
+                        time.sleep(sleep)
+
+        client.close()
+
+def __add_trace_for_gluster(host, lock, args):
+        cmd_list = []
+        if len(args) != 5:
+                print 'Error: args are zero'
+                exit (-1)
+
+        path_config = args[0]
+        start_line = args[1]
+        prev_module_line = args[2]
+        next_module_name = args[3]
+        volname = args[4]
+
+        cmd1 = 'sed -i \'' + start_line + 'a\\volume ' + volname + '-trace\' ' + path_config  
+        cmd_list.append(cmd1)
+        cmd2 = 'sed -i \'' + str(int(start_line)+1) + 'a\\    type debug/trace\' ' + path_config
+        cmd_list.append(cmd2)
+        cmd3 = 'sed -i \'' + str(int(start_line)+2) + 'a\\    option log-file yes\' ' + path_config
+        cmd_list.append(cmd3)
+        cmd4 = 'sed -i \'' + str(int(start_line)+3) + 'a\\    option log-history yes\' ' + path_config
+        cmd_list.append(cmd4)
+        cmd5 = 'sed -i \'' + str(int(start_line)+4) + 'a\\    subvolumes '  + next_module_name + '\' ' + path_config
+        cmd_list.append(cmd5)
+        cmd6 = 'sed -i \'' + str(int(start_line)+5) + 'a\\end-volume\' ' + path_config
+        cmd_list.append(cmd6)
+        cmd7 = 'sed -i \'' + str(int(start_line)+6) + 'a\\zhangjianwei\' ' + path_config
+        cmd_list.append(cmd7)
+        cmd8 = 'sed -i \'s/zhangjianwei//g\' ' + path_config
+        cmd_list.append(cmd8)
+        cmd9 = 'sed -i \'' + prev_module_line + 'a\\    subvolumes ' + volname + '-trace\' ' + path_config
+        cmd_list.append(cmd9)
+        cmd10 = 'sed -i \'' + prev_module_line + 'd\' ' + path_config
+        cmd_list.append(cmd10)
+
+        __client_exec_commands(host, cmd_list)
+
+        lock.release()
+
+def add_trace_for_gluster(args):
+        nodes = []
+        start_line = ''
+        prev_module_line = ''
+        path_config = ''
+        next_module_name = ''
+        volname = ''
+        flags_tmp = {'is_nodes':False, 'is_start_line':False, 'is_prev_module_line':False, \
+                     'is_path_config':False, 'is_next_module_name':False, 'is_volname':False}
+
+        flags = {}
+        if len(args) == 0:
+                print 'Error: args are zero!'
+                exit(-1)
+
+        for arg in args:
+                if arg == '--nodes':
+                        flags = flags_tmp.copy()
+                        flags['is_nodes'] = True
+                        print '\nflags_tmp:', flags_tmp
+                        print '\nflags:', flags
+                elif arg == '--next-module-name':
+                        flags = flags_tmp.copy()
+                        flags['is_next_module_name'] = True
+                elif arg == '--prev-module-subvolumes-line':
+                        flags = flags_tmp.copy()
+                        flags['is_prev_module_line'] = True
+                elif arg == '--path':
+                        flags = flags_tmp.copy()
+                        flags['is_path_config'] = True
+                elif arg == '--start-line':
+                        flags = flags_tmp.copy()
+                        flags['is_start_line'] = True
+                elif arg == '--volname':
+                        flags = flags_tmp.copy()
+                        flags['is_volname'] = True
+                else:
+                        if len(flags) == 0:
+                                print '%d: Error: args are error' % (sys.__getframe().f_lineno)
+                                exit(-1)
+                        if flags['is_nodes'] == True:
+                                nodes.append(arg)
+                        elif flags['is_next_module_name'] == True:
+                                next_module_name = arg
+                        elif flags['is_prev_module_line'] == True:
+                                prev_module_line = arg
+                        elif flags['is_start_line'] == True:
+                                start_line = arg
+                        elif flags['is_path_config'] == True:
+                                path_config = arg
+                        elif flags['is_volname'] == True:
+                                volname = arg
+                        else:
+                                print '%d: Error: args are error' % (sys.__getframe().f_lineno)
+                                exit(-1)
+
+        print 'nodes:', nodes
+        print 'next_module_name:', next_module_name
+        print 'prev_module_line:', prev_module_line
+        print 'start_line:', start_line
+        print 'path_config:', path_config
+        print 'volname:', volname
+        if len(nodes) == 0 or next_module_name == '' or prev_module_line == '' \
+           or start_line == '' or path_config == '' or volname == '':
+                   print '%d: Error: args are error' % (sys._getframe().f_lineno)
+                   exit(-1)
+
+        __multi_thread(nodes, __add_trace_for_gluster, path_config,\
+                       start_line, prev_module_line, next_module_name, volname)
 
 # ssh non-password login
 def not_use_ssh_passwd(args):
@@ -311,6 +434,8 @@ def help_option():
               '                 [--unpack --nodes nodes_ip --files pathname [--dir pathname]]\n'\
               '                 [--scp --src_nodes nodes_ip --src_files pathname --dst_nodes nodes_ip --dst_save_path pathname]\n'\
               '                 [--not-use-ssh-passwd --nodes nodes_ip] [--clean-all-digioceanfs-env --nodes nodes_ip]\n'\
+              '                 [--add-trace-for-gluster --path configfile --nodes nodes_ip --start-line linenum\n'\
+              '                  --next-module-name modulename --prev-module-subvolumes-line linenum --volname volumename]\n'\
               '                 [--calc-avg --filename datafile]\n'\
               % (__file__)
 
@@ -341,6 +466,7 @@ def help_info():
               '                                 to login, must specify this option!\n' \
               '  --calc-avg                     give a data file that one digit takes up a raw and calculate\n'\
               '                                 sum, avg and count\n'\
+              '  --add-trace-for-gluster        add\n'\
               'Here are some examples:\n' \
               '(1)' + __file__ + ' --scp --src_nodes 10.10.21.11{1,2,3,4,5} --src_files \'/root/10.10.21.11?_1464071514.tar.gz\' \n' \
               '             --dst_nodes 10.10.12.16 --dst_save_path /root/log/ --password 123456\n' \
@@ -348,8 +474,10 @@ def help_info():
               '             --need_pack_files /var/log/digioceanfs/* /var/lib/digioceand/* --password 123456\n'\
               '(3)' + __file__ + ' --not-use-ssh-passwd --nodes 10.10.21.11{1,2,3,4,5} 10.10.12.16 --password 123456\n' \
               '(4)' + __file__ + ' --clean-all-digioceanfs-env --nodes 10.10.21.9{1,2,3} --password 123456\n'\
-              '(5)' + __file__ + ' --calc-avg /root/log/mkdir_create_speed_test/lookup_seconds_dht_is_do_force-10.10.21.111\n'
-
+              '(5)' + __file__ + ' --calc-avg /root/log/mkdir_create_speed_test/lookup_seconds_dht_is_do_force-10.10.21.111\n'\
+              '(6)' + __file__ + ' --add-trace-for-gluster --path /root/git/my-scripts/python_script/trusted-test.tcp-fuse.vol\n'\
+              '             --nodes 10.10.21.111 --start-line 150 --next-module-name test-dht --prev-module-subvolumes-line 160\n'\
+              '             --volname test --password 123456'
 
 # main
 if __name__ == '__main__':
@@ -402,6 +530,8 @@ if __name__ == '__main__':
                 not_use_ssh_passwd(args)
         elif cmd == '--clean-all-digioceanfs-env':
                 clean_all_digioceanfs_env(args)
+        elif cmd == '--add-trace-for-gluster':
+                add_trace_for_gluster(args)
         else:
                 print 'Error: unknown option!'
                 exit (-1)
