@@ -1,0 +1,6 @@
+./mkdir/mkdir.dht_do_force.all.nodes:	            count=3271		sum=2077291065.000000		avg=635062.997554
+./mkdir/mkdir.dht_do_force.latency.10.10.21.111:	count=577		sum=305703368.000000		avg=529815.195841
+./mkdir/mkdir.dht_do_force.latency.10.10.21.112:	count=540		sum=411277378.000000		avg=761624.774074
+./mkdir/mkdir.dht_do_force.latency.10.10.21.113:	count=1055		sum=812298388.000000		avg=769951.078673
+./mkdir/mkdir.dht_do_force.latency.10.10.21.114:	count=554		sum=188644927.000000		avg=340514.308664
+./mkdir/mkdir.dht_do_force.latency.10.10.21.115:	count=545		sum=359367004.000000		avg=659388.998165
