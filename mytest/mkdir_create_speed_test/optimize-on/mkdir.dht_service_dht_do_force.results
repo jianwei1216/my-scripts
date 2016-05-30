@@ -1,0 +1,6 @@
+./mkdir/mkdir.dht_do_force_only_dht.10.10.21.111:	count=536		sum=54391046.000000		avg=101475.832090
+./mkdir/mkdir.dht_do_force_only_dht.10.10.21.112:	count=530		sum=114185916.000000		avg=215445.124528
+./mkdir/mkdir.dht_do_force_only_dht.10.10.21.113:	count=853		sum=101499464.000000		avg=118991.165299
+./mkdir/mkdir.dht_do_force_only_dht.10.10.21.114:	count=858		sum=127793151.000000		avg=148943.066434
+./mkdir/mkdir.dht_do_force_only_dht.10.10.21.115:	count=836		sum=72431712.000000		avg=86640.803828
+./mkdir/mkdir.dht_do_force_only_dht.all.nodes:	count=3613		sum=470301289.000000		avg=130169.191531

@@ -1,0 +1,6 @@
+./mknod/mknod.dht_not_lookup_all.10.10.21.111:	count=904000		sum=31541574597.000000		avg=34891.122342
+./mknod/mknod.dht_not_lookup_all.10.10.21.112:	count=913000		sum=31609465351.000000		avg=34621.539267
+./mknod/mknod.dht_not_lookup_all.10.10.21.113:	count=905000		sum=31452671016.000000		avg=34754.332614
+./mknod/mknod.dht_not_lookup_all.10.10.21.114:	count=894000		sum=30829290098.000000		avg=34484.664539
+./mknod/mknod.dht_not_lookup_all.10.10.21.115:	count=889000		sum=31234137196.000000		avg=35134.012594
+./mknod/mknod.dht_not_lookup_all.all.nodes:	count=4505000		sum=156667138258.000000		avg=34776.279303

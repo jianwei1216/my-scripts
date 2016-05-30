@@ -1,0 +1,6 @@
+./mknod/mknod.dht_do_force_only_dht.10.10.21.111:	count=536530		sum=7448151980.000000		avg=13882.079250
+./mknod/mknod.dht_do_force_only_dht.10.10.21.112:	count=530605		sum=7371267471.000000		avg=13892.193762
+./mknod/mknod.dht_do_force_only_dht.10.10.21.113:	count=853457		sum=11993381780.000000		avg=14052.707729
+./mknod/mknod.dht_do_force_only_dht.10.10.21.114:	count=858304		sum=12016131152.000000		avg=13999.854541
+./mknod/mknod.dht_do_force_only_dht.10.10.21.115:	count=836554		sum=11946239733.000000		avg=14280.297187
+./mknod/mknod.dht_do_force_only_dht.all.nodes:	count=3615450		sum=50775172116.000000		avg=14043.942557

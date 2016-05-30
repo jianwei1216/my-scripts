@@ -1,0 +1,5 @@
+./lookup/lookup.dht_do_force_only_dht.all.nodes:	count=3799388		sum=21197768869.000000		avg=5579.258783 (dht service 2disks)
+./lookup/lookup.dht_do_force.all.nodes:	            count=3469650		sum=21744774177.000000		avg=6267.137659 (ec service 2bricks 10disks)
+./lookup/lookup.dht_not_lookup_all.all.nodes:	    count=4789821		sum=18689709664.000000		avg=3901.964116 (ec service 2bricks 10disks)
+./lookup/lookup.dht_release_3.8.all.nodes:	        count=3952470		sum=12992713973.000000		avg=3287.239112 (ec service 2bricks 10disks)
+

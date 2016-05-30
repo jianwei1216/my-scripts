@@ -1,0 +1,6 @@
+./lookup/lookup.dht_not_lookup_all.10.10.21.111:	count=961380		sum=3566342141.000000		avg=3709.607170
+./lookup/lookup.dht_not_lookup_all.10.10.21.112:	count=970710		sum=3542231287.000000		avg=3649.113831
+./lookup/lookup.dht_not_lookup_all.10.10.21.113:	count=962004		sum=3669342530.000000		avg=3814.269514
+./lookup/lookup.dht_not_lookup_all.10.10.21.114:	count=950332		sum=4053865492.000000		avg=4265.736071
+./lookup/lookup.dht_not_lookup_all.10.10.21.115:	count=945395		sum=3857928214.000000		avg=4080.758005
+./lookup/lookup.dht_not_lookup_all.all.nodes:	count=4789821		sum=18689709664.000000		avg=3901.964116

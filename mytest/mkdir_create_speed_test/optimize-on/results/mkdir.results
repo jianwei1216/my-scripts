@@ -1,0 +1,4 @@
+./mkdir/mkdir.dht_do_force_only_dht.all.nodes:	count=3613		sum=470301289.000000		avg=130169.191531
+./mkdir/mkdir.dht_do_force.all.nodes:	        count=3271		sum=2077291065.000000		avg=635062.997554
+./mkdir/mkdir.dht_not_lookup_all.all.nodes:	    count=4505		sum=1995140179.000000		avg=442872.403774
+./mkdir/mkdir.dht_release_3.8.all.nodes:	    count=3764		sum=1607366016.000000		avg=427036.667375

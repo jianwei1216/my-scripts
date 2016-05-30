@@ -1,0 +1,6 @@
+./mkdir/mkdir.dht_not_lookup_all.10.10.21.111:	count=904		sum=294059650.000000		avg=325287.223451
+./mkdir/mkdir.dht_not_lookup_all.10.10.21.112:	count=913		sum=334504649.000000		avg=366379.681271
+./mkdir/mkdir.dht_not_lookup_all.10.10.21.113:	count=905		sum=370653502.000000		avg=409561.880663
+./mkdir/mkdir.dht_not_lookup_all.10.10.21.114:	count=894		sum=604653285.000000		avg=676345.956376
+./mkdir/mkdir.dht_not_lookup_all.10.10.21.115:	count=889		sum=391269093.000000		avg=440122.714286
+./mkdir/mkdir.dht_not_lookup_all.all.nodes:	count=4505		sum=1995140179.000000		avg=442872.403774

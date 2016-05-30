@@ -1,6 +1,0 @@
-./mknod/mknod.dht_do_force.all.nodes:	            count=3272450		sum=94608791700.000000		avg=28910.691286
-./mknod/mknod.dht_do_force.latency.10.10.21.111:	count=577195		sum=17479317885.000000		avg=30283.210847
-./mknod/mknod.dht_do_force.latency.10.10.21.112:	count=540872		sum=16404934851.000000		avg=30330.530793
-./mknod/mknod.dht_do_force.latency.10.10.21.113:	count=1054000		sum=26952179688.000000		avg=25571.327977
-./mknod/mknod.dht_do_force.latency.10.10.21.114:	count=554689		sum=17200596952.000000		avg=31009.443043
-./mknod/mknod.dht_do_force.latency.10.10.21.115:	count=545694		sum=16571762324.000000		avg=30368.232607

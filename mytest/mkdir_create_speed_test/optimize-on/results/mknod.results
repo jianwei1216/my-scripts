@@ -1,0 +1,4 @@
+./mknod/mknod.dht_do_force_only_dht.all.nodes:	count=3615450		sum=50775172116.000000		avg=14043.942557
+./mknod/mknod.dht_do_force.all.nodes:	        count=3272450		sum=94608791700.000000		avg=28910.691286
+./mknod/mknod.dht_not_lookup_all.all.nodes:	    count=4505000		sum=156667138258.000000		avg=34776.279303
+./mknod/mknod.dht_release_3.8.all.nodes:	    count=3767631		sum=95672474999.000000		avg=25393.270997
