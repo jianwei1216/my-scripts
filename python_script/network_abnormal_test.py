@@ -49,7 +49,7 @@ def create_5_level_directory(no):
     dirs += workdir
     dirs += '/one/two/three/four/five/' + str(no) + '/'
     try:
-        os.mkdirs(dirs)
+        os.makedirs(dirs)
     except OSError, e:
         mylog.error(e)
         return -1
@@ -59,7 +59,7 @@ def mkdir_create_some_directories_and_files(now_dir):
     for i in range(0, 1000):
         try:
             dirname = now_dir + 'newdir-' + str(time.time()) + '-' + str(i)
-            os.mkdir(filename)
+            os.mkdir(dirname)
             mylog.debug('Create dir ' + dirname + ' success!')
             filename = now_dir + 'newfile-' + str(time.time()) + '-' + str(i)
             os.mknod(filename)
@@ -224,7 +224,7 @@ if __name__ == '__main__':
                 hours = arg
             elif flags_tmp['--dir-count']:
                 dir_count = arg
-            elif flags_tmp['--operate-hots']:
+            elif flags_tmp['--operate-hosts']:
                 hosts_list.append(arg)
             elif flags_tmp['--network-card-name']:
                 network_card_name.append(arg) 
