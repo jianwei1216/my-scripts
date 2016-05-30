@@ -1,2 +1,0 @@
-ACTION=="add",KERNEL=="sd*",RUN+="/usr/local/digioceanfs_manager/monitor_reporter/udev_monitor.py %k up"
-ACTION=="remove",KERNEL=="sd*",RUN+="/usr/local/digioceanfs_manager/monitor_reporter/udev_monitor.py %k down"
