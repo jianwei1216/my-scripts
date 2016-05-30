@@ -98,17 +98,17 @@ def bug6284_test():
     now_dir = ''
 
     begin_time = time.time()
+    mylog.info('BEGIN_TIME:' + str(begin_time))
 
     while True:
         if count >= dir_count and dir_count != 1:
             mylog.info('Create 5 level dirs count more than ' + str(dir_count) + ' and exit!')
-            exit(0)
+            break
 
         now_time = time.time()
         if (now_time - begin_time) > (hours * 3600):
             mylog.info('Process already run more than ' + str(hours) + ' and exit!')
-            exit(0)
-
+            break
         # 1.在挂载点创建创建五级目录，
         if dir_count == 1 and count == 0:
             now_dir = create_5_level_directory(count)
@@ -144,10 +144,14 @@ def bug6284_test():
         mkdir_create_some_directories_and_files(now_dir)
 
         # 7.将拔掉网线的机器恢复正常，
-        restore_network_card_software(hosts_list[nu2], network_card_name[nu2])
+        restore_network_card_software(hosts_list[nu2], network_card_name[nu2], 3)
 
         # 8.然后ls查看第五级目录下的信息，发现卡主现象，但是不是死锁，其上四级目录都是正常的，没有问题，log信息显示在附件中。
         lookup_fifth_level_directory(now_dir)
+
+    end_time = time.time()
+    mylog.info('END_TIME:' + str(end_time))
+    mylog.info('COST_TIME:' + str((end_time - begin_time)/3600) + ' hours')
 
 def help_options():
     print 'Usage: ' + __file__ + ' --workdir --dir-count --operate-hosts --network-card-name [--hours] [--log-level] [--help]'
