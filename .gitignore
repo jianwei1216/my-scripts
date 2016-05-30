@@ -1,0 +1,6 @@
+python_script/.cluster.py.config
+python_script/.fast.py.config
+python_script/colors.pyc
+*.pyc
+*.o
+*.lo
