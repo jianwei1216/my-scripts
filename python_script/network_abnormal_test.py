@@ -45,23 +45,25 @@ class log:
 # 创建2+1的纠删码卷，ec(16 * (2+1))
 
 def create_5_level_directory(no):
+    global workdir
     dirs = ''
     dirs += workdir
-    dirs += '/one/two/three/four/five/' + str(no) + '/'
+    dirs += '/five-' + str(int(time.time())) + '-' + str(no) + '/'
     try:
-        os.makedirs(dirs)
+        os.mkdir(dirs)
     except OSError, e:
         mylog.error(e)
         return -1
+    mylog.info('Five-level-dir:' + dirs)
     return dirs
 
 def mkdir_create_some_directories_and_files(now_dir):
     for i in range(0, 1000):
         try:
-            dirname = now_dir + 'newdir-' + str(time.time()) + '-' + str(i)
+            dirname = now_dir + 'newdir-' + str(int(time.time())) + '-' + str(i)
             os.mkdir(dirname)
             mylog.debug('Create dir ' + dirname + ' success!')
-            filename = now_dir + 'newfile-' + str(time.time()) + '-' + str(i)
+            filename = now_dir + 'newfile-' + str(int(time.time())) + '-' + str(i)
             os.mknod(filename)
             mylog.debug('Create file ' + filename + ' success!')
         except OSError, e:
@@ -71,21 +73,21 @@ def mkdir_create_some_directories_and_files(now_dir):
 
 def close_network_card_software(host, ethno, times=1):
     # ssh host "ifconfig ethno down"
-    cmd = 'ssh ' + host + ' \" if config ' + ethno + ' down\"'
+    cmd = 'ssh ' + host + ' \" ifconfig ' + ethno + ' down\"'
+    mylog.info(cmd)
     for i in range(0, times):
         out_status, result = commands.getstatusoutput(cmd)
-        mylog.info(out_status)
 
 def restore_network_card_software(host, ethno, times=1):
-    cmd = 'ssh ' + host + ' \" if config ' + ethno + ' up\"'
+    cmd = 'ssh ' + host + ' \" ifconfig ' + ethno + ' up\"'
+    mylog.info(cmd)
     for i in range(0, times):
         out_status, result = commands.getstatusoutput(cmd)
-        mylog.info(out_status)
 
 def lookup_fifth_level_directory(now_dir):
     cmd = 'ls ' + now_dir
+    mylog.info(cmd)
     out_status, result = commands.getstatusoutput(cmd)
-    mylog.info(out_status)
 
 def bug6284_test():
     global workdir
@@ -113,14 +115,14 @@ def bug6284_test():
         if dir_count == 1 and count == 0:
             now_dir = create_5_level_directory(count)
             if now_dir == -1:
-                mylog.error('Create 5 level dirs failed!')
-                exit(-1)
+                mylog.error('Create 5 level dirs failed:' + newdir)
+                #exit(-1)
 
         if dir_count != 1:
             now_dir = create_5_level_directory(count)
             if now_dir == -1:
-                mylog.error('Create 5 level dirs failed!')
-                exit(-1)
+                mylog.error('Create 5 level dirs failed:' + newdir)
+                #exit(-1)
 
         count += 1
 
@@ -172,6 +174,7 @@ def help_info():
           '  --log-level          DEBUG/INFO(default)/ERROR\n'\
 
 if __name__ == '__main__':
+    cmds = ''
     global workdir
     global hours
     global dir_count
@@ -195,6 +198,7 @@ if __name__ == '__main__':
         help_info()
         exit(0)
 
+    cmds += 'python ' + sys.argv[0] + ' '
     args = sys.argv[1:]
     for arg in args:
         if arg == '--workdir':
@@ -212,22 +216,30 @@ if __name__ == '__main__':
         elif arg == '--operate-hosts':
             flags_tmp = flags.copy()
             flags_tmp['--operate-hosts'] = True
+            cmds += '--operate-hosts '
         elif arg == '--network-card-name':
             flags_tmp = flags.copy()
             flags_tmp['--network-card-name'] = True
+            cmds += '--networkd-card-name '
         else:
             if flags_tmp['--workdir']:
                 workdir = arg
+                cmds += '--workdir ' + workdir + ' '
             elif flags_tmp['--log-level']:
                 log_level = arg
+                cmds += '--log-level ' + log_level + ' '
             elif flags_tmp['--hours']:
-                hours = arg
+                hours = int(arg)
+                cmds += '--hours ' + arg + ' '
             elif flags_tmp['--dir-count']:
-                dir_count = arg
+                dir_count = int(arg)
+                cmds += '--dir-count ' + arg + ' '
             elif flags_tmp['--operate-hosts']:
                 hosts_list.append(arg)
+                cmds += arg + ' '
             elif flags_tmp['--network-card-name']:
                 network_card_name.append(arg) 
+                cmds += arg
             else:
                 print '[line:%d] Error: args are invalid!'\
                       % (sys._getframe().f_lineno)
@@ -242,4 +254,17 @@ if __name__ == '__main__':
         log_level = 'INFO' 
     mylog = log(log_level)
 
+    workdir += '/one-' + str(int(time.time()))
+    workdir += '/two-' + str(int(time.time()))
+    workdir += '/three-' + str(int(time.time()))
+    workdir += '/four-' + str(int(time.time()))
+    mylog.info('Four-level-dir:' + workdir)
+    os.makedirs(workdir)
+
+    mylog.info(cmds)
+    print 'workdir:' , workdir
+    print 'hosts_list:',hosts_list
+    print 'network_card_name:', network_card_name
+    print 'hours:', str(hours)
+    print 'dir_count:', str(dir_count)
     bug6284_test() 
