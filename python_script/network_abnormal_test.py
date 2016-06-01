@@ -89,6 +89,12 @@ def lookup_fifth_level_directory(now_dir):
     mylog.info(cmd)
     out_status, result = commands.getstatusoutput(cmd)
 
+def get_volume_status():
+    out_status, result = commands.getstatusoutput('digiocean volume status')
+    mylog.info(result)
+    out_status, result = commands.getstatusoutput('digiocean peer status')
+    mylog.info(result)
+
 def bug6284_test():
     global workdir
     global dir_count
@@ -112,6 +118,7 @@ def bug6284_test():
             mylog.info('Process already run more than ' + str(hours) + ' and exit!')
             break
         # 1.在挂载点创建创建五级目录，
+        get_volume_status()
         if dir_count == 1 and count == 0:
             now_dir = create_5_level_directory(count)
             if now_dir == -1:
@@ -127,6 +134,7 @@ def bug6284_test():
         count += 1
 
         # 2.在第五级目录下创建文件删除文件等等一些操作使第五级目录的version值（扩展属性）发生改变，
+        get_volume_status()
         mkdir_create_some_directories_and_files(now_dir)
 
         # 3.然后拔掉一个机器上的网线，
@@ -134,6 +142,7 @@ def bug6284_test():
         close_network_card_software(hosts_list[nu1], network_card_name[nu1], 3)
 
         # 4.再次在第五级目录下执行一些操作，使第五级目录version发生改变，
+        get_volume_status()
         mkdir_create_some_directories_and_files(now_dir)
 
         # 5.然后将拔掉网线的机器恢复正常没有执行修复操作，此时在拔掉另一台机器的网线，
@@ -143,12 +152,14 @@ def bug6284_test():
         close_network_card_software(hosts_list[nu2], network_card_name[nu2], 3)
 
         # 6.再次在第五级目录下执行一些操作，使第五级目录version发生改变，
+        get_volume_status()
         mkdir_create_some_directories_and_files(now_dir)
 
         # 7.将拔掉网线的机器恢复正常，
         restore_network_card_software(hosts_list[nu2], network_card_name[nu2], 3)
 
         # 8.然后ls查看第五级目录下的信息，发现卡主现象，但是不是死锁，其上四级目录都是正常的，没有问题，log信息显示在附件中。
+        get_volume_status()
         lookup_fifth_level_directory(now_dir)
 
     end_time = time.time()
