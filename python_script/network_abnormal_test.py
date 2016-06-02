@@ -122,13 +122,13 @@ def bug6284_test():
         if dir_count == 1 and count == 0:
             now_dir = create_5_level_directory(count)
             if now_dir == -1:
-                mylog.error('Create 5 level dirs failed:' + newdir)
+                mylog.error('Create 5 level dirs failed:' + now_dir)
                 #exit(-1)
 
         if dir_count != 1:
             now_dir = create_5_level_directory(count)
             if now_dir == -1:
-                mylog.error('Create 5 level dirs failed:' + newdir)
+                mylog.error('Create 5 level dirs failed:' + now_dir)
                 #exit(-1)
 
         count += 1
