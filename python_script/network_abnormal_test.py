@@ -8,7 +8,7 @@ import logging
 import logging.handlers
 import commands
 
-LOG_FILE = '/var/log/digioceanfs/' + __file__.split('/')[-1].split('.')[0] + '.log'
+LOG_FILE = '/var/log/glusterfs/' + __file__.split('/')[-1].split('.')[0] + '.log'
 mylog = ""
 
 class log:
@@ -52,6 +52,7 @@ def create_5_level_directory(no):
     try:
         os.mkdir(dirs)
     except OSError, e:
+        mylog.info('Five-level-dir Failed:' + dirs)
         mylog.error(e)
         return -1
     mylog.info('Five-level-dir:' + dirs)
@@ -90,9 +91,9 @@ def lookup_fifth_level_directory(now_dir):
     out_status, result = commands.getstatusoutput(cmd)
 
 def get_volume_status():
-    out_status, result = commands.getstatusoutput('digiocean volume status')
+    out_status, result = commands.getstatusoutput('gluster volume status')
     mylog.info(result)
-    out_status, result = commands.getstatusoutput('digiocean peer status')
+    out_status, result = commands.getstatusoutput('gluster peer status')
     mylog.info(result)
 
 def bug6284_test():
@@ -122,13 +123,15 @@ def bug6284_test():
         if dir_count == 1 and count == 0:
             now_dir = create_5_level_directory(count)
             if now_dir == -1:
-                mylog.error('Create 5 level dirs failed:' + now_dir)
+                continue
+                #mylog.error('Create 5 level dirs failed')
                 #exit(-1)
 
         if dir_count != 1:
             now_dir = create_5_level_directory(count)
             if now_dir == -1:
-                mylog.error('Create 5 level dirs failed:' + now_dir)
+                continue
+                #mylog.error('Create 5 level dirs failed')
                 #exit(-1)
 
         count += 1
@@ -157,6 +160,7 @@ def bug6284_test():
 
         # 7.将拔掉网线的机器恢复正常，
         restore_network_card_software(hosts_list[nu2], network_card_name[nu2], 3)
+        time.sleep(5)
 
         # 8.然后ls查看第五级目录下的信息，发现卡主现象，但是不是死锁，其上四级目录都是正常的，没有问题，log信息显示在附件中。
         get_volume_status()
