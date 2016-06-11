@@ -141,30 +141,24 @@ def bug6284_test():
         mkdir_create_some_directories_and_files(now_dir)
 
         # 3.然后拔掉一个机器上的网线，
-        nu1 = count % len(hosts_list)
-        close_network_card_software(hosts_list[nu1], network_card_name[nu1], 3)
+        close_network_card_software(hosts_list[0], network_card_name[0], 3)
 
         # 4.再次在第五级目录下执行一些操作，使第五级目录version发生改变，
         #get_volume_status()
         mkdir_create_some_directories_and_files(now_dir)
 
-        # 5.然后将拔掉网线的机器恢复正常没有执行修复操作，此时在拔掉另一台机器的网线，
-        nu2 = (nu1 + 1) % len(hosts_list)
-        restore_network_card_software(hosts_list[nu1], network_card_name[nu1], 3)
+        # 5.然后将拔掉网线的机器恢复正常没有执行修复操作
+        restore_network_card_software(hosts_list[0], network_card_name[0], 3)
         time.sleep(5)
-        close_network_card_software(hosts_list[nu2], network_card_name[nu2], 3)
 
         # 6.再次在第五级目录下执行一些操作，使第五级目录version发生改变，
         #get_volume_status()
         mkdir_create_some_directories_and_files(now_dir)
 
-        # 7.将拔掉网线的机器恢复正常，
-        restore_network_card_software(hosts_list[nu2], network_card_name[nu2], 3)
-        time.sleep(5)
-
         # 8.然后ls查看第五级目录下的信息，发现卡主现象，但是不是死锁，其上四级目录都是正常的，没有问题，log信息显示在附件中。
         #get_volume_status()
         lookup_fifth_level_directory(now_dir)
+        time.sleep(300)
 
     end_time = time.time()
     mylog.info('END_TIME:' + str(end_time))

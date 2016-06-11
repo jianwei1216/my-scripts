@@ -61,7 +61,6 @@ class Cluster:
                          "--mandir=/usr/share/man --infodir=/usr/share/info "\
                          "--enable-systemtap=no --enable-debug --enable-bd-xlator;"
                 make = "make -j8;make install;"
-
                 install_cmd = "ssh " + host + " \"" + "cd " + self.workdir + ";"\
                             + autogen + config + make + "\""
                 print install_cmd
