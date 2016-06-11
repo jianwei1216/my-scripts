@@ -10,7 +10,7 @@ write_day()
         echo bash.exe rm -rf /$HOSTNAME/*
         bash.exe rm -rf /$HOSTNAME/*
 
-        for ((i = 1; i <= 4; i++)); do
+        for (( i = 1; i <= 4; i++ )); do
                 #mkdir
                 bash.exe mkdir -p /$HOSTNAME/day$i
                 WORK_DIR="/$HOSTNAME/day$i"
