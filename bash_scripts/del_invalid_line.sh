@@ -3,7 +3,7 @@
 for i in `ls ./`; do
     del_flag=0
     line_count=`cat $i | wc -l`
-    for ((j=1; j <= $line_count; j++));do
+    for ((j=2; j <= $line_count; j++));do
         if (( $del_flag != 0 ));then
             j=$del_flag
             del_flag=0
