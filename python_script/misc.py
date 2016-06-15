@@ -193,7 +193,7 @@ def __clean_all_digioceanfs_env(host, lock, args):
         cmd_list.append(clean_process)
         clean_rpm = 'for i in `rpm -qa | grep digioceanfs`; do rpm -e $i --nodeps; done'
         cmd_list.append(clean_rpm)
-        clean_lib = 'cd /usr/lib64/; rm -rf digioceanfs libgfdb.* libgfxdr.* libgfrpc.* libgfchangelog.*'
+        clean_lib = 'cd /usr/lib64/; rm -rf digioceanfs libgfapi.* libgfdb.* libgfxdr.* libgfrpc.* libgfchangelog.*'
         cmd_list.append(clean_lib)
         clean_mgmt = 'cd /usr/local/; rm -rf digioceanfs_backup digioceanfs_manager '\
                      'digioceanfs_client digioceanfs_gui digiserver'
