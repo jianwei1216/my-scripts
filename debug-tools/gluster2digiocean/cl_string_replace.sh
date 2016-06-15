@@ -1,10 +1,10 @@
 #!/bin/bash
 
-GlfsString=(gluster GLUSTER Gluster glfs libgfapi)
-DlfsString=(digiocean DIGIOCEAN Digiocean dofs libdfapi)
+GlfsString=(gluster GLUSTER Gluster)
+DlfsString=(digiocean DIGIOCEAN Digiocean)
 
-GlfsFileName=(glfs gluster)
-DlfsFileName=(dofs digiocean)
+GlfsFileName=(gluster)
+DlfsFileName=(digiocean)
 
 help() {
     echo "    Usage: cl_string_replace.sh [source_path] --[option]"
