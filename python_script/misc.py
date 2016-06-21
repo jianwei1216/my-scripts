@@ -185,31 +185,36 @@ def scp_tar(args):
 def __clean_all_digioceanfs_env(host, lock, args):
         cmd_list = []
         print '__clean_all_digioceanfs_env()', host
-        clean_hosts = 'node-manager stop; node-manager clear;'
-        cmd_list.append(clean_hosts)
-        clean_process = 'killall digioceanfs; killall digioceand; killall digioceanfsd; killall mongod;'\
-                        'killall mdadm; ps -ef | grep node_manager | grep -v grep | awk \'{print $2}\' | xargs kill -9;'\
-                        'ps -ef | grep digioceanfs_gui | grep -v grep | awk \'{print $2}\' | xargs kill -9;'
-        cmd_list.append(clean_process)
-        clean_rpm = 'for i in `rpm -qa | grep digioceanfs`; do rpm -e $i --nodeps; done'
-        cmd_list.append(clean_rpm)
-        clean_lib = 'cd /usr/lib64/; rm -rf digioceanfs libgfapi.* libgfdb.* libgfxdr.* libgfrpc.* libgfchangelog.*'
-        cmd_list.append(clean_lib)
-        clean_mgmt = 'cd /usr/local/; rm -rf digioceanfs_backup digioceanfs_manager '\
-                     'digioceanfs_client digioceanfs_gui digiserver'
-        cmd_list.append(clean_mgmt)
-        clean_log_config = 'rm -rf /var/lib/digioceand /var/log/digioceanfs '\
-                           '/etc/digioceanfs /etc/digioceanfs_manager '\
-                           '/etc/systemd/system/multi-user.target.wants/digioceanfs-client.service '\
-                           '/etc/nginx/digioceanfs.* /etc/sudoers.d/digioceanfs '\
-                           '/var/log/digioceanfs_manager/ /usr/lib/ocf/resource.d/digioceanfs '\
-                           '/usr/share/doc/digioceanfs /usr/share/digioceanfs '\
-                           '/usr/include/digioceanfs /usr/libexec/digioceanfs /var/run/digiocean '\
-                           '/data /var/log/digioceanfs_gui/ /usr/sbin/digiocean* /usr/bin/digioceanfs-client '\
-                           '/usr/bin/digioceanfs-gui /usr/bin/digioceanfs-reporter /usr/bin/digioceanfind '\
-                           '/usr/bin/digi_partition /usr/bin/digioceanfs-volgen /usr/bin/digioceanfs-afrgen '\
-                           '/usr/bin/node-manager'
-        cmd_list.append(clean_log_config)
+
+        if args[0]:
+                light_cleanup_cmd = 'rm -rf /var/log/digioceanfs /var/lib/digioceand' 
+                cmd_list.append(light_cleanup_cmd)
+        else:
+                clean_hosts = 'node-manager stop; node-manager clear;'
+                cmd_list.append(clean_hosts)
+                clean_process = 'killall digioceanfs; killall digioceand; killall digioceanfsd; killall mongod;'\
+                                'killall mdadm; ps -ef | grep node_manager | grep -v grep | awk \'{print $2}\' | xargs kill -9;'\
+                                'ps -ef | grep digioceanfs_gui | grep -v grep | awk \'{print $2}\' | xargs kill -9;'
+                cmd_list.append(clean_process)
+                clean_rpm = 'for i in `rpm -qa | grep digioceanfs`; do rpm -e $i --nodeps; done'
+                cmd_list.append(clean_rpm)
+                clean_lib = 'cd /usr/lib64/; rm -rf digioceanfs libgfapi.* libgfdb.* libgfxdr.* libgfrpc.* libgfchangelog.*'
+                cmd_list.append(clean_lib)
+                clean_mgmt = 'cd /usr/local/; rm -rf digioceanfs_backup digioceanfs_manager '\
+                             'digioceanfs_client digioceanfs_gui digiserver'
+                cmd_list.append(clean_mgmt)
+                clean_log_config = 'rm -rf /var/lib/digioceand /var/log/digioceanfs '\
+                                   '/etc/digioceanfs /etc/digioceanfs_manager '\
+                                   '/etc/systemd/system/multi-user.target.wants/digioceanfs-client.service '\
+                                   '/etc/nginx/digioceanfs.* /etc/sudoers.d/digioceanfs '\
+                                   '/var/log/digioceanfs_manager/ /usr/lib/ocf/resource.d/digioceanfs '\
+                                   '/usr/share/doc/digioceanfs /usr/share/digioceanfs '\
+                                   '/usr/include/digioceanfs /usr/libexec/digioceanfs /var/run/digiocean '\
+                                   '/data /var/log/digioceanfs_gui/ /usr/sbin/digiocean* /usr/bin/digioceanfs-client '\
+                                   '/usr/bin/digioceanfs-gui /usr/bin/digioceanfs-reporter /usr/bin/digioceanfind '\
+                                   '/usr/bin/digi_partition /usr/bin/digioceanfs-volgen /usr/bin/digioceanfs-afrgen '\
+                                   '/usr/bin/node-manager'
+                cmd_list.append(clean_log_config)
         client = get_ssh_client(host)
         for cmd in cmd_list:
                 print host, cmd
@@ -225,17 +230,21 @@ def __clean_all_digioceanfs_env(host, lock, args):
 
 def clean_all_digioceanfs_env(args):
         nodes = []
+        light_cleanup_flag = False
         if len(args) == 0:
                 print 'Error: args are zero!'
                 exit(-1)
-        
+
         for i in range(0, len(args)):
                 if args[i] == '--nodes':
                         del args[i]
                         break
+                elif args[i] == '--light-cleanup':
+                        light_clean_flag = True
+                        del args[i]
 
         nodes = args
-        __multi_thread(nodes, __clean_all_digioceanfs_env, '')
+        __multi_thread(nodes, __clean_all_digioceanfs_env, light_clean_flag)
 
 def __client_exec_commands (host, cmd_list, sleep=0):
         if host == '' or len(cmd_list) == 0:
@@ -478,7 +487,7 @@ def help_option():
               '                 [--pack --nodes nodes_ip --save_pack_path pathname --need_pack_files pathname]\n'\
               '                 [--unpack --nodes nodes_ip --files pathname [--dir pathname]]\n'\
               '                 [--scp --src_nodes nodes_ip --src_files pathname --dst_nodes nodes_ip --dst_save_path pathname]\n'\
-              '                 [--not-use-ssh-passwd --nodes nodes_ip] [--clean-all-digioceanfs-env --nodes nodes_ip]\n'\
+              '                 [--not-use-ssh-passwd --nodes nodes_ip] [--clean-all-digioceanfs-env --nodes <IPs> [--light-cleanup]]\n'\
               '                 [--add-trace-for-gluster --nodes nodes_ip --path configfile --start-line linenum\n'\
               '                  --need-trace-volume-name modulename --volname volumename]\n'\
               '                 [--calc-avg --filename datafile] [--build-mongodb --master-node <IP> --slave-nodes <IPs>]\n'\
