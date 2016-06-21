@@ -424,6 +424,54 @@ def calc_avg(args):
         else:
                 print '%s:\tcount == 0' % (datafile)
 
+def build_mongodb(args):
+        master_node = ''
+        slave_nodes = []
+        global ssh_password
+        digi_mongodb_deploy_path = '/usr/local/digioceanfs_manager/utils/digi-mongodbdeploy.pyc'
+        cmd = '/usr/bin/python'
+        prefix_str = 'test'
+
+        if len(args) == 0:
+                print 'Arg is Zero!' 
+                exit(-1)
+        flags = {'--master-node':False, '--slave-nodes':False} 
+        flags_tmp = flags.copy()
+
+        for arg in args:
+                if arg == '--master-node':
+                        flags_tmp = flags.copy()
+                        flags_tmp['--master-node'] = True
+                elif arg == '--slave-nodes':
+                        flags_tmp = flags.copy()
+                        flags_tmp['--slave-nodes'] = True
+                else:
+                        if flags_tmp['--master-node']:
+                                master_node = arg
+                        elif flags_tmp['--slave-nodes']:
+                                slave_nodes.append(arg)
+                        else:
+                                print '%d: Error: args are error' % (sys.__getframe().f_lineno)
+                                exit(-1)
+
+        # python /usr/local/digioceanfs_manager/utils/digi-mongodbdeploy.pyc domain create 
+        # test#10.10.21.115 test2#10.10.21.116 test3#10.10.21.91 10.10.21.115 
+        exec_cmd = cmd + ' ' + digi_mongodb_deploy_path + ' domain create ' + prefix_str + '#' + master_node + ' '
+        for i in range(0, len(slave_nodes)):
+                exec_cmd += prefix_str + str(i) + '#' + slave_nodes[i] + ' '
+        exec_cmd += master_node
+        print exec_cmd
+        os.system (exec_cmd)
+
+        # python /usr/local/digioceanfs_manager/utils/digi-mongodbdeploy.pyc create rs0
+        # replset#10.10.21.115#10.10.21.116#10.10.21.91 10.10.21.115
+        exec_cmd = cmd + ' ' + digi_mongodb_deploy_path + ' create rs0 replset#' + master_node
+        for slave_node in slave_nodes:
+                exec_cmd += '#' + slave_node
+        exec_cmd += ' ' + master_node
+        print exec_cmd
+        os.system (exec_cmd)
+
 # help info
 def help_option():
         print 'Usage: %s [--help] --password ssh_password\n'\
@@ -433,7 +481,7 @@ def help_option():
               '                 [--not-use-ssh-passwd --nodes nodes_ip] [--clean-all-digioceanfs-env --nodes nodes_ip]\n'\
               '                 [--add-trace-for-gluster --nodes nodes_ip --path configfile --start-line linenum\n'\
               '                  --need-trace-volume-name modulename --volname volumename]\n'\
-              '                 [--calc-avg --filename datafile]\n'\
+              '                 [--calc-avg --filename datafile] [--build-mongodb --master-node <IP> --slave-nodes <IPs>]\n'\
               % (__file__)
 
 def help_info():
@@ -477,6 +525,7 @@ def help_info():
               '(5)' + __file__ + ' --calc-avg /root/log/mkdir_create_speed_test/lookup_seconds_dht_is_do_force-10.10.21.111\n'\
               '(6)' + __file__ + ' --add-trace-for-gluster --nodes 10.10.21.111 --path /var/lib/digioceand/vols/test/trusted-test.tcp-fuse.vol\n'\
               '             --start-line 150 --need-trace-volume-name test-dht --volname test --password 123456\n'\
+              '(7)' + __file__ + ' --build-mongodb --master-node 10.10.21.115 --slave-nodes 10.10.21.116 10.10.21.91\n'\
 
 # main
 if __name__ == '__main__':
@@ -492,9 +541,11 @@ if __name__ == '__main__':
         if sys.argv[1] == '--help':
                 help_info()      
                 exit(0)
-
         if sys.argv[1] == '--calc-avg':
                 calc_avg(sys.argv[2:])
+                exit(0)
+        elif sys.argv[1] == '--build-mongodb':
+                build_mongodb(sys.argv[2:])
                 exit(0)
 
         for i in range(0, len(sys.argv)):
