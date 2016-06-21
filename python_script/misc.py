@@ -231,20 +231,28 @@ def __clean_all_digioceanfs_env(host, lock, args):
 def clean_all_digioceanfs_env(args):
         nodes = []
         light_cleanup_flag = False
+        count = 0
+
         if len(args) == 0:
                 print 'Error: args are zero!'
                 exit(-1)
+        flags = {'--nodes':False, '--light-cleanup':False}
+        flags_tmp = flags.copy()
+        for arg in args:
+                if arg == '--nodes':
+                        flags_tmp = flags.copy()
+                        flags_tmp['--nodes'] = True
+                elif arg == '--light-cleanup':
+                        light_cleanup_flag = True
+                else:
+                        if flags_tmp['--nodes']:
+                                nodes.append(arg)
+                                light_cleanup_flag = True
+                        else:
+                                print '%d: Error: args are error' % (sys.__getframe().f_lineno)
+                                exit(-1)
 
-        for i in range(0, len(args)):
-                if args[i] == '--nodes':
-                        del args[i]
-                        break
-                elif args[i] == '--light-cleanup':
-                        light_clean_flag = True
-                        del args[i]
-
-        nodes = args
-        __multi_thread(nodes, __clean_all_digioceanfs_env, light_clean_flag)
+        __multi_thread(nodes, __clean_all_digioceanfs_env, light_cleanup_flag)
 
 def __client_exec_commands (host, cmd_list, sleep=0):
         if host == '' or len(cmd_list) == 0:
