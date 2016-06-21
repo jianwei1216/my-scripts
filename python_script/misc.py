@@ -247,7 +247,6 @@ def clean_all_digioceanfs_env(args):
                 else:
                         if flags_tmp['--nodes']:
                                 nodes.append(arg)
-                                light_cleanup_flag = True
                         else:
                                 print '%d: Error: args are error' % (sys.__getframe().f_lineno)
                                 exit(-1)
