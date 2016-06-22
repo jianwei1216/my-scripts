@@ -187,7 +187,7 @@ def __clean_all_digioceanfs_env(host, lock, args):
         print '__clean_all_digioceanfs_env()', host
 
         if args[0]:
-                light_cleanup_cmd = 'rm -rf /var/log/digioceanfs /var/lib/digioceand' 
+                light_cleanup_cmd = 'rm -rf /var/log/digioceanfs'
                 cmd_list.append(light_cleanup_cmd)
         else:
                 clean_hosts = 'node-manager stop; node-manager clear;'
