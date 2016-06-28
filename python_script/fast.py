@@ -13,7 +13,7 @@ def get_ssh_client(host):
         global ssh_passwd
         client = ssh.SSHClient()
         client.set_missing_host_key_policy(ssh.AutoAddPolicy())
-        client.connect(host, port=22, username='root', password=ssh_passwd)
+        client.connect(host, port=9999, username='root', password=ssh_passwd)
         return client
 
 def __despatch_cmd(host, lock, cmd):
