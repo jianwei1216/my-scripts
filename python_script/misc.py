@@ -196,7 +196,7 @@ def __clean_all_digioceanfs_env(host, lock, args):
                                 'killall mdadm; ps -ef | grep node_manager | grep -v grep | awk \'{print $2}\' | xargs kill -9;'\
                                 'ps -ef | grep digioceanfs_gui | grep -v grep | awk \'{print $2}\' | xargs kill -9;'
                 cmd_list.append(clean_process)
-                clean_rpm = 'for i in `rpm -qa | grep digioceanfs`; do rpm -e $i --nodeps; done'
+                clean_rpm = 'for i in `rpm -qa | grep digiocean`; do rpm -e $i --nodeps; done'
                 cmd_list.append(clean_rpm)
                 clean_lib = 'cd /usr/lib64/; rm -rf digioceanfs libgfapi.* libgfdb.* libgfxdr.* libgfrpc.* libgfchangelog.*'
                 cmd_list.append(clean_lib)
