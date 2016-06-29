@@ -12,7 +12,7 @@ def get_ssh_client(host):
         global ssh_password
         client = ssh.SSHClient()
         client.set_missing_host_key_policy(ssh.AutoAddPolicy())
-        client.connect(host, port=22, username='root', password=ssh_password)
+        client.connect(host, port=9999, username='root', password=ssh_password)
         return client
         
 # get multi threads
