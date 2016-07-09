@@ -4,6 +4,7 @@
 import argparse
 import sys
 import os
+import ssh
 
 def get_ssh_client(host):
     global args
@@ -24,6 +25,7 @@ def __despatch_cmd(host, cmd):
     client.close()
 
 def multi_fork(nodes, cmd):
+    pids = []
     for host in nodes:
         try:
             pid = os.fork () 
@@ -31,9 +33,17 @@ def multi_fork(nodes, cmd):
                 # CHILD
                 __despatch_cmd (host, cmd) 
                 exit ()
+            else:
+                pids.append(pid)
         except Exception, e:
             print e
             exit (-1)
+
+    for pid in pids:
+        try:
+            os.waitpid(pid, 0)
+        except Exception, e:
+            print e
     exit(0)
 
 def exec_commands():
