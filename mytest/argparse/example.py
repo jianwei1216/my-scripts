@@ -199,56 +199,57 @@ def args_action():
 
 def args_nargs():
         # N
-        parser = argparse.ArgumentParser()
-        parser.add_argument('--foo', nargs=2)
-        parser.add_argument('bar', nargs=1)
-        args = parser.parse_args('c --foo a b'.split())
-        #print args
-        
-        # ?
-        parser1 = argparse.ArgumentParser()
-        parser1.add_argument('--foo', nargs='?', const='c', default='d')
-        parser1.add_argument('bar', nargs='?', default='d')
-        args = parser1.parse_args(['XX', '--foo', 'YY'])
-        #print args
-        args = parser1.parse_args(['XX', '--foo'])
-        #print args
-        args = parser1.parse_args([])
-        #print args
+        #parser = argparse.ArgumentParser()
+        #parser.add_argument('--foo', nargs=2)
+        #parser.add_argument('bar', nargs=1)
+        #args = parser.parse_args('c --foo a b'.split())
+        ##print args
+        #
+        ## ?
+        #parser1 = argparse.ArgumentParser()
+        #parser1.add_argument('--foo', nargs='?', const='c', default='d')
+        #parser1.add_argument('bar', nargs='?', default='d')
+        #args = parser1.parse_args(['XX', '--foo', 'YY'])
+        ##print args
+        #args = parser1.parse_args(['XX', '--foo'])
+        ##print args
+        #args = parser1.parse_args([])
+        ##print args
 
-        parser2 = argparse.ArgumentParser()
-        parser2.add_argument('infile', nargs='?', type=argparse.FileType('r'),
-                             default=sys.stdin)
-        parser2.add_argument('outfile', nargs='?', type=argparse.FileType('w'),
-                             default=sys.stdout)
-        args = parser2.parse_args(['input.txt', 'output.txt'])
-        #print args 
-        args = parser2.parse_args([])
-        #print args
+        #parser2 = argparse.ArgumentParser()
+        #parser2.add_argument('infile', nargs='?', type=argparse.FileType('r'),
+        #                     default=sys.stdin)
+        #parser2.add_argument('outfile', nargs='?', type=argparse.FileType('w'),
+        #                     default=sys.stdout)
+        #args = parser2.parse_args(['input.txt', 'output.txt'])
+        ##print args 
+        #args = parser2.parse_args([])
+        ##print args
 
-        # *
-        parser3 = argparse.ArgumentParser()
-        parser3.add_argument('--foo', nargs='*')
-        parser3.add_argument('--bar', nargs='*')
-        parser3.add_argument('barz', nargs='*')
-        args = parser3.parse_args('a b --foo x y --bar 1 2 3'.split())
-        #print args
+        ## *
+        #parser3 = argparse.ArgumentParser()
+        #parser3.add_argument('--foo', nargs='*')
+        #parser3.add_argument('--bar', nargs='*')
+        #parser3.add_argument('barz', nargs='*')
+        #args = parser3.parse_args('a b --foo x y --bar 1 2 3'.split())
+        ##print args
 
-        # +
-        parser4 = argparse.ArgumentParser()
-        parser4.add_argument('foo', nargs='+')
-        args = parser4.parse_args(['a', 'b'])
-        #print args
-        #args = parser4.parse_args([])
-        #print args
+        ## +
+        #parser4 = argparse.ArgumentParser()
+        #parser4.add_argument('foo', nargs='+')
+        #args = parser4.parse_args(['a', 'b'])
+        ##print args
+        ##args = parser4.parse_args([])
+        ##print args
 
         # REMAINDER
         parser5 = argparse.ArgumentParser(prog='PROG')
         parser5.add_argument('--foo')
         parser5.add_argument('command')
         parser5.add_argument('args', nargs=argparse.REMAINDER)
-        args = parser5.parse_args('--foo B cmd --arg1 XX ZZ'.split())
-        #print args
+        #args = parser5.parse_args('--foo B cmd --arg1 XX ZZ'.split())
+        args = parser5.parse_args()
+        print args
 
 def args_default():
         parser = argparse.ArgumentParser()
@@ -478,7 +479,7 @@ if __name__ == '__main__':
         #args_add_help()
         #args_name_or_flags()
         #args_action()
-        #args_nargs()
+        args_nargs()
         #args_default()
         #args_type()
         #args_choices()
@@ -491,4 +492,4 @@ if __name__ == '__main__':
         #args_argument_containing()
         #args_argument_abbreviations()
         #args_beyond_sys_argv()
-        args_namespace_object()
+        #args_namespace_object()
