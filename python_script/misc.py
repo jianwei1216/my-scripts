@@ -8,13 +8,19 @@ import thread
 import time
 import argparse
 import textwrap
+sys.path.append('./')
+from log import misclog
 
 # according ssh get a client for remote exec cmds, close after using
 def get_ssh_client(host):
     global args
-    client = ssh.SSHClient()
-    client.set_missing_host_key_policy(ssh.AutoAddPolicy())
-    client.connect(host, port=args.port, username=args.user, password=args.password)
+    try:
+        client = ssh.SSHClient()
+        client.set_missing_host_key_policy(ssh.AutoAddPolicy())
+        client.connect(host, port=args.port, username=args.user, password=args.password)
+    except Exception, e:
+        print host, e
+        misclog.error ("%s: %s" % (host, e))
     return client
         
 # get multi threads
@@ -40,12 +46,20 @@ def __client_exec_commands (host, cmd_list, sleep=0):
     client = get_ssh_client(host)
     for cmd in cmd_list:
         print host, cmd
-        stdin, stdout, stderr = client.exec_command(cmd)
-        err = stderr.read()
-        if len(err) > 0:
-            print host, err,
-        if sleep != 0:
-            time.sleep(sleep)
+        try:
+            stdin, stdout, stderr = client.exec_command(cmd)
+            out = stdout.read()
+            err = stderr.read()
+            if len(err) > 0:
+                print host, err,
+                misclog.error ("%s: %s" % (host, err))
+            if len(out) > 0:
+                misclog.info ("%s: %s" % (host, out))
+            if sleep != 0:
+                time.sleep(sleep)
+        except Exception, e:
+            print host, e
+            misclog.error ("%s: %s" % (host, e)) 
 
     client.close()
 
@@ -290,6 +304,7 @@ if __name__ == '__main__':
     #          digi_mongodbdeploy_path=
     #          light_cleanup=None
     
+    misclog.info ('>>>>>>>>>>>>>>>>NEW COMMANDS START>>>>>>>>>>>>>>\nnargs = %s' % args)
     if args.add_trace_module:
         add_trace_module()
     elif args.build_mongodb:
@@ -301,3 +316,4 @@ if __name__ == '__main__':
     else:
         #print 'Error: unkown keyword!!!'
         parser.print_usage()
+    misclog.info ('<<<<<<<<<<<<<<<<NEW COMMANDS END<<<<<<<<<<<<<<<<\n\n')

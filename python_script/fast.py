@@ -11,21 +11,32 @@ from log import fastlog
 
 def get_ssh_client(host):
     global args
-    client = ssh.SSHClient()
-    client.set_missing_host_key_policy(ssh.AutoAddPolicy())
-    client.connect(host, port=int(args.port), username='root', password=args.password)
+
+    try:
+        client = ssh.SSHClient()
+        client.set_missing_host_key_policy(ssh.AutoAddPolicy())
+        client.connect(host, port=int(args.port), username='root', password=args.password)
+    except Exception, e:
+        print host, e
+        fastlog.error ("%s:%s" % (host, e))
+        return None
     return client
 
 def __despatch_cmd(host, cmd):
     client = get_ssh_client(host)
+    if client == None:
+        return None
+
     stdin, stdout, stderr = client.exec_command(cmd)
     err = stderr.read()
     out = stdout.read()
     if len(out) > 0:
         print host, out,
+        out = out[0:-1]
         fastlog.info ("%s: %s" % (host, out))
     if len(err) > 0:
         print host, err,
+        err = err[0:-1]
         fastlog.error ("%s: %s" % (host, err))
     client.close()
 
@@ -42,13 +53,16 @@ def multi_fork(nodes, cmd):
                 pids.append(pid)
         except Exception, e:
             print e
-            exit (-1)
+            fastlog.error ("%s" % e)
+            return None
 
     for pid in pids:
         try:
             os.waitpid(pid, 0)
         except Exception, e:
             print e
+            fastlog.error ("%s" % e)
+            return None
 
 def exec_commands():
     global args 
