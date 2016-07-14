@@ -113,7 +113,7 @@ def clean_all_cluster_env():
               command_remainder['clean_all_cluster_env']
         exit(-1)
 
-    __multi_thread(nodes, __clean_all_cluster_env, args.light_cleanup)
+    __multi_thread(args.nodes, __clean_all_cluster_env, args.light_cleanup)
 
 def __add_trace_module (host, lock, args):
     cmd_list = []
@@ -237,17 +237,17 @@ if __name__ == '__main__':
 
     command_remainder = {}
     command_remainder = {'build_mongodb':sys_argv_0 + ' --build-mongodb --master-node 10.10.21.115 --slave-nodes 10.10.21.116 10.10.21.91',\
-                         'add_trace_module':sys_argv_0 + '--add-trace-module --nodes 10.10.21.111 --configure-path /var/lib/digioceand/vols/test'\
+                         'add_trace_module':sys_argv_0 + ' --add-trace-module --nodes 10.10.21.111 --configure-path /var/lib/digioceand/vols/test'\
                          '/trusted-test.tcp-fuse.vol --start-line 150 --need-trace-volume-name test-dht --volname test --password 123456',\
-                         'clean_all_cluster_env':sys_argv_0 + '--clean-all-cluster-env --nodes 10.10.21.9{1,2,3} --password 123456',\
-                         'not_use_ssh_passwd':sys_argv_0 + '--not-use-ssh-passwd --nodes 10.10.21.11{1,2,3,4,5} 10.10.12.16 --password 123456'}
+                         'clean_all_cluster_env':sys_argv_0 + ' --clean-all-cluster-env --nodes 10.10.21.9{1,2,3} --password 123456',\
+                         'not_use_ssh_passwd':sys_argv_0 + ' --not-use-ssh-passwd --nodes 10.10.21.11{1,2,3,4,5} 10.10.12.16 --password 123456'}
     #print 'debug command_remainder', command_remainder
 
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,\
-                                     epilog=textwrap.dedent('' + command_remainder['build_mongodb'] + '\n'     \
-                                                            '' + command_remainder['not_use_ssh_passwd'] +'\n' \
-                                                            '' + command_remainder['add_trace_module'] + '\n'  \
-                                                            '' + command_remainder['clean_all_cluster_env']))
+                                     epilog=textwrap.dedent('(1) ' + command_remainder['build_mongodb'] + '\n'     \
+                                                            '(2) ' + command_remainder['not_use_ssh_passwd'] +'\n' \
+                                                            '(3) ' + command_remainder['add_trace_module'] + '\n'  \
+                                                            '(4) ' + command_remainder['clean_all_cluster_env']))
     parser.add_argument ('--clean-all-cluster-env', action='store_true', help='cleanup all the cluster env on the specified nodes')
     parser.add_argument ('--cluster-keyword', nargs=1, default='digiocean', help='gluster or digiocean (default is digiocean)')
     parser.add_argument ('--light-cleanup', action='store_true', help='only delete the /var/log/digioceanfs')
