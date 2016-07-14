@@ -18,37 +18,39 @@ def get_ssh_client(host):
     return client
         
 # get multi threads
-def __multi_thread(nodes, func, *args):
+def __multi_thread(func):
+    global args
     locks = []
-    for host in nodes:
-            lock = thread.allocate_lock()
-            lock.acquire()
-            locks.append(lock)
-            thread.start_new_thread(func, (host, lock, args))
+
+    for host in args.nodes:
+        lock = thread.allocate_lock()
+        lock.acquire()
+        locks.append(lock)
+        thread.start_new_thread(func, (host, lock))
 
     for lock in locks:
-            while lock.locked():
-                    pass
+        while lock.locked():
+            pass
 
 def __client_exec_commands (host, cmd_list, sleep=0):
     if host == '' or len(cmd_list) == 0:
-            print 'Error: args are NULL'
-            exit(-1)
+        print 'Error: args are NULL'
+        exit(-1)
 
     client = get_ssh_client(host)
     for cmd in cmd_list:
-            print host, cmd
-            stdin, stdout, stderr = client.exec_command(cmd)
-            err = stderr.read()
-            if len(err) > 0:
-                    print host, err,
-            if sleep != 0:
-                    time.sleep(sleep)
+        print host, cmd
+        stdin, stdout, stderr = client.exec_command(cmd)
+        err = stderr.read()
+        if len(err) > 0:
+            print host, err,
+        if sleep != 0:
+            time.sleep(sleep)
 
     client.close()
 
 # clean up all cluster environment
-def __clean_all_cluster_env(host, lock, args1):
+def __clean_all_cluster_env(host, lock):
     global args
     cmd_list = []
 
@@ -63,35 +65,36 @@ def __clean_all_cluster_env(host, lock, args1):
 
     print '__clean_all_cluster_env()', host
 
-    if args1[0]:
-            light_cleanup_cmd = 'rm -rf /var/log/' + clusterfs
-            cmd_list.append(light_cleanup_cmd)
+    if args.light_cleanup:
+        light_cleanup_cmd = 'rm -rf /var/log/' + clusterfs
+        cmd_list.append(light_cleanup_cmd)
     else:
-            clean_hosts = 'node-manager stop; node-manager clear;'
-            cmd_list.append(clean_hosts)
-            clean_process = 'killall ' + clusterfs + '; killall ' + clusterd + '; killall ' + clusterfsd + '; killall mongod;'\
-                            'killall mdadm; ps -ef | grep node_manager | grep -v grep | awk \'{print $2}\' | xargs kill -9;'\
-                            'ps -ef | grep ' + cluster_gui + '| grep -v grep | awk \'{print $2}\' | xargs kill -9;'
-            cmd_list.append(clean_process)
-            clean_rpm = 'for i in `rpm -qa | grep ' + cluster + '`; do rpm -e $i --nodeps; done'
-            cmd_list.append(clean_rpm)
-            clean_lib = 'cd /usr/lib64/; rm -rf ' + clusterfs + 'libgfapi.* libgfdb.* libgfxdr.* libgfrpc.* libgfchangelog.*'
-            cmd_list.append(clean_lib)
-            clean_mgmt = 'cd /usr/local/; rm -rf ' + cluster_gui + ' ' + cluster_backup + ' '  + cluster_manager + ' '\
-                         + cluster_client + ' digiserver'
-            cmd_list.append(clean_mgmt)
-            clean_log_config = 'rm -rf /var/lib/' + clusterd + ' /var/log/' + clusterfs + \
-                               ' /etc/' + clusterfs + ' /etc/' + cluster_manager + \
-                               ' /etc/systemd/system/multi-user.target.wants/' + clusterfs + '-client.service '\
-                               ' /etc/nginx/' + clusterfs + '.* /etc/sudoers.d/' + clusterfs + \
-                               ' /var/log/' + cluster_manager + ' /usr/lib/ocf/resource.d/' + clusterfs + \
-                               ' /usr/share/doc/'+ clusterfs + ' /usr/share/' + clusterfs + \
-                               ' /usr/include/' + clusterfs + ' /usr/libexec/' + clusterfs + ' /var/run/' + cluster + \
-                               ' /data /var/log/' + cluster_gui + ' /usr/sbin/' + cluster + '* /usr/bin/' + clusterfs + '-client '\
-                               ' /usr/bin/' + cluster_gui + ' /usr/bin/' + clusterfs + '-reporter /usr/bin/' + cluster + 'find '\
-                               ' /usr/bin/digi_partition /usr/bin/' + clusterfs + '-volgen /usr/bin/' + clusterfs + '-afrgen '\
-                               ' /usr/bin/node-manager'
-            cmd_list.append(clean_log_config)
+        clean_hosts = 'node-manager stop; node-manager clear;'
+        cmd_list.append(clean_hosts)
+        clean_process = 'killall ' + clusterfs + '; killall ' + clusterd + '; killall ' + clusterfsd + '; killall mongod;'\
+                        'killall mdadm; ps -ef | grep node_manager | grep -v grep | awk \'{print $2}\' | xargs kill -9;'\
+                        'ps -ef | grep ' + cluster_gui + '| grep -v grep | awk \'{print $2}\' | xargs kill -9;'
+        cmd_list.append(clean_process)
+        clean_rpm = 'for i in `rpm -qa | grep ' + cluster + '`; do rpm -e $i --nodeps; done'
+        cmd_list.append(clean_rpm)
+        clean_lib = 'cd /usr/lib64/; rm -rf ' + clusterfs + 'libgfapi.* libgfdb.* libgfxdr.* libgfrpc.* libgfchangelog.*'
+        cmd_list.append(clean_lib)
+        clean_mgmt = 'cd /usr/local/; rm -rf ' + cluster_gui + ' ' + cluster_backup + ' '  + cluster_manager + ' '\
+                     + cluster_client + ' digiserver'
+        cmd_list.append(clean_mgmt)
+        clean_log_config = 'rm -rf /var/lib/' + clusterd + ' /var/log/' + clusterfs + \
+                           ' /etc/' + clusterfs + ' /etc/' + cluster_manager + \
+                           ' /etc/systemd/system/multi-user.target.wants/' + clusterfs + '-client.service '\
+                           ' /etc/nginx/' + clusterfs + '.* /etc/sudoers.d/' + clusterfs + \
+                           ' /var/log/' + cluster_manager + ' /usr/lib/ocf/resource.d/' + clusterfs + \
+                           ' /usr/share/doc/'+ clusterfs + ' /usr/share/' + clusterfs + \
+                           ' /usr/include/' + clusterfs + ' /usr/libexec/' + clusterfs + ' /var/run/' + cluster + \
+                           ' /data /var/log/' + cluster_gui + ' /usr/sbin/' + cluster + '* /usr/bin/' + clusterfs + '-client '\
+                           ' /usr/bin/' + cluster_gui + ' /usr/bin/' + clusterfs + '-reporter /usr/bin/' + cluster + 'find '\
+                           ' /usr/bin/digi_partition /usr/bin/' + clusterfs + '-volgen /usr/bin/' + clusterfs + '-afrgen '\
+                           ' /usr/bin/node-manager'
+        cmd_list.append(clean_log_config)
+
     client = get_ssh_client(host)
     for cmd in cmd_list:
             print host, cmd
@@ -113,18 +116,16 @@ def clean_all_cluster_env():
               command_remainder['clean_all_cluster_env']
         exit(-1)
 
-    __multi_thread(args.nodes, __clean_all_cluster_env, args.light_cleanup)
+    __multi_thread( __clean_all_cluster_env)
 
-def __add_trace_module (host, lock, args):
+def __add_trace_module (host, lock):
+    global args
     cmd_list = []
-    if len(args) != 4:
-            print 'Error: args are zero'
-            exit (-1)
 
-    path_config = args[0]
-    start_line = args[1]
-    need_trace_vol_name = args[2]
-    volname = args[3]
+    path_config = args.configure_path
+    start_line = args.start_line
+    need_trace_vol_name = args.need_trace_volume_name
+    volname = args.volname
     subvolume_trace_name = volname + '-trace'
     need_subvolumes_name = 'subvolumes ' + need_trace_vol_name
     need_replace_trace_name = 'subvolumes ' + subvolume_trace_name
@@ -162,8 +163,7 @@ def add_trace_module():
               command_remainder['add_trace_module']
         exit(-1)
 
-    __multi_thread(args.nodes, __add_trace_module, args.configure_path, \
-                   args.start_line, args.need_trace_vol_name, args.volname)
+    __multi_thread(__add_trace_module)
 
 # ssh non-password login
 def not_use_ssh_passwd():
@@ -236,7 +236,7 @@ if __name__ == '__main__':
     sys_argv_0 = sys.argv[0]
 
     command_remainder = {}
-    command_remainder = {'build_mongodb':sys_argv_0 + ' --build-mongodb --master-node 10.10.21.115 --slave-nodes 10.10.21.116 10.10.21.91',\
+    command_remainder = {'build_mongodb':sys_argv_0 + ' --build-mongodb --master-node 10.10.21.111 --slave-nodes 10.10.21.11{2,3,4,5}',\
                          'add_trace_module':sys_argv_0 + ' --add-trace-module --nodes 10.10.21.111 --configure-path /var/lib/digioceand/vols/test'\
                          '/trusted-test.tcp-fuse.vol --start-line 150 --need-trace-volume-name test-dht --volname test --password 123456',\
                          'clean_all_cluster_env':sys_argv_0 + ' --clean-all-cluster-env --nodes 10.10.21.9{1,2,3} --password 123456',\
@@ -299,5 +299,5 @@ if __name__ == '__main__':
     elif args.not_use_ssh_passwd:
         not_use_ssh_passwd()
     else:
-        print 'Error: unkown keyword!!!'
-        #parser.print_help()
+        #print 'Error: unkown keyword!!!'
+        parser.print_usage()
