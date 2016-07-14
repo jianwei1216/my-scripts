@@ -5,6 +5,9 @@ import argparse
 import sys
 import os
 import ssh
+import time
+sys.path.append('./')
+from log import fastlog
 
 def get_ssh_client(host):
     global args
@@ -18,10 +21,12 @@ def __despatch_cmd(host, cmd):
     stdin, stdout, stderr = client.exec_command(cmd)
     err = stderr.read()
     out = stdout.read()
-    if len(err) > 0:
-        print host, err,
     if len(out) > 0:
         print host, out,
+        fastlog.info ("%s: %s" % (host, out))
+    if len(err) > 0:
+        print host, err,
+        fastlog.error ("%s: %s" % (host, err))
     client.close()
 
 def multi_fork(nodes, cmd):
@@ -44,7 +49,6 @@ def multi_fork(nodes, cmd):
             os.waitpid(pid, 0)
         except Exception, e:
             print e
-    exit(0)
 
 def exec_commands():
     global args 
@@ -54,8 +58,9 @@ def exec_commands():
     multi_fork(args.nodes, cmd)
 
 if __name__ == '__main__':
-    global args
+    global args, mylog
     config_file_path = os.path.expanduser('~') + '/.' + sys.argv[0].split('/')[1] + '.config'
+
     parser = argparse.ArgumentParser()
     parser.add_argument('--nodes', nargs='+', default=open(config_file_path, "ab+"))
     parser.add_argument('-p', '--port', nargs='?', type=int, default='22')
@@ -94,5 +99,7 @@ if __name__ == '__main__':
         fp.close()
 
     print args
+    fastlog.info ('>>>>>>>>>>>>>>>>NEW COMMANDS START>>>>>>>>>>>>>>\nnargs = %s' % args)
     exec_commands()
+    fastlog.info ('<<<<<<<<<<<<<<<<NEW COMMANDS END<<<<<<<<<<<<<<<<\n\n')
     exit()
