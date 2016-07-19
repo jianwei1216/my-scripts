@@ -11,12 +11,14 @@ try:
     os.mkdir('/var/log/my-scripts')
     os.system('touch /var/log/my-scripts/fast.log')
     os.system('touch /var/log/my-scripts/misc.log')
+    os.system('touch /var/log/my-scripts/cluster.log')
 except:
     pass
 
 logging.config.fileConfig(log_conf)
 fastlog = logging.getLogger('fastCommandLoger')
 misclog = logging.getLogger('miscLoger')
+clusterlog = logging.getLogger('clusterLoger')
 
 def test():
     fastlog.info('This is info message')
@@ -30,6 +32,12 @@ def test():
     misclog.warn('This is Warning message')
     misclog.error('This is Error message')
     misclog.critical('This is critical message')
+
+    clusterlog.info('This is info message')
+    clusterlog.debug('This is DEBUG message')
+    clusterlog.warn('This is Warning message')
+    clusterlog.error('This is Error message')
+    clusterlog.critical('This is critical message')
 
 if __name__ == "__main__":
     test()

@@ -1,0 +1,182 @@
+#!/usr/bin/python
+# -*- coding:UTF-8 -*-
+
+import os
+import time
+import sys
+import ssh
+import argparse
+sys.path.append('./')
+from log import clusterlog 
+try:
+    import cPickle as pickle
+except ImportError:
+    import pickle
+
+cluster_config_path = os.path.expanduser('~') + '/.' + sys.argv[0].split('/')[1] + '.config'
+
+class Cluster:
+    url = ""
+    gitdir = ""
+    workdir = ""
+    nodes = ()
+
+    def __init__(self, gitdir, url, node):
+        self.url = url
+        self.gitdir = gitdir
+        tmpstr = self.url.split("/")
+        if cmp(self.url[-1], "/") == 0:
+            tmpdir = tmpstr[-2]
+        else:
+            tmpdir = tmpstr[-1]
+
+        if cmp(self.gitdir[-1], "/") == 0:
+            currdir = self.gitdir + tmpdir
+        else:
+            currdir = self.gitdir + "/" + tmpdir
+        self.workdir = currdir
+        self.nodes = node
+        print self.url, self.gitdir, self.workdir, self.nodes
+        print 'gitdir=' + YELLOW + self.gitdir + ENDC + '\n' +\
+              'giturl=' + YELLOW + self.url + ENDC + '\n' +\
+              'workdir=' + YELLOW + self.workdir + ENDC + '\n' +\
+              'nodes=' + YELLOW, self.nodes, ENDC + '\n'
+
+    def __clone(self, host, lock):
+        clone_cmd = "ssh " + host + " " + "\"" + "cd " + self.gitdir + ";"\
+                    + "git clone " + self.url + "\""
+        print clone_cmd
+        os.system(clone_cmd)
+        
+            
+    def __pull(self, host, lock):
+        pull_cmd = "ssh " + host + " \"" + "cd " + self.workdir + ";"\
+                   + "git pull;" + "\""
+        os.system(pull_cmd)
+        
+
+    def __install(self, host, lock):
+        autogen = "./autogen.sh;"
+        config = "./configure --build=x86_64-unknown-linux-gnu "\
+                 "--host=x86_64-unknown-linux-gnu "\
+                 "--target=x86_64-redhat-linux-gnu "\
+                 "--program-prefix= --prefix=/usr "\
+                 "--exec-prefix=/usr --bindir=/usr/bin "\
+                 "--sbindir=/usr/sbin --sysconfdir=/etc "\
+                 "--datadir=/usr/share --includedir=/usr/include "\
+                 "--libdir=/usr/lib64 --libexecdir=/usr/libexec "\
+                 "--localstatedir=/var --sharedstatedir=/var/lib "\
+                 "--mandir=/usr/share/man --infodir=/usr/share/info "\
+                 "--enable-systemtap=no --enable-debug --enable-bd-xlator;"
+        make = "make -j8;make install;"
+        install_cmd = "ssh " + host + " \"" + "cd " + self.workdir + ";"\
+                    + autogen + config + make + "\""
+        print install_cmd
+        os.system (install_cmd)
+        
+
+    def __uninstall(self, host, lock):
+        uninstall_cmd = "ssh " + host + " \"" + "cd " + self.workdir + ";"\
+                    + "make uninstall; make clean" + "\""
+        os.system (uninstall_cmd)
+        
+
+    def __rm_work_dir(self, host, lock):
+        rm_cmd = "ssh " + host + " \"" + "rm -rf " + self.workdir + "\""
+        os.system (rm_cmd)
+        
+
+    def __multi_thread(self, func):
+        pid_list = []
+
+        for host in self.nodes:
+            try:
+                pid = os.fork()
+                if pid == 0:
+                    func (host)
+                    exit()
+                else:
+                    pid_list.append (pid)
+            except Exception, e:
+                print e
+                clusterlog.error ("%s" % e)
+
+        for pid in pid_list:
+            try:
+                os.waitpid(pid, 0)
+            except Exception, e:
+                print e
+                clusterlog.error ("%s" % e)
+                return None
+
+    def clone(self):
+        self.__multi_thread(self.__clone)
+
+    def pull(self):
+        self.__multi_thread(self.__pull)
+
+    def install(self):
+        self.__multi_thread(self.__install)
+
+    def uninstall(self):
+        self.__multi_thread(self.__uninstall)
+
+    def rm_work_dir(self):
+        self.__multi_thread(self.__rm_work_dir)
+
+def cluster_test()
+    global args 
+    c = Cluster(args.git_workdir, args.git_url, args.nodes) 
+    if args.cmd == "clone":
+        c.clone()
+    elif args.cmd == "pull":
+        c.pull()
+    elif args.cmd == "install":
+        c.install()
+    elif args.cmd == "uninstall":
+        c.uninstall()
+    elif args.cmd == "rm":
+        c.rm_work_dir()
+
+if __name__ == "__main__":
+    global args
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument ('--nodes', nargs='*', \
+                         help= 'the node ip that want to deploy this source codes')
+    parser.add_argument ('--git-url','--git-repository-url', type=str, \
+                         help='the git repository that can be cloned')
+    parser.add_argument ('--git-workdir', type=str, \
+                         help='the workdir that exec git clone command')
+    parser.add_argument ('cmd', choices=['clone', 'pull', 'install', 'uninstall', 'rm'],
+                         help='the command that can be exec')
+    args = parser.parse_args()
+
+    if args.git_workdir == None \
+            and args.git_url == None \
+            and args.nodes == None:
+        # read options from the configure file
+        fp = open (cluster_config_path, 'rb')
+        options = pickle.load(fp)
+        fp.close()
+        args.git_workdir = options['git_workdir']
+        args.git_url     = options['git_url']
+        args.nodes       = options['nodes']
+    elif args.git_workdir != None \
+            and args.git_url != None \
+            and args.nodes != None:
+        # write the options to configure file
+        options = {'git_workdir':args.git_workdir, \
+                   'git_url':args.git_url, \
+                   'nodes':args.nodes} 
+        fp = open (cluster_config_path, 'wb')
+        pickle.dump (options, fp)
+        fp.close()
+    else:
+        # error need user give all options
+        print 'Error: please give all arguments!'
+        exit (-1)
+
+    print args
+
+    cluster_test() 
