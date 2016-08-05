@@ -6,7 +6,7 @@
 #include "erasure_code.h"
 
 #ifndef RANDOMS
-#define RANDOMS 200
+#define RANDOMS 201
 #endif
 
 #ifndef INTEL_MMATRIX_LEN
@@ -30,7 +30,7 @@
 
 #define char_show(error_count, str, max_count) do { \
     int i;                                         \
-    printf ("%d==>", error_count);                 \
+    printf ("%d==>\t", error_count);                 \
     for (i = 0; i < max_count; i++) {              \
        printf ("%d\t", str[i]);                    \
     }                                              \
@@ -40,7 +40,7 @@
 #define char_init(src_in_err, max_count) do {   \
     int i;                                      \
     for (i = 0; i < max_count; i++) {           \
-        src_in_err[i] = '0';                    \
+        src_in_err[i] = 0;                    \
     }                                           \
 } while(0)
 
@@ -85,8 +85,8 @@ int ec_method_initialize_intel (const int m, const int k)
 
     srand (INTEL_SEED);  
 
-	encode_matrix = calloc (MMAX * KMAX, sizeof(*encode_matrix));
-	encode_tbls   = calloc (MMAX * KMAX * 32, sizeof(*encode_tbls));
+	encode_matrix = calloc (m * k, sizeof(*encode_matrix));
+	encode_tbls   = calloc (m * k * 32, sizeof(*encode_tbls));
     if (!encode_matrix || !encode_tbls) {
         printf ("Failed to allocate "
                 "memory for encode_matrix and encode_tbls!\n");
@@ -135,8 +135,8 @@ static int gf_gen_decode_matrix(unsigned char *encode_matrix,
 	unsigned char   *backup = NULL;
     unsigned char   *b      = NULL;
 
-	b      = calloc (MMAX * KMAX, sizeof(*b));
-	backup = calloc (MMAX * KMAX, sizeof(*backup));
+	b      = calloc (m * k, sizeof(*b));
+	backup = calloc (m * k, sizeof(*backup));
 	if (b == NULL || backup == NULL) {
         printf ("Failed to allocate "
                 "memory for matrix!\n");
@@ -165,7 +165,7 @@ static int gf_gen_decode_matrix(unsigned char *encode_matrix,
                 free (b);
             if (backup)
                 free (backup);
-            printf ("BAD MATRIX!\n");
+            printf ("%d:BAD MATRIX!\n", __LINE__);
 			return NO_INVERT_MATRIX;
 		}
 		incr++;
@@ -182,7 +182,7 @@ static int gf_gen_decode_matrix(unsigned char *encode_matrix,
                 free (b);
             if (backup)
                 free (backup);
-            printf ("BAD MATRIX!\n");
+            printf ("%d:BAD MATRIX!\n", __LINE__);
 			return NO_INVERT_MATRIX;
 		}
 		decode_index[k - 1] += incr;
@@ -267,6 +267,9 @@ static int ec_decode_matrix_new (const int m, const int k,
     int err = -EINVAL;
     unsigned char *invert_matrix = NULL;
     ec_decode_matrix_t *new = NULL;
+
+    /*char_show (8, src_in_err, m);*/
+    /*char_show (7, src_err_list, m);*/
     
     if (m <= 0 || k <= 0 || src_in_err == NULL
             || src_err_list == NULL
@@ -277,7 +280,7 @@ static int ec_decode_matrix_new (const int m, const int k,
     }
 
     new = calloc (1, sizeof(*new));
-    invert_matrix = calloc (1, m * k);
+    invert_matrix = calloc (m * k, sizeof(*new));
     if (new== NULL || invert_matrix == NULL) {
         err = -ENOMEM;
         printf ("%s\n", strerror(-err));
@@ -287,8 +290,8 @@ static int ec_decode_matrix_new (const int m, const int k,
     new->src_in_err = calloc (m, sizeof(*(new->src_in_err)));
     new->src_err_list = calloc (m, sizeof(*(new->src_err_list)));
     new->decode_index = calloc (m, sizeof(*(new->decode_index)));
-    new->decode_matrix = calloc (1, m * k);
-    new->decode_tbls = calloc (1, m * k * 32);
+    new->decode_matrix = calloc (m * k, sizeof(*(new->decode_matrix)));
+    new->decode_tbls = calloc (m * k * 32, sizeof(*(new->decode_tbls)));
     if (new->src_in_err == NULL
             || new->src_err_list == NULL
             || new->decode_index == NULL
@@ -354,7 +357,7 @@ static int ec_method_decode_matrix_ftw (int n, int m, int k, int *count, int err
 
     for (i = n + 1; i < m; i++) {
         (*count)++;
-        src_in_err[i] = '1';
+        src_in_err[i] = 1;
         src_err_list[(*nerrs)++] = i;
         if (i > k)
             (*nsrcerrs)++;
@@ -368,9 +371,9 @@ static int ec_method_decode_matrix_ftw (int n, int m, int k, int *count, int err
             }
             char_show(*count, src_in_err, m);
             char_show (9, src_err_list, m);
-            src_in_err[i] = '0';
+            src_in_err[i] = 0;
             (*count)--;
-            src_err_list[--(*nerrs)] = '0';
+            src_err_list[--(*nerrs)] = 0;
             if (i > k)
                 (*nsrcerrs)--;
             continue;
@@ -378,8 +381,8 @@ static int ec_method_decode_matrix_ftw (int n, int m, int k, int *count, int err
             ec_method_decode_matrix_ftw (i, m, k, count, error_count,
                                         src_in_err, src_err_list,
                                         nerrs, nsrcerrs);
-            src_in_err[i] = '0';
-            src_err_list[--(*nerrs)] = '0';
+            src_in_err[i] = 0;
+            src_err_list[--(*nerrs)] = 0;
             if (i > k)
                 (*nsrcerrs)--;
             (*count)--;
@@ -446,7 +449,7 @@ static int ec_method_decode_matrix_init (const int m, const int k)
             char_init(src_in_err, m);
             char_init(src_err_list, m);
             tmp_count++;
-            src_in_err[n] = '1';
+            src_in_err[n] = 1;
             src_err_list[nerrs++] = n;
             if (n > k)
                 nsrcerrs++;
@@ -460,18 +463,18 @@ static int ec_method_decode_matrix_init (const int m, const int k)
                     printf ("%s\n", strerror(-err));
                     goto out;
                 }
-                src_in_err[n] = '0';
+                src_in_err[n] = 0;
                 tmp_count--;
-                src_err_list[--nerrs] = '0';
+                src_err_list[--nerrs] = 0; 
                 if (n > k)
                     nsrcerrs--;
             } else {
                 ec_method_decode_matrix_ftw(n, m, k, &tmp_count, error_count,
                                             src_in_err, src_err_list,
                                             &nerrs, &nsrcerrs);
-                src_in_err[n] = '0';
+                src_in_err[n] = 0;
                 tmp_count--;
-                src_err_list[--nerrs] = '0';
+                src_err_list[--nerrs] = 0;
                 if (n > k)
                     nsrcerrs--;
             }
@@ -486,6 +489,7 @@ out:
 
 int main(void)
 {
+    /*printf ("%d, %d\n", 0, '0');*/
     ec_method_initialize_intel(5, 3);
     ec_method_decode_matrix_init (5, 3);
 }
