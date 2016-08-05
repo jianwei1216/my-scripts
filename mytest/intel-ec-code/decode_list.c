@@ -68,6 +68,7 @@ typedef struct {
 
 static unsigned char *encode_matrix, *encode_tbls;
 static struct list_head decode_list_head;
+static int decode_list_count = 0;
 
 static inline void
 list_add (struct list_head *new, struct list_head *head)
@@ -229,7 +230,7 @@ static long long ec_method_combination (const int m, const int k)
 
     if (m <=0 || k <=0) {
         ret = -EINVAL;
-        printf ("%s\n", strerror(EINVAL));
+        printf ("%d: %s\n", __LINE__, strerror(EINVAL));
         goto out;
     }
 
@@ -275,7 +276,10 @@ static int ec_decode_matrix_new (const int m, const int k,
             || src_err_list == NULL
             || nerrs < 0 || nsrcerrs < 0) {
         err = -EINVAL;
-        printf ("%s\n", strerror(-err));
+        printf ("%d: %s (args: m=%d, k=%d,"\
+                "src_in_err=%p, src_err_list=%p, nerrs=%d, nsrcerrs=%d)\n",
+                __LINE__, strerror(-err), m, k, src_in_err, src_err_list,
+                nerrs, nsrcerrs);
         goto out;
     }
 
@@ -323,6 +327,7 @@ static int ec_decode_matrix_new (const int m, const int k,
 	ec_init_tables (k, nerrs, new->decode_matrix, new->decode_tbls);
 
     list_add (&new->list, &decode_list_head);
+    decode_list_count++;
 
     err = 0;
 
@@ -359,22 +364,24 @@ static int ec_method_decode_matrix_ftw (int n, int m, int k, int *count, int err
         (*count)++;
         src_in_err[i] = 1;
         src_err_list[(*nerrs)++] = i;
-        if (i > k)
+        if (i < k)
             (*nsrcerrs)++;
 
         if ((*count) == error_count) {
-            err = ec_decode_matrix_new (m, k, src_in_err, src_err_list,
-                                        *nerrs, *nsrcerrs);
-            if (err < 0) {
-                printf ("%s\n", strerror(-err));
-                goto out;
+            if (nsrcerrs) {
+                err = ec_decode_matrix_new (m, k, src_in_err, src_err_list,
+                                            *nerrs, *nsrcerrs);
+                if (err < 0) {
+                    printf ("%s\n", strerror(-err));
+                    goto out;
+                }
             }
             char_show(*count, src_in_err, m);
             char_show (9, src_err_list, m);
             src_in_err[i] = 0;
             (*count)--;
             src_err_list[--(*nerrs)] = 0;
-            if (i > k)
+            if (i < k)
                 (*nsrcerrs)--;
             continue;
         } else {
@@ -382,10 +389,10 @@ static int ec_method_decode_matrix_ftw (int n, int m, int k, int *count, int err
                                         src_in_err, src_err_list,
                                         nerrs, nsrcerrs);
             src_in_err[i] = 0;
-            src_err_list[--(*nerrs)] = 0;
-            if (i > k)
-                (*nsrcerrs)--;
             (*count)--;
+            src_err_list[--(*nerrs)] = 0;
+            if (i < k)
+                (*nsrcerrs)--;
         }
     }
 
@@ -414,7 +421,7 @@ static int ec_method_decode_matrix_init (const int m, const int k)
 
     if (m <= 0 || k <= 0) {
         err = -EINVAL;
-        printf ("%s", strerror(EINVAL));
+        printf ("%d: %s", __LINE__, strerror(EINVAL));
         goto out;
     }
 
@@ -451,22 +458,24 @@ static int ec_method_decode_matrix_init (const int m, const int k)
             tmp_count++;
             src_in_err[n] = 1;
             src_err_list[nerrs++] = n;
-            if (n > k)
+            if (n < k)
                 nsrcerrs++;
 
             if (tmp_count == error_count) {
                 char_show (error_count, src_in_err, m);
                 char_show (9, src_err_list, m);
-                err = ec_decode_matrix_new (m, k, src_in_err, src_err_list,
-                                            nerrs, nsrcerrs);
-                if (err < 0) {
-                    printf ("%s\n", strerror(-err));
-                    goto out;
+                if (nsrcerrs) {
+                    err = ec_decode_matrix_new (m, k, src_in_err, src_err_list,
+                                                nerrs, nsrcerrs);
+                    if (err < 0) {
+                        printf ("%s\n", strerror(-err));
+                        goto out;
+                    }
                 }
                 src_in_err[n] = 0;
                 tmp_count--;
                 src_err_list[--nerrs] = 0; 
-                if (n > k)
+                if (n < k)
                     nsrcerrs--;
             } else {
                 ec_method_decode_matrix_ftw(n, m, k, &tmp_count, error_count,
@@ -475,13 +484,15 @@ static int ec_method_decode_matrix_init (const int m, const int k)
                 src_in_err[n] = 0;
                 tmp_count--;
                 src_err_list[--nerrs] = 0;
-                if (n > k)
+                if (n < k)
                     nsrcerrs--;
             }
         }
 
         error_count++;
     }
+
+    printf ("%d, %d\n", decode_matrix_count, decode_list_count);
 
 out:
     return err;
@@ -490,6 +501,6 @@ out:
 int main(void)
 {
     /*printf ("%d, %d\n", 0, '0');*/
-    ec_method_initialize_intel(5, 3);
-    ec_method_decode_matrix_init (5, 3);
+    ec_method_initialize_intel (20, 15);
+    ec_method_decode_matrix_init (20, 15);
 }
