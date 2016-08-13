@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>		// for memset, memcmp
+#include <inttypes.h>
 #include <errno.h>
 #include "erasure_code.h"
 #include "types.h"
@@ -81,8 +82,6 @@ void test_of_all_zeros(void)
     int err = -1;
     void *buf = NULL;
     u8 g_tbls[TEST_SOURCES * 32];
-    /*u8 src_in_err[TEST_SOURCES];*/
-    /*u8 src_err_list[TEST_SOURCES];*/
     u8 *buffs[TEST_SOURCES];
     u8 *dest = NULL;
     u8 *dest_ref = NULL;
@@ -337,7 +336,7 @@ void test_ec_using_gf_vect_dot_prod (int m, int k)
     printf ("======================================================\n\n\n");
 
     /* 3. 生成encode矩阵 */
-    gf_gen_rs_matrix (a, m, k);
+    gf_gen_cauchy1_matrix (a, m, k);
 
     /* 4. 编码并生成冗余数据 */
     for (i = k; i < m; i++) {
@@ -424,11 +423,275 @@ out:
     return;
 }
 
+#if 1
+/* 通过点积(dot product)方式encode and decode */
+#define EC_METHOD_CHUNK_SIZE 512
+
+uint8_t *dot_encode_matrix;
+uint8_t *dot_encode_tbls;
+
+int ec_method_encode (int m, int k, int idx, uint8_t *in,
+                      uint8_t *out, size_t size)
+{
+    int i = 0;
+    int j = 0;
+    uint8_t *data_ptr[k];
+    uint8_t *in_ptr = NULL;
+    size_t out_size = 0;
+
+    if (m < 0 || k < 0 || idx < 0 || !in
+            || !out || size < 0) {
+        out_size = -EINVAL;
+        printf ("args invalid!\n");
+        goto out;
+    }
+
+    in_ptr = in; 
+    size /= EC_METHOD_CHUNK_SIZE * k;
+
+    for (i = 0; i < size; i++) {
+        if (idx < k) {
+            memcpy (out, in_ptr + idx * EC_METHOD_CHUNK_SIZE,
+                    EC_METHOD_CHUNK_SIZE);
+        } else {
+            for (j = 0; j < k; j++) {
+                data_ptr[j] = in_ptr + j * EC_METHOD_CHUNK_SIZE;
+            }
+
+            gf_vect_dot_prod (EC_METHOD_CHUNK_SIZE, k,
+                              dot_encode_tbls + (idx - k) * k * 32,
+                              data_ptr, out);
+        }
+
+        out += EC_METHOD_CHUNK_SIZE;
+        out_size += EC_METHOD_CHUNK_SIZE;
+        in_ptr += EC_METHOD_CHUNK_SIZE * k;
+    }
+
+out:
+    return out_size;
+}
+
+int ec_gen_decode_matrix (uint8_t *src_in_err, uint8_t **decode_matrix,
+                          uint8_t *decode_index, int m, int k)
+{
+    int err = -EINVAL;
+    int i = 0;
+    int j = 0;
+    int r = 0;
+    uint8_t *invert_matrix = NULL;
+    uint8_t *p_dmatrix = NULL;
+
+    if (!src_in_err || !decode_matrix
+            || m < 0 || k < 0) {
+        err = -EINVAL;
+        printf ("args invalid!\n");
+        goto out;
+    }
+
+    invert_matrix = calloc (m * k, sizeof(*invert_matrix));
+    p_dmatrix = calloc (m * k, sizeof(*p_dmatrix));
+    if (!invert_matrix || !p_dmatrix) {
+        err = -ENOMEM;
+        printf ("Failed to allocate memory for "
+                "invert_matrix and p_dmatrix.\n");
+        goto out;
+    }
+
+    for (i = 0, r = 0; i < k; i++, r++) {
+        while (src_in_err[r]) {
+            r++;
+            continue;
+        }
+        for (j = 0; j < k; j++) {
+            invert_matrix[k * i + j] = dot_encode_matrix[k * r + j];
+        }
+        decode_index[i] = r;
+    }
+
+    err = gf_invert_matrix ((u8 *)invert_matrix, (u8 *)p_dmatrix, k);
+    if (err < 0) {
+        printf ("BAD MATRIX\n");
+        goto out;
+    }
+
+    *decode_matrix = p_dmatrix;
+    err = 0;
+out: 
+    if (err < 0) {
+        if (invert_matrix)
+            free (invert_matrix);
+        if (p_dmatrix)
+            free (p_dmatrix);
+    }
+
+    return err;
+}
+
+int ec_method_decode (size_t size, int m, int k,
+                      uint8_t *src_in_err, uint8_t *src_err_list,
+                      int nerrs, int nsrcerrs,
+                      uint8_t **in, uint8_t *out)
+{
+    size_t out_size = 0;
+    int i = 0;
+    int j = 0;
+    uint8_t *decode_matrix = NULL;
+    uint8_t *decode_tbls = NULL;
+    uint8_t *decode_index = NULL;
+    uint8_t *temp_buff[nerrs];
+    uint8_t *data_ptr[k];
+    uint8_t *in_ptr[m];
+    void *buf = NULL;
+
+    if (size < 0 || m < 0 || k < 0
+            || !src_err_list
+            || !src_in_err || nerrs < 0
+            || !in || !out || nsrcerrs < 0) {
+        out_size = -EINVAL;
+        printf ("args invalid\n");
+        goto out;
+    }
+
+    size /= EC_METHOD_CHUNK_SIZE;
+
+    for (i = 0; i < m; i++) {
+        in_ptr[i] = in[i];
+    }
+
+    if (nsrcerrs == 0) {
+        for (out_size = 0; out_size < (size * k);) {
+            for (i = 0; i < k; i++) {
+                memcpy (out + out_size, in_ptr[i],
+                        EC_METHOD_CHUNK_SIZE);
+                out_size += EC_METHOD_CHUNK_SIZE;
+                in_ptr[i] += EC_METHOD_CHUNK_SIZE;
+            }
+        }
+        goto out;
+    }
+
+    for (i = 0; i < nerrs; i++) {
+        buf = calloc (EC_METHOD_CHUNK_SIZE, sizeof(*temp_buff));
+        if (!buf) {
+            out_size = -ENOMEM;
+            printf ("Failed to allocate memory for decode_tbls\n");
+            goto out;
+        }
+        temp_buff[i] = buf;
+    }
+
+    decode_index = calloc (m, sizeof(*decode_index));
+    decode_tbls = calloc (m * k * 32, sizeof(*decode_tbls));
+    if (!decode_tbls || !decode_index) {
+        out_size = -ENOMEM;
+        printf ("Failed to allocate memory for decode_tbls\n");
+        goto out;
+    }
+
+    out_size = ec_gen_decode_matrix (src_in_err, &decode_matrix,
+                                     decode_index, m, k);
+    if (out_size < 0) {
+        printf ("Failed to ec_gen_decode_matrix() %s\n",
+                strerror(-out_size));
+        goto out;
+    }
+
+    for (out_size = 0; out_size < size * k;) {
+        for (i = 0; i < k; i++)
+            data_ptr[i] = in_ptr[decode_index[i]];
+    
+        for (i = 0; i < nerrs; i++) {
+            for (j = 0; j < k; j++)
+                gf_vect_mul_init (decode_matrix[k * src_err_list[i] + j], &decode_tbls[j * 32]);
+            
+            gf_vect_dot_prod (EC_METHOD_CHUNK_SIZE, k, decode_tbls, data_ptr, temp_buff[i]);
+            in[src_err_list[i]] = temp_buff[i];
+        }
+
+        for (i = 0; i < k; i++) {
+            memcpy (out + out_size, in_ptr[i],
+                    EC_METHOD_CHUNK_SIZE);
+            out_size += EC_METHOD_CHUNK_SIZE;
+        }
+
+        for (i = 0; i < k; i++) {
+            in_ptr[decode_index[i]] += EC_METHOD_CHUNK_SIZE; 
+        }
+    }
+        
+out:
+    if (decode_matrix)
+        free (decode_matrix);
+    if (decode_tbls)
+        free (decode_tbls);
+    if (decode_index)
+        free (decode_index);
+    for (i = 0; i < nerrs; i++) {
+        if (temp_buff[i])
+            free (temp_buff[i]);
+    }
+
+    return out_size;
+}
+
+int ec_initialize_tables(int m, int k)
+{
+    int err = -EINVAL;
+    int i = 0;
+    int j = 0;
+
+    if (m < 0 || k < 0) {
+        err = -EINVAL;
+        printf ("args invalid!\n");
+        goto out;
+    }
+
+    dot_encode_matrix = calloc (m * k, sizeof(*dot_encode_matrix));
+    dot_encode_tbls = calloc (m * k * 32, sizeof(*dot_encode_tbls));
+    if (!dot_encode_matrix || !dot_encode_tbls) {
+        err = -ENOMEM;
+        printf ("Failed to allocate memory "
+                "for dot_encode_matrix/tbls\n");
+        goto out;
+    }
+
+    gf_gen_cauchy1_matrix (dot_encode_matrix, m, k);
+    
+    for (i = k; i < m; i++) {
+        for (j = 0; j < k; j++)
+            gf_vect_mul_init (dot_encode_matrix[k * i + j],
+                              &dot_encode_tbls[j * 32]);
+    }
+
+    err = 0;
+out:
+    if (err < 0) {
+        if (dot_encode_matrix)
+            free (dot_encode_matrix);
+        if (dot_encode_tbls)
+            free (dot_encode_tbls);
+    }
+
+    return err;
+}
+
+#endif
+
 int main(int argc, char *argv[])
 {
+    int err = -1;
     /*test_of_all_zeros ();*/
     /*rand_data_test_with_varied_parameters();*/
-    test_ec_using_gf_vect_dot_prod(9, 5);
+    /*test_ec_using_gf_vect_dot_prod(9, 5);*/
 
-    return 0;
+    err = ec_initialize_tables (3, 2);
+    if (err < 0) {
+        printf ("Failed to ec_initialize_tables(): %s",
+                strerror (-err));
+        goto out;
+    }
+
+out:
+    return err;
 }
