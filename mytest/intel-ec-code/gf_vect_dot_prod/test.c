@@ -437,13 +437,14 @@ int ec_method_dot_prod_encode (size_t size, int m, int k, int idx,
     int r = 0;
     uint8_t *data_ptr[k];
     uint8_t *temp_ptr = NULL;
+    uint8_t *dot_encode_tbls = NULL;
     size_t out_size = 0;
     int count = 0;
-    uint8_t *dot_encode_tbls;
+    int err = 0;
 
     if (m < 0 || k < 0 || idx < 0 || !in
             || !out || size < 0) {
-        out_size = -EINVAL;
+        err = -EINVAL;
         printf ("args invalid!\n");
         goto out;
     }
@@ -462,9 +463,9 @@ int ec_method_dot_prod_encode (size_t size, int m, int k, int idx,
     }
 
     dot_encode_tbls = calloc (m * k * 32, sizeof(*dot_encode_tbls));
-    temp_ptr = calloc (EC_METHOD_CHUNK_SIZE, sizeof(*temp_ptr));
+    temp_ptr = calloc (EC_METHOD_CHUNK_SIZE + 1, sizeof(*temp_ptr));
     if (!temp_ptr || !dot_encode_tbls) {
-        out_size = -ENOMEM;
+        err = -ENOMEM;
         printf ("Failed to allocate memory for temp_ptr/dot_encode_tbls!\n");
         goto out;
     }
@@ -476,7 +477,7 @@ int ec_method_dot_prod_encode (size_t size, int m, int k, int idx,
             i--;
 
             for (j = k; j < m; j++) {
-                if (j % (m - k) == (idx - k)) {
+                if (j % m == idx) {
                     for (r = 0; r < k; r++)
                         gf_vect_mul_init (dot_encode_matrix[k * j + r],
                                           &dot_encode_tbls[r * 32]);
@@ -484,6 +485,7 @@ int ec_method_dot_prod_encode (size_t size, int m, int k, int idx,
                     gf_vect_dot_prod (EC_METHOD_CHUNK_SIZE,
                                       k, dot_encode_tbls,
                                       data_ptr, temp_ptr);
+                    /*printf ("temp_ptr[%d]=\t%s\n", j, temp_ptr);*/
                     memcpy (out + out_size, temp_ptr,
                             EC_METHOD_CHUNK_SIZE);
                     out_size += EC_METHOD_CHUNK_SIZE;
@@ -498,7 +500,7 @@ out:
     if (temp_ptr)
         free (temp_ptr);
 
-    return out_size;
+    return err;
 }
 
 int ec_gen_dot_prod_decode_matrix (uint8_t *src_in_err, uint8_t **decode_matrix,
@@ -540,7 +542,7 @@ int ec_gen_dot_prod_decode_matrix (uint8_t *src_in_err, uint8_t **decode_matrix,
 
     err = gf_invert_matrix ((u8 *)invert_matrix, (u8 *)p_dmatrix, k);
     if (err < 0) {
-        printf ("BAD MATRIX\n");
+        printf ("BAD MATRIX, err=%d\n", err);
         goto out;
     }
 
@@ -557,10 +559,10 @@ out:
     return err;
 }
 
-int ec_method_dot_prod_decode (size_t size, int m, int k,
-                               uint8_t *src_in_err, uint8_t *src_err_list,
-                               int nerrs, int nsrcerrs,
-                               uint8_t **in, uint8_t *out)
+size_t ec_method_dot_prod_decode (size_t size, int m, int k,
+                                  uint8_t *src_in_err, uint8_t *src_err_list,
+                                  int nerrs, int nsrcerrs,
+                                  uint8_t **in, uint8_t *out)
 {
     size_t out_size = 0;
     int i = 0;
@@ -572,20 +574,20 @@ int ec_method_dot_prod_decode (size_t size, int m, int k,
     uint8_t *data_ptr[k];
     uint8_t *in_ptr[m];
     void *buf = NULL;
+    int err = 0;
 
     if (size < 0 || m < 0 || k < 0
             || !src_err_list
             || !src_in_err || nerrs < 0
             || !in || !out || nsrcerrs < 0) {
-        out_size = -EINVAL;
+        err = -EINVAL;
         printf ("args invalid\n");
         goto out;
     }
 
-    size /= EC_METHOD_CHUNK_SIZE;
-
     for (i = 0; i < m; i++) {
         in_ptr[i] = in[i];
+        temp_buff[i] = NULL;
     }
 
     if (nsrcerrs == 0) {
@@ -603,7 +605,7 @@ int ec_method_dot_prod_decode (size_t size, int m, int k,
     for (i = 0; i < nerrs; i++) {
         buf = calloc (EC_METHOD_CHUNK_SIZE, sizeof(*temp_buff));
         if (!buf) {
-            out_size = -ENOMEM;
+            err = -ENOMEM;
             printf ("Failed to allocate memory for decode_tbls\n");
             goto out;
         }
@@ -613,18 +615,28 @@ int ec_method_dot_prod_decode (size_t size, int m, int k,
     decode_index = calloc (m, sizeof(*decode_index));
     decode_tbls = calloc (m * k * 32, sizeof(*decode_tbls));
     if (!decode_tbls || !decode_index) {
-        out_size = -ENOMEM;
+        err = -ENOMEM;
         printf ("Failed to allocate memory for decode_tbls\n");
         goto out;
     }
 
-    out_size = ec_gen_dot_prod_decode_matrix(src_in_err, &decode_matrix,
-                                             decode_index, m, k);
-    if (out_size < 0) {
+    err = ec_gen_dot_prod_decode_matrix (src_in_err, &decode_matrix,
+                                         decode_index, m, k);
+    if (err < 0) {
+        err = -EIO;
         printf ("Failed to ec_gen_dot_prod_decode_matrix() %s\n",
-                strerror(-out_size));
+                strerror(-err));
         goto out;
     }
+
+#if 0
+    for (i = 0; i < m; i++) {
+        printf ("decode_index[%d] = \t%d\n", i, decode_index[i]);
+    }
+    for (i = 0; i < m; i++) {
+        printf ("src_err_list[%d] = \t%d\n", i, src_err_list[i]);
+    }
+#endif
 
     for (out_size = 0; out_size < size * k;) {
         for (i = 0; i < k; i++)
@@ -635,7 +647,7 @@ int ec_method_dot_prod_decode (size_t size, int m, int k,
                 gf_vect_mul_init (decode_matrix[k * src_err_list[i] + j], &decode_tbls[j * 32]);
             
             gf_vect_dot_prod (EC_METHOD_CHUNK_SIZE, k, decode_tbls, data_ptr, temp_buff[i]);
-            in[src_err_list[i]] = temp_buff[i];
+            in_ptr[src_err_list[i]] = temp_buff[i];
         }
 
         for (i = 0; i < k; i++) {
@@ -661,7 +673,7 @@ out:
             free (temp_buff[i]);
     }
 
-    return out_size;
+    return err;
 }
 
 int ec_initialize_dot_prod_tables(int m, int k)
@@ -703,7 +715,7 @@ int main(int argc, char *argv[])
     int k = 5;
     uint8_t *data = NULL;
     uint8_t *data2 = NULL;
-    uint8_t *encode_data = NULL;
+    uint8_t *encode_data[m];
     int i = 0;
     size_t size = 0;
     char tmp = 0;
@@ -711,7 +723,8 @@ int main(int argc, char *argv[])
     uint8_t src_in_err[m];
     int nerrs = 0;
     int nsrcerrs = 0;
-    uint8_t *recov[k];
+    uint8_t *recov[m];
+    void *buf = NULL;
 
     /*test_of_all_zeros ();*/
     /*rand_data_test_with_varied_parameters();*/
@@ -720,17 +733,25 @@ int main(int argc, char *argv[])
     size = EC_METHOD_CHUNK_SIZE * k;
     data = calloc (size + 1, sizeof(*data));
     data2 = calloc (size + 1, sizeof(*data));
-    encode_data = calloc (size / k + 1, sizeof(*encode_data));
-    if (!data || !encode_data || !data2) {
+    if (!data || !data2) {
         printf ("Failed to allocate memory for data!\n");
         goto out;
+    }
+
+    for (i = 0; i < m; i++) {
+        buf = calloc (EC_METHOD_CHUNK_SIZE + 1, sizeof(**encode_data));
+        if (!buf) {
+            printf ("Failed to allocate memory for data!\n");
+            goto out;
+        }
+        encode_data[i] = buf;
     }
 
     tmp = 'a';
     for (i = 0; i < size; i++) {
         if (i % EC_METHOD_CHUNK_SIZE == 0 && i != 0) {
             tmp = tmp + 1;
-            printf ("TEST:%d, %c\n", i, tmp);
+            /*printf ("TEST:%d, %c\n", i, tmp);*/
         }
         data[i] = tmp;
         /*printf ("data[%d]=%d\n", i, data[i]);*/
@@ -746,29 +767,45 @@ int main(int argc, char *argv[])
     }
 
     for (i = 0; i < m; i++) {
-        memset (encode_data, 0, EC_METHOD_CHUNK_SIZE);
-        err = ec_method_dot_prod_encode (size, m, k, i, data, encode_data);
+        err = ec_method_dot_prod_encode (size, m, k, i, data, encode_data[i]);
         if (err < 0) {
             printf ("Failed to ec_method_dot_prod_encode(): %s\n",
                     strerror(-err));
             goto out;
         }
-        printf ("encode_data[%d]=\t%s\n=============================\n", i, encode_data);
+        /*printf ("encode_data[%d]=\t%s\n=============================\n", i, encode_data[i]);*/
     }
-    
+
     memset (src_in_err, 0, m);
     memset (src_err_list, 0, m);
-    src_in_err[0] = '1';
-    src_err_list[0] = 0;
-    nerrs = 1;
-    nsrcerrs = 1;
+    src_in_err[1] = 1;
+    src_in_err[2] = 1;
+    src_in_err[3] = 1;
+    src_in_err[4] = 1;
+    src_err_list[0] = 1;
+    src_err_list[1] = 2;
+    src_err_list[2] = 3;
+    src_err_list[3] = 4;
+    nerrs = 4;
+    nsrcerrs = 4;
+    for (i = 0; i < m; i++) {
+        if (i == 1 || i == 2 || i == 3 || i == 4)
+            continue;
 
-    err = ec_method_dot_prod_decode (size, m, k, src_in_err, src_err_list,
+        recov[i] = encode_data[i];
+        /*printf ("<<<<<<<<<<<<<>>>>>>>>>>>>>>>>recov[%d]=\t%s\n", i, recov[i]);*/
+    }
+
+    printf ("DEBUG pre data2:%s\n", data2);
+    err = ec_method_dot_prod_decode (EC_METHOD_CHUNK_SIZE,
+                                     m, k, src_in_err, src_err_list,
                                      nerrs, nsrcerrs, recov, data2);
     if (err < 0) {
         printf ("Failed to decode data: %s\n", strerror(-err));
         goto out;
     }
+
+    printf ("DEBUG post data2:%s\n", data2);
 
 out:
     return err;
