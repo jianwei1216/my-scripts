@@ -1,5 +1,5 @@
 #!/usr/bin/python
-# -*- conding:UTF-8 -*-
+# -*- coding:UTF-8 -*-
 
 import sys
 import os
@@ -8,6 +8,7 @@ import thread
 import time
 import argparse
 import textwrap
+import commands
 sys.path.append('./')
 from log import misclog
 
@@ -243,6 +244,116 @@ def build_mongodb():
     print exec_cmd
     os.system (exec_cmd)
 
+def get_test_basic_info():
+    global args
+    global command_remainder
+    save_path_file = args.save_path_file
+    cfg_file = args.configure_path[0]
+    flagstr = '###########################################################\n'
+
+    if args.nodes == None or args.password == None:
+        print 'Error: invalid arguments!(REQUIRED: tree, node-manager start)\nExample: ' + \
+              command_remainder['get_test_basic_info'] 
+        exit(-1)
+
+    fo1 = open (save_path_file, "ab")
+    # 1.存储服务信息
+    fo1.write ("\n\nBEGIN-TIME: " + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+    fo1.write ("\n1.存储服务信息\n" + flagstr)
+    get_service_info_cmd = args.cluster_keyword + ' volume info'
+    service_info = commands.getoutput(get_service_info_cmd)
+    fo1.write (service_info)
+    # 2.存储服务客户端配置文件信息
+    fo1.write ("\n\n2.存储服务客户端配置文件信息\n" + flagstr)
+    fo2 = open (cfg_file, "rb")         
+    while True:
+        line = fo2.readline ()
+        if not line:
+            break
+        fo1.write (line)
+    fo2.close()
+    # 3.操作系统的磁盘挂载信息
+    fo1.write ("\n\n3.操作系统的磁盘挂载信息\n" + flagstr)
+    get_os_mount_info_cmd = 'mount'
+    for host in args.nodes:
+        fo1.write ("HOST:" + host + "\n" + flagstr)
+        try:
+            client = get_ssh_client (host)
+            stdin, stdout, stderr = client.exec_command(get_os_mount_info_cmd)
+            out = stdout.read()
+            err = stderr.read()
+            if len(err) > 0:
+                print host, err,
+                misclog.error ("%s: %s" % (host, err))
+            if len(out) > 0:
+                fo1.write (out)
+        except Exception, e:
+            print host, e
+            misclog.error ("%s: %s" % (host, e)) 
+        client.close()
+    # 4.盘位信息
+    fo1.write ("\n\n4.盘位信息\n" + flagstr)
+    get_disk_position_info_cmd = 'python /usr/local/digioceanfs_manager/manager/digi_manager.pyc node list_disk'
+    disk_position_info = commands.getoutput (get_disk_position_info_cmd)
+    fo1.write (disk_position_info)
+    # 5.指定路径文件列表信息
+    fo1.write ("\n\n5.指定路径文件列表信息\n" + flagstr)
+    if args.want_to_ls_path != None:
+        get_want_to_ls_path_info_cmd = 'ls -lUh ' + args.want_to_ls_path[0]
+        fo1.write (get_want_to_ls_path_info_cmd + "\n")
+        want_to_ls_path_info = commands.getoutput (get_want_to_ls_path_info_cmd)
+        fo1.write (want_to_ls_path_info)
+    else:
+        fo1.write ("User Not Specify The Want To Ls Path\n")
+    # 6.存储服务单盘文件分布信息
+    fo1.write ("\n\n6.存储服务单盘文件分布信息\n" + flagstr)
+    if args.tree_brick_top_path != None:
+        get_file_distribute_on_brick_info_cmd = 'tree -Uh ' + args.tree_brick_top_path[0]
+        for host in args.nodes:
+            fo1.write ("\n\nHOST:" + host + "\n" + flagstr)
+            client = get_ssh_client (host)
+            try:
+                stdin, stdout, stderr = client.exec_command(get_file_distribute_on_brick_info_cmd)
+                out = stdout.read()
+                err = stderr.read()
+                if len(err) > 0:
+                    print host, err,
+                    misclog.error ("%s: %s" % (host, err))
+                if len(out) > 0:
+                    fo1.write (out)
+            except Exception, e:
+                print host, e
+                misclog.error ("%s: %s" % (host, e)) 
+    else:
+        fo1.write ("User Not Specify The Tree Brick Top Path\n")
+
+    # 7. 各节点主机配置
+    #fo1.write ("\n\n7. 各节点主机配置\n" + flagstr)
+    #uname_r_cmd = 'uname -r'  
+    #redhat_release_cmd  = 'cat /etc/redhat-release'
+    #free_h_cmd = 'free -h'
+    #cpuinfo_cmd = 'cat /proc/cpuinfo'
+    #for host in args.nodes:
+    #    fo1.write ("\n\nHOST:" + host + "\n" + flagstr)
+    #    client = get_ssh_client (host)
+    #    try:
+    #        stdin, stdout, stderr = client.exec_command(get_file_distribute_on_brick_info_cmd)
+    #        out = stdout.read()
+    #        err = stderr.read()
+    #        if len(err) > 0:
+    #            print host, err,
+    #            misclog.error ("%s: %s" % (host, err))
+    #        if len(out) > 0:
+    #            fo1.write (out)
+    #    except Exception, e:
+    #        print host, e
+    #        misclog.error ("%s: %s" % (host, e)) 
+
+    fo1.write ("\nEND-TIME: " + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
+    fo1.close()
+    print "Success!"
+    print "Result Path:" + args.save_path_file
+
 # main
 if __name__ == '__main__':
     global args
@@ -254,14 +365,17 @@ if __name__ == '__main__':
                          'add_trace_module':sys_argv_0 + ' --add-trace-module --nodes 10.10.21.111 --configure-path /var/lib/digioceand/vols/test'\
                          '/trusted-test.tcp-fuse.vol --start-line 150 --need-trace-volume-name test-dht --volname test --password 123456',\
                          'clean_all_cluster_env':sys_argv_0 + ' --clean-all-cluster-env --nodes 10.10.21.9{1,2,3} --password 123456',\
-                         'not_use_ssh_passwd':sys_argv_0 + ' --not-use-ssh-passwd --nodes 10.10.21.11{1,2,3,4,5} 10.10.12.16 --password 123456'}
+                         'not_use_ssh_passwd':sys_argv_0 + ' --not-use-ssh-passwd --nodes 10.10.21.11{1,2,3,4,5} 10.10.12.16 --password 123456',\
+                         'get_test_basic_info':sys_argv_0 + ' --get-test-basic-info --configure-path /var/lib/digioceand/vols/test/trusted-test.tcp-fuse.vol ' \
+                         '--want-to-ls-path /cluster2/test --nodes 10.10.178.10{1,2,3} --password 123456'}
     #print 'debug command_remainder', command_remainder
 
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,\
                                      epilog=textwrap.dedent('(1) ' + command_remainder['build_mongodb'] + '\n'     \
                                                             '(2) ' + command_remainder['not_use_ssh_passwd'] +'\n' \
                                                             '(3) ' + command_remainder['add_trace_module'] + '\n'  \
-                                                            '(4) ' + command_remainder['clean_all_cluster_env']))
+                                                            '(4) ' + command_remainder['clean_all_cluster_env'] + '\n' \
+                                                            '(5) ' + command_remainder['get_test_basic_info']))
     parser.add_argument ('--clean-all-cluster-env', action='store_true', help='cleanup all the cluster env on the specified nodes')
     parser.add_argument ('--cluster-keyword', nargs=1, default='digiocean', help='gluster or digiocean (default is digiocean)')
     parser.add_argument ('--light-cleanup', action='store_true', help='only delete the /var/log/digioceanfs')
@@ -284,6 +398,20 @@ if __name__ == '__main__':
     parser.add_argument ('--user', default='root', help='ssh user name')
     parser.add_argument ('--password', type=str, help='ssh password of the specified nodes')
 
+    parser.add_argument ('--get-test-basic-info', action='store_true',
+                         help=textwrap.dedent('获取存储服务基本信息:\n' \
+                         '1.存储服务信息\n' \
+                         '2.存储服务客户端配置文件信息\n' \
+                         '3.操作系统的磁盘挂载信息\n' \
+                         '4.盘位信息\n' \
+                         '5.指定路径文件列表信息\n' \
+                         '6.存储服务单盘文件分布信息\n'))
+    parser.add_argument ('--save-path-file', nargs=1, type=str, default='/var/log/get_test_basic_info.log', \
+                         help='default is /var/log/get_test_basic_info.log')
+    parser.add_argument ('--want-to-ls-path', nargs=1, type=str)
+    parser.add_argument ('--tree-brick-top-path', nargs=1, type=str,
+                          help='是否需要tree -Uh /digioceanfs')
+
     args = parser.parse_args ()
     #print 'debug-args:', args
 
@@ -303,6 +431,7 @@ if __name__ == '__main__':
     #          volname=None)
     #          digi_mongodbdeploy_path=
     #          light_cleanup=None
+    #          get_test_basic_info=None
     
     misclog.info ('>>>>>>>>>>>>>>>>NEW COMMANDS START>>>>>>>>>>>>>>\nnargs = %s' % args)
     if args.add_trace_module:
@@ -313,6 +442,8 @@ if __name__ == '__main__':
         clean_all_cluster_env()
     elif args.not_use_ssh_passwd:
         not_use_ssh_passwd()
+    elif args.get_test_basic_info:
+        get_test_basic_info()
     else:
         #print 'Error: unkown keyword!!!'
         parser.print_usage()
