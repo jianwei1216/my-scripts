@@ -376,7 +376,7 @@ static int ec_method_decode_matrix_ftw (int n, int m, int k, int *count, int err
                     goto out;
                 }
             }
-            /*char_show(*count, src_in_err, m, *nerrs, *nsrcerrs);*/
+            char_show(*count, src_in_err, m, *nerrs, *nsrcerrs);
             /*char_show (9, src_err_list, m, *nerrs, *nsrcerrs);*/
             src_in_err[i] = 0;
             (*count)--;
@@ -462,7 +462,7 @@ static int ec_method_decode_matrix_init (const int m, const int k)
                 nsrcerrs++;
 
             if (tmp_count == error_count) {
-                /*char_show (error_count, src_in_err, m, nerrs, nsrcerrs);*/
+                char_show (error_count, src_in_err, m, nerrs, nsrcerrs);
                 /*char_show (9, src_err_list, m, nerrs, nsrcerrs);*/
                 if (nsrcerrs != 0) {
                     err = ec_decode_matrix_new (m, k, src_in_err, src_err_list,
@@ -500,6 +500,7 @@ out:
 
 int main(void)
 {
+    printf ("%d\n", (sizeof(ec_decode_matrix_t) + 20 + 20 + 20 * sizeof(int) + 20 * 16 * 32 + 20 * 16) * 6195 / 1024/ 1024);
     /*printf ("%d, %d\n", 0, '0');*/
     ec_method_initialize_intel (20, 16);
     ec_method_decode_matrix_init (20, 16);

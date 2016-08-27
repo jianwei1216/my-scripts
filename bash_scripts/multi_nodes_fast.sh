@@ -10,7 +10,7 @@ fast_delete_service()
 	fast node-manager clear
 	fast node-manager stop
 
-	cluster.py uninstall
+	cluster uninstall
 
 	fast rm -rf /root/git/digioceanfs
 
@@ -36,14 +36,14 @@ fast_prepare_service()
 
 fast_create_service()
 {
-	cluster.py /root/git ${giturl} 10.10.178.10{1,2,3,4,5,6} clone
-	cluster.py install
+	cluster /root/git ${giturl} 10.10.21.11{1,2,3,4} clone
+	cluster install
 	fast systemctl daemon-reload
 	fast systemctl restart digioceand
 	fast node-manager stop
 	fast killall mongod
 	fast rm -rf /data/*
-	misc.py --build-mongodb --master-node 10.10.178.101 --slave-nodes 10.10.178.10{2,3}
+    #misc.py --build-mongodb --master-node 10.10.178.101 --slave-nodes 10.10.178.10{2,3}
 	fast node-manager start
 }
 

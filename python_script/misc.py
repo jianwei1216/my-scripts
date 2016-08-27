@@ -244,6 +244,29 @@ def build_mongodb():
     print exec_cmd
     os.system (exec_cmd)
 
+def __client_exec_commands2 (host, cmd_list, fo):
+    if host == '' or len(cmd_list) == 0 or fo == None:
+        print 'Error: args are NULL'
+        exit(-1)
+
+    client = get_ssh_client(host)
+    for cmd in cmd_list:
+        print host, cmd
+        fo.write ('[>>>COMMAND: ' + cmd + ' <<<]\n')
+        try:
+            stdin, stdout, stderr = client.exec_command(cmd)
+            out = stdout.read()
+            err = stderr.read()
+            if len(err) > 0:
+                print host, err,
+                misclog.error ("%s: %s" % (host, err))
+            if len(out) > 0:
+                fo.write (out)
+        except Exception, e:
+            print host, e
+            misclog.error ("%s: %s" % (host, e)) 
+    client.close()
+
 def get_test_basic_info():
     global args
     global command_remainder
@@ -256,7 +279,7 @@ def get_test_basic_info():
               command_remainder['get_test_basic_info'] 
         exit(-1)
 
-    fo1 = open (save_path_file, "ab")
+    fo1 = open (save_path_file, "wb")
     # 1.存储服务信息
     fo1.write ("\n\nBEGIN-TIME: " + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     fo1.write ("\n1.存储服务信息\n" + flagstr)
@@ -328,31 +351,26 @@ def get_test_basic_info():
         fo1.write ("User Not Specify The Tree Brick Top Path\n")
 
     # 7. 各节点主机配置
-    #fo1.write ("\n\n7. 各节点主机配置\n" + flagstr)
-    #uname_r_cmd = 'uname -r'  
-    #redhat_release_cmd  = 'cat /etc/redhat-release'
-    #free_h_cmd = 'free -h'
-    #cpuinfo_cmd = 'cat /proc/cpuinfo'
-    #for host in args.nodes:
-    #    fo1.write ("\n\nHOST:" + host + "\n" + flagstr)
-    #    client = get_ssh_client (host)
-    #    try:
-    #        stdin, stdout, stderr = client.exec_command(get_file_distribute_on_brick_info_cmd)
-    #        out = stdout.read()
-    #        err = stderr.read()
-    #        if len(err) > 0:
-    #            print host, err,
-    #            misclog.error ("%s: %s" % (host, err))
-    #        if len(out) > 0:
-    #            fo1.write (out)
-    #    except Exception, e:
-    #        print host, e
-    #        misclog.error ("%s: %s" % (host, e)) 
+    fo1.write ("\n\n7. 各节点主机配置\n" + flagstr)
+    cmd_list = []
+    uname_r_cmd = 'uname -r'  
+    cmd_list.append (uname_r_cmd)
+    redhat_release_cmd  = 'cat /etc/redhat-release'
+    cmd_list.append (redhat_release_cmd)
+    free_h_cmd = 'free -h'
+    cmd_list.append (free_h_cmd)
+    cpuinfo_cmd = 'cat /proc/cpuinfo'
+    cmd_list.append (cpuinfo_cmd)
+    df_h_cmd = 'df -h'
+    cmd_list.append (df_h_cmd)
+    for host in args.nodes:
+        fo1.write ("\n\nHOST:" + host + "\n" + flagstr)
+        __client_exec_commands2 (host, cmd_list, fo1)
 
     fo1.write ("\nEND-TIME: " + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()))
     fo1.close()
     print "Success!"
-    print "Result Path:" + args.save_path_file
+    print "Result Path: " + args.save_path_file
 
 # main
 if __name__ == '__main__':
@@ -405,7 +423,8 @@ if __name__ == '__main__':
                          '3.操作系统的磁盘挂载信息\n' \
                          '4.盘位信息\n' \
                          '5.指定路径文件列表信息\n' \
-                         '6.存储服务单盘文件分布信息\n'))
+                         '6.存储服务单盘文件分布信息\n' \
+                         '7.各节点配置信息\n'))
     parser.add_argument ('--save-path-file', nargs=1, type=str, default='/var/log/get_test_basic_info.log', \
                          help='default is /var/log/get_test_basic_info.log')
     parser.add_argument ('--want-to-ls-path', nargs=1, type=str)

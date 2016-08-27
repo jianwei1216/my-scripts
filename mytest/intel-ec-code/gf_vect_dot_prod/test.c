@@ -469,7 +469,7 @@ int ec_dot_prod_method_encode (size_t size, int m, int k, int idx,
         printf ("Failed to allocate memory for temp_ptr/dot_encode_tbls!\n");
         goto out;
     }
-
+    
     for (i = 0, j = 0; i < (count + 1); i++) {
         if (j < k) {
             data_ptr[j++] = in + i * EC_DOT_PROD_METHOD_CHUNK_SIZE;
@@ -603,7 +603,7 @@ size_t ec_dot_prod_method_decode (size_t size, int m, int k,
     }
 
     for (i = 0; i < nerrs; i++) {
-        buf = calloc (EC_DOT_PROD_METHOD_CHUNK_SIZE, sizeof(*temp_buff));
+        buf = calloc (EC_DOT_PROD_METHOD_CHUNK_SIZE + 1, sizeof(*temp_buff));
         if (!buf) {
             err = -ENOMEM;
             printf ("Failed to allocate memory for decode_tbls\n");
@@ -629,15 +629,6 @@ size_t ec_dot_prod_method_decode (size_t size, int m, int k,
         goto out;
     }
 
-#if 0
-    for (i = 0; i < m; i++) {
-        printf ("decode_index[%d] = \t%d\n", i, decode_index[i]);
-    }
-    for (i = 0; i < m; i++) {
-        printf ("src_err_list[%d] = \t%d\n", i, src_err_list[i]);
-    }
-#endif
-
     for (out_size = 0; out_size < size * k;) {
         for (i = 0; i < k; i++)
             data_ptr[i] = in_ptr[decode_index[i]];
@@ -645,9 +636,10 @@ size_t ec_dot_prod_method_decode (size_t size, int m, int k,
         for (i = 0; i < nerrs; i++) {
             for (j = 0; j < k; j++)
                 gf_vect_mul_init (decode_matrix[k * src_err_list[i] + j], &decode_tbls[j * 32]);
-            
+
             gf_vect_dot_prod (EC_DOT_PROD_METHOD_CHUNK_SIZE, k, decode_tbls, data_ptr, temp_buff[i]);
             in_ptr[src_err_list[i]] = temp_buff[i];
+            /*printf ("DEBUG DECODE temp_buff[%d]=\t%s\n", i, temp_buff[i]);*/
         }
 
         for (i = 0; i < k; i++) {
@@ -711,8 +703,8 @@ out:
 int main(int argc, char *argv[])
 {
     int err = -1;
-    int m = 9;
-    int k = 5;
+    int m = 3;
+    int k = 2;
     uint8_t *data = NULL;
     uint8_t *data2 = NULL;
     uint8_t *encode_data[m];
@@ -779,17 +771,17 @@ int main(int argc, char *argv[])
     memset (src_in_err, 0, m);
     memset (src_err_list, 0, m);
     src_in_err[1] = 1;
-    src_in_err[2] = 1;
-    src_in_err[3] = 1;
-    src_in_err[4] = 1;
+    /*src_in_err[2] = 1;*/
+    /*src_in_err[3] = 1;*/
+    /*src_in_err[4] = 1;*/
     src_err_list[0] = 1;
-    src_err_list[1] = 2;
-    src_err_list[2] = 3;
-    src_err_list[3] = 4;
-    nerrs = 4;
-    nsrcerrs = 4;
+    /*src_err_list[1] = 2;*/
+    /*src_err_list[2] = 3;*/
+    /*src_err_list[3] = 4;*/
+    nerrs = 1;
+    nsrcerrs = 1;
     for (i = 0; i < m; i++) {
-        if (i == 1 || i == 2 || i == 3 || i == 4)
+        if (i == 1)
             continue;
 
         recov[i] = encode_data[i];
