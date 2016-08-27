@@ -261,7 +261,7 @@ def __client_exec_commands2 (host, cmd_list, fo):
                 print host, err,
                 misclog.error ("%s: %s" % (host, err))
             if len(out) > 0:
-                fo.write (out)
+                fo.write (out + '\n')
         except Exception, e:
             print host, e
             misclog.error ("%s: %s" % (host, e)) 
@@ -363,6 +363,11 @@ def get_test_basic_info():
     cmd_list.append (cpuinfo_cmd)
     df_h_cmd = 'df -h'
     cmd_list.append (df_h_cmd)
+    ifcfg_cmd = "for i in `ls /etc/sysconfig/network-scripts/ifcfg-* -U|awk -F\"[@ -]\" \'{print $3}\'`; do ethtool $i;done"
+    cmd_list.append (ifcfg_cmd)
+    ifcfg_cmd2 = 'ifconfig'
+    cmd_list.append (ifcfg_cmd2)
+
     for host in args.nodes:
         fo1.write ("\n\nHOST:" + host + "\n" + flagstr)
         __client_exec_commands2 (host, cmd_list, fo1)
