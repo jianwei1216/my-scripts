@@ -377,6 +377,38 @@ def get_test_basic_info():
     print "Success!"
     print "Result Path: " + args.save_path_file
 
+def __nmon(host, lock):
+    global args
+    global command_remainder
+    cmd_list = []
+    save_dir = '/root/nmon_data'
+
+    if args.start:
+        cmd_dir = 'mkdir -p ' + save_dir
+        cmd_list.append (cmd_dir)
+        cmd_start = 'nmon -f -t -s 1 -c 1800 -m ' + save_dir
+        cmd_list.append (cmd_start)
+    elif args.stop:
+        cmd_stop = 'kill -USR2 `ps -ef | grep -v grep | grep nmon | awk \'{print $2}\'`'
+        cmd_list.append (cmd_stop)
+
+    __client_exec_commands(host, cmd_list)
+
+    lock.release()
+
+def nmon():
+    global args
+    global command_remainder
+
+    if args.nodes == None or args.password == None \
+            or (args.start == False and args.stop == False) \
+            or (args.start == True and args.stop == True):
+        print 'Error: invalid arguments!(REQUIRED: nmon)\nExample: ' + \
+              command_remainder['nmon'] 
+        exit(-1)
+
+    __multi_thread (__nmon)
+
 # main
 if __name__ == '__main__':
     global args
@@ -390,7 +422,8 @@ if __name__ == '__main__':
                          'clean_all_cluster_env':sys_argv_0 + ' --clean-all-cluster-env --nodes 10.10.21.9{1,2,3} --password 123456',\
                          'not_use_ssh_passwd':sys_argv_0 + ' --not-use-ssh-passwd --nodes 10.10.21.11{1,2,3,4,5} 10.10.12.16 --password 123456',\
                          'get_test_basic_info':sys_argv_0 + ' --get-test-basic-info --configure-path /var/lib/digioceand/vols/test/trusted-test.tcp-fuse.vol ' \
-                         '--want-to-ls-path /cluster2/test --nodes 10.10.178.10{1,2,3} --password 123456'}
+                         '--want-to-ls-path /cluster2/test --nodes 10.10.178.10{1,2,3} --password 123456',\
+                         'nmon':sys_argv_0 + ' --nmon --nodes 10.10.21.11{1,2,3,4} -p 9999 --password asdf --start/stop'}
     #print 'debug command_remainder', command_remainder
 
     parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter,\
@@ -398,7 +431,8 @@ if __name__ == '__main__':
                                                             '(2) ' + command_remainder['not_use_ssh_passwd'] +'\n' \
                                                             '(3) ' + command_remainder['add_trace_module'] + '\n'  \
                                                             '(4) ' + command_remainder['clean_all_cluster_env'] + '\n' \
-                                                            '(5) ' + command_remainder['get_test_basic_info']))
+                                                            '(5) ' + command_remainder['get_test_basic_info'] + '\n' \
+                                                            '(6) ' + command_remainder['nmon']))
     parser.add_argument ('--clean-all-cluster-env', action='store_true', help='cleanup all the cluster env on the specified nodes')
     parser.add_argument ('--cluster-keyword', nargs=1, default='digiocean', help='gluster or digiocean (default is digiocean)')
     parser.add_argument ('--light-cleanup', action='store_true', help='only delete the /var/log/digioceanfs')
@@ -435,6 +469,13 @@ if __name__ == '__main__':
     parser.add_argument ('--want-to-ls-path', nargs=1, type=str)
     parser.add_argument ('--tree-brick-top-path', nargs=1, type=str,
                           help='是否需要tree -Uh /digioceanfs')
+    
+    #nmon监控iozone测试期间系统资源的使用情况
+    parser.add_argument ('--nmon', action='store_true',
+                         help='nmon监控iozone测试期间系统资源的使用情况')
+    parser.add_argument ('--monitor-process', nargs=1, type=str, default='iozone')
+    parser.add_argument ('--start', action='store_true')
+    parser.add_argument ('--stop', action='store_true')
 
     args = parser.parse_args ()
     #print 'debug-args:', args
@@ -468,6 +509,8 @@ if __name__ == '__main__':
         not_use_ssh_passwd()
     elif args.get_test_basic_info:
         get_test_basic_info()
+    elif args.nmon:
+        nmon()
     else:
         #print 'Error: unkown keyword!!!'
         parser.print_usage()
